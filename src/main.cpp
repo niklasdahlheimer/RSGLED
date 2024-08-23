@@ -3,57 +3,156 @@
 #include <SoftwareSerial.h>
 #include "helper.h"
 #include "midiConsts.h"
+#include "protothreads.h"
+
+// LED header
 
 #define LED_CHIP WS2811
 #define COLOR_ORDER BRG
-#define NUM_LED 30
+#define NUM_LED 10
 #define DATA_PIN 3
 #define BRIGHTNESS 100
 
-//LED stuff
+CRGB COLOR_RSG_BLUE = CRGB::Green;
+CRGB COLOR_RSG_WHITE = CRGB::Red;
+CRGB COLOR_RSG_GREEN = CRGB::Blue;
+CRGB COLOR_RSG_PINK = CRGB::Violet;
+
+pt ptBlink;
+
 CRGB leds[NUM_LED];
-CRGB COLOR_RSG_BLUE = CRGB(83, 192, 219);
 
-// Config for "R"
-CRGBSet group1(leds, 18, 19);
-CRGBSet group2(leds, 16, 17);
-CRGBSet group3(leds, 14, 15);
-CRGBSet group4(leds, 12, 13);
-CRGBSet group5(leds, 10, 11);
-CRGBSet group6(leds, 8, 9);
-CRGBSet group7(leds, 6, 7);
-CRGBSet group8(leds, 4, 5);
-CRGBSet group9(leds, 2, 3);
-CRGBSet group10(leds, 0, 1);
-CRGBSet groupAll(leds, 0, 19);
+CRGBSet group1(leds, 8, 9);
+CRGBSet group2(leds, 6, 7);
+CRGBSet group3(leds, 4, 5);
+CRGBSet group4(leds, 2, 3);
+CRGBSet group5(leds, 0, 1);
 
+void LED_init();
+void LED_groupOn(CRGBSet *group, const CRGB *color = &COLOR_RSG_BLUE);
+void LED_groupOff(CRGBSet *group);
+int LED_spin();
+void LED_breath();
+unsigned long startMillis = 0;
+
+// MIDI header
 SoftwareSerial midiSerial(5, 4); // RX, TX
 MIDI_CREATE_INSTANCE(SoftwareSerial, midiSerial, MIDI);
 
+// MIDI cpp
 
-void fastLEDSetup() {
+void handleNoteOn(byte channel, byte note, byte velocity);
+void handleNoteOff(byte channel, byte note, byte velocity);
+void handleError(int8_t error);
+
+void MIDI_init() {
+    // Create and bind the MIDI interface to the default hardware Serial port
+    midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
+    MIDI.begin(1);
+    MIDI.turnThruOff();
+
+    MIDI.setHandleNoteOn(handleNoteOn);
+    MIDI.setHandleNoteOff(handleNoteOff);
+    MIDI.setHandleError(handleError);
+}
+
+void MIDI_handle(){
+    if (MIDI.read()) {
+        FastLED.show();
+    }
+}
+
+void handleNoteOn(byte channel, byte note, byte velocity) {
+    //serialPrintf("NoteOn: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
+    switch (note) {
+        case Note_C2:
+            LED_groupOn(&group1, &COLOR_RSG_PINK);
+        break;
+        case Note_Cis2:
+            LED_groupOn(&group2, &COLOR_RSG_WHITE);
+        break;
+        case Note_D2:
+            LED_groupOn(&group3, &COLOR_RSG_GREEN);
+        break;
+        case Note_Dis2:
+            LED_groupOn(&group4, &COLOR_RSG_PINK);
+        break;
+        case Note_E2:
+            LED_groupOn(&group5);
+        break;
+        case Note_C3:
+            PT_SCHEDULE(LED_spin());
+        break;
+        default:
+            serialPrintf("unhandled NoteOn: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
+    }
+}
+
+void handleNoteOff(byte channel, byte note, byte velocity) {
+    //serialPrintf("NoteOff: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
+    switch (note) {
+        case Note_C2:
+            LED_groupOff(&group1);
+        break;
+        case Note_Cis2:
+            LED_groupOff(&group2);
+        break;
+        case Note_D2:
+            LED_groupOff(&group3);
+        break;
+        case Note_Dis2:
+            LED_groupOff(&group4);
+        break;
+        case Note_E2:
+            LED_groupOff(&group5);
+        break;
+        default:
+            serialPrintf("unhandled noteOff: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
+    }
+}
+
+void handleError(int8_t error) {
+    serialPrintf("unhandled error %d", error);
+};
+
+void handleSystemExclusive(byte *array, unsigned size);
+
+void handleTimeCodeQuarterFrame(byte data);
+
+void handleSongPosition(unsigned int beats);
+
+void handleSongSelect(byte songnumber);
+
+void handleTuneRequest();
+
+
+
+// LED
+
+void LED_init() {
     // sanity check delay - allows reprogramming if accidently blowing power w/leds
     //delay(1000);
     FastLED.addLeds<LED_CHIP, DATA_PIN, COLOR_ORDER>(leds, NUM_LED); // GRB ordering is typical
     FastLED.setBrightness(BRIGHTNESS);
-    groupAll = CRGB::Black;
     FastLED.clear(true);
 }
 
-void groupOn(CRGBSet *group, const CRGB *color = &COLOR_RSG_BLUE) {
+void LED_groupOn(CRGBSet *group, const CRGB *color) {
     *group = *color;
 }
 
-void groupOff(CRGBSet *group) {
+void LED_groupOff(CRGBSet *group) {
     *group = CRGB::Black;
 }
 
-void spin() {
+int LED_spin() {
+    PT_BEGIN(pt);
+
     for (int i = 0; i < NUM_LED; i++) {
         leds[i] = COLOR_RSG_BLUE;
         FastLED.show();
         // Wait a little bit
-        delay(30);
+        PT_SLEEP(30);
         leds[i] = CRGB::Black;
     }
 
@@ -61,12 +160,14 @@ void spin() {
         leds[i] = COLOR_RSG_BLUE;
         FastLED.show();
         // Wait a little bit
-        delay(30);
+        PT_SLEEP(30);
         leds[i] = CRGB::Black;
     }
+
+    PT_END(pt);
 }
 
-void breath() {
+void LED_breath() {
     int hue = 0;
     int divisor = 30;
     int MIN_BRIGHTNESS = BRIGHTNESS / 10;
@@ -85,103 +186,27 @@ void breath() {
     }
 }
 
-void handleNoteOn(byte channel, byte note, byte velocity) {
-    serialPrintf("NoteOn: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
-    switch (note) {
-        case Note_C2:
-            groupOn(&group1);
-            break;
-        case Note_Cis2:
-            groupOn(&group2);
-            break;
-        case Note_D2:
-            groupOn(&group3);
-        break;
-        case Note_Dis2:
-            groupOn(&group4);
-        break;
-        case Note_E2:
-            groupOn(&group5);
-        break;
-        case Note_F2:
-            groupOn(&group6);
-        break;
-        case Note_Fis2:
-            groupOn(&group7);
-        break;
-        case Note_G2:
-            groupOn(&group8);
-        break;
-        case Note_Gis2:
-            groupOn(&group9);
-        break;
-        case Note_A2:
-            breath();
-        break;
-        default:
-            serialPrintf("unhandled NoteOn: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
-    }
-}
 
-void handleNoteOff(byte channel, byte note, byte velocity) {
-    serialPrintf("NoteOff: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
-    switch (note) {
-        case Note_C2:
-            groupOff(&group1);
-            break;
-        case Note_Cis2:
-            groupOff(&group2);
-            break;
-        case Note_D2:
-            groupOff(&group3);
-        break;
-        case Note_Dis2:
-            groupOff(&group4);
-        break;
-        case Note_E2:
-            groupOff(&group5);
-        break;
-        case Note_F2:
-            groupOff(&group6);
-        break;
-        case Note_Fis2:
-            groupOff(&group7);
-        break;
-        case Note_G2:
-            groupOff(&group8);
-        break;
-        case Note_Gis2:
-            groupOff(&group9);
-        break;
-        case Note_A2:
-            groupOff(&group10);
-        break;
-        default:
-            serialPrintf("unhandled noteOff: Ch= %d, Note=%d, Velocity=%d", channel, note, velocity);
-    }
-}
-
-
-void midiSetup() {
-    // Create and bind the MIDI interface to the default hardware Serial port
-    midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
-    MIDI.begin(1); // Listen to all incoming messages
-    MIDI.setHandleNoteOn(handleNoteOn);
-    MIDI.setHandleNoteOff(handleNoteOff);
-}
+// INIT
 
 void setup() {
-    Serial.begin(9600);
-    fastLEDSetup();
-    midiSetup();
+    startMillis = millis();
+    Serial.begin(115200);
+
+    LED_init();
+    MIDI_init();
+
+    PT_INIT(&ptBlink);
 }
 
-
-// This function runs over and over, and is where you do the magic to light
-// your LEDs.
 void loop() {
-    maybeDisplayCriticalRam();
-    if(MIDI.read()) {
-        FastLED.show();
-    }
+    MIDI_handle();
+    //maybeDisplayCriticalRam();
 }
+
+
+
+// LED
+
+
+
