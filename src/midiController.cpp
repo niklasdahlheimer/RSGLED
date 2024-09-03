@@ -3,57 +3,51 @@
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
-MidiController::MidiController(SoftwareSerial *logSerial) :
-        logSerial(logSerial),
-        noteOn{} {
+SoftwareSerial *logSerial;
+bool noteOnArray[255];
 
-    Serial.begin(115200);
+void MIDIC_handleNoteOn(byte channel, byte note, byte velocity);
+void MIDIC_handleNoteOff(byte channel, byte note, byte velocity);
+void MIDIC_handleError(int8_t error);
+void MIDIC_handleSystemExclusive(byte *array, unsigned size);
+void MIDIC_handleTimeCodeQuarterFrame(byte data);
+void MIDIC_handleSongPosition(unsigned int beats);
+void MIDIC_handleSongSelect(byte songNumber);
+void MIDIC_handleTuneRequest();
+
+void MIDIC_init(SoftwareSerial *serial) {
+    logSerial = serial;
+
+    //Serial.begin(115200);
 
     // Create and bind the MIDI interface to the default hardware Serial port
     //midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
     MIDI.begin(MIDI_CHANNEL);
     MIDI.turnThruOff();
 
-    MIDI.setHandleNoteOn(handleNoteOn);
-    MIDI.setHandleNoteOff(handleNoteOff);
-    MIDI.setHandleError(handleError);
-
+    MIDI.setHandleNoteOn(MIDIC_handleNoteOn);
+    MIDI.setHandleNoteOff(MIDIC_handleNoteOff);
+    MIDI.setHandleError(MIDIC_handleError);
 }
 
-void MidiController::read() {
+void MIDIC_read() {
     MIDI.read();
 }
 
-void MidiController::handleNoteOn(byte channel, byte note, byte velocity) {
+bool* MIDIC_getNoteOnArray(){
+    return noteOnArray;
+}
+
+void MIDIC_handleNoteOn(byte channel, byte note, byte velocity) {
     serialPrintf(logSerial, "NoteOn: %d %d %d", channel, note, velocity);
-    noteOn[note] = true;
+    noteOnArray[note] = true;
 }
 
-void MidiController::handleNoteOff(byte channel, byte note, byte velocity) {
+void MIDIC_handleNoteOff(byte channel, byte note, byte velocity) {
     serialPrintf(logSerial, "NoteOff: %d %d %d", channel, note, velocity);
-    noteOn[note] = false;
+    noteOnArray[note] = false;
 }
 
-void MidiController::handleError(int8_t error) {
-
-};
-
-void MidiController::handleSystemExclusive(byte *array, unsigned size) {
-
-};
-
-void MidiController::handleTimeCodeQuarterFrame(byte data) {
-
-};
-
-void MidiController::handleSongPosition(unsigned int beats) {
-
-};
-
-void MidiController::handleSongSelect(byte songNumber) {
-
-};
-
-void MidiController::handleTuneRequest() {
-
+void MIDIC_handleError(int8_t error) {
+    serialPrintf(logSerial, "MIDI error: %d", error);
 };

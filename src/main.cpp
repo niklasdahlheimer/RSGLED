@@ -4,7 +4,6 @@
 #include "midiController.h"
 #include "ledController.h"
 
-MidiController *midiController;
 LEDController *ledController;
 
 SoftwareSerial logSerial(4, 5); // RX, TX
@@ -14,11 +13,11 @@ void setup() {
     serialPrintf(&logSerial, "Hello from Arduino 1!");
 
     ledController = new LEDController(&logSerial);
-    midiController = new MidiController(&logSerial);
+    MIDIC_init(&logSerial);
 }
 
 void loop() {
-    midiController->read();
-    ledController->updateLEDStripe(midiController->getNoteOnArray(), millis());
+    MIDIC_read();
+    ledController->updateLEDStripe(MIDIC_getNoteOnArray(), millis());
     maybeDisplayCriticalRam(&logSerial);
 }

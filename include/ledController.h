@@ -32,34 +32,17 @@ static CRGB COLOR_RSG_RED = CRGB::Pink;
 static CRGB COLOR_RSG_Yellow = CRGB::Yellow;
 static CRGB COLOR_RSG_Purple = CRGB::Purple;
 
-class LEDController{
-public:
-    LEDController(SoftwareSerial* logSerial);
-    void updateLEDStripe(const bool* noteOn, unsigned long triggerMillis);
+void LEDC_init(SoftwareSerial* logSerial);
+void LEDC_updateStripe(const bool* noteOn, unsigned long triggerMillis);
 
-private:
-    SoftwareSerial* logSerial;
-    unsigned long lastTriggerMillis;
-    double breathBrightnessFactor;
+CRGB leds[LED_NUM];
 
-    unsigned long strobeStartMillis;
-    unsigned long breathStartMillis;
-    unsigned long rainbowStartMillis;
-
-    double currentNoiseVal;
-    unsigned long lastNoiseUpdateInMillis;
-
-    unsigned int startHue;
-
-    static void LED_on(CRGBSet *group, const CRGB *color);
-    static void LED_off(CRGBSet *group);
-    void LED_strobe();
-    void LED_breath();
-    void LED_noise();
-    void LED_rainbow();
-    CRGB leds[LED_NUM];
-    CRGBSet group1, group2, group3, group4, group5, groupAll;
-};
+CRGBSet group1 = CRGBSet(leds, 8, 9);
+CRGBSet group2 = CRGBSet(leds, 6, 7);
+CRGBSet group3 = CRGBSet(leds, 4, 5);
+CRGBSet group4 = CRGBSet(leds, 2, 3);
+CRGBSet group5 = CRGBSet(leds, 0, 1);
+CRGBSet groupAll = CRGBSet(leds, 0, 9);
 
 
 #endif //RSGLED_LEDCONTROLLER_H
