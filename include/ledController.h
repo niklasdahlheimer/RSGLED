@@ -1,5 +1,6 @@
 #ifndef RSGLED_LEDCONTROLLER_H
 #define RSGLED_LEDCONTROLLER_H
+
 #include <Arduino.h>
 #include <FastLED.h>
 #include <SoftwareSerial.h>
@@ -34,15 +35,6 @@ static CRGB COLOR_RSG_Purple = CRGB::Purple;
 
 void LEDC_init(SoftwareSerial* logSerial);
 void LEDC_updateStripe(const bool* noteOn, unsigned long triggerMillis);
-
-CRGB leds[LED_NUM];
-
-CRGBSet group1 = CRGBSet(leds, 8, 9);
-CRGBSet group2 = CRGBSet(leds, 6, 7);
-CRGBSet group3 = CRGBSet(leds, 4, 5);
-CRGBSet group4 = CRGBSet(leds, 2, 3);
-CRGBSet group5 = CRGBSet(leds, 0, 1);
-CRGBSet groupAll = CRGBSet(leds, 0, 9);
 
 
 #endif //RSGLED_LEDCONTROLLER_H

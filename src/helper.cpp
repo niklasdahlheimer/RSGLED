@@ -3,7 +3,6 @@
 #include <Arduino.h>
 
 
-
 void serialPrintf(SoftwareSerial *serial, const char *fmt, ...) {
     /* Buffer for storing the formatted data */
     char buff[SERIAL_PRINTF_MAX_BUFF];

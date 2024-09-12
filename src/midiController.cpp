@@ -3,7 +3,7 @@
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
-SoftwareSerial *logSerial;
+SoftwareSerial *midiLogSerial;
 bool noteOnArray[255];
 
 void MIDIC_handleNoteOn(byte channel, byte note, byte velocity);
@@ -16,7 +16,7 @@ void MIDIC_handleSongSelect(byte songNumber);
 void MIDIC_handleTuneRequest();
 
 void MIDIC_init(SoftwareSerial *serial) {
-    logSerial = serial;
+    midiLogSerial = serial;
 
     //Serial.begin(115200);
 
@@ -39,15 +39,15 @@ bool* MIDIC_getNoteOnArray(){
 }
 
 void MIDIC_handleNoteOn(byte channel, byte note, byte velocity) {
-    serialPrintf(logSerial, "NoteOn: %d %d %d", channel, note, velocity);
+    serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
     noteOnArray[note] = true;
 }
 
 void MIDIC_handleNoteOff(byte channel, byte note, byte velocity) {
-    serialPrintf(logSerial, "NoteOff: %d %d %d", channel, note, velocity);
+    serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
     noteOnArray[note] = false;
 }
 
 void MIDIC_handleError(int8_t error) {
-    serialPrintf(logSerial, "MIDI error: %d", error);
+    serialPrintf(midiLogSerial, "MIDI error: %d", error);
 };

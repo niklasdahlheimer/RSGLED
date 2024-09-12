@@ -1,6 +1,16 @@
 #include "ledController.h"
+#include "helper.h"
 
-SoftwareSerial* logSerial;
+SoftwareSerial* ledLogSerial;
+
+CRGB leds[LED_NUM];
+
+CRGBSet group1 = CRGBSet(leds, 8, 9);
+CRGBSet group2 = CRGBSet(leds, 6, 7);
+CRGBSet group3 = CRGBSet(leds, 4, 5);
+CRGBSet group4 = CRGBSet(leds, 2, 3);
+CRGBSet group5 = CRGBSet(leds, 0, 1);
+CRGBSet groupAll = CRGBSet(leds, 0, 9);
 
 unsigned long lastTriggerMillis = 0;
 
@@ -24,7 +34,7 @@ void LED_noise();
 void LED_rainbow();
 
 void LEDC_init(SoftwareSerial* serial)         {
-        logSerial = serial;
+        ledLogSerial = serial;
 
     // sanity check delay - allows reprogramming if accidentally blowing power w/leds
     //delay(1000);
@@ -33,8 +43,10 @@ void LEDC_init(SoftwareSerial* serial)         {
     FastLED.clear(true);
 }
 
-void LEDC_updateLEDStripe(const bool *noteOn, const unsigned long triggerMillis) {
+void LEDC_updateStripe(const bool *noteOn, const unsigned long triggerMillis) {
     // prime values
+    lastTriggerMillis = triggerMillis;
+
     FastLED.clear();
     FastLED.setBrightness(LED_BRIGHTNESS_MAX);
 
