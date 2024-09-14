@@ -13,7 +13,7 @@ void serialPrintf(SoftwareSerial *serial, const char *fmt, ...) {
     /* create the formatted data and store in buff */
     vsnprintf(buff, SERIAL_PRINTF_MAX_BUFF, fmt, pargs);
     va_end(pargs);
-    serial->println(buff);
+    Serial.println(buff);
 }
 
 

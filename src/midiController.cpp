@@ -1,19 +1,24 @@
 #include "midiController.h"
 #include "ledController.h"
+#include <Arduino.h>
+#include "midiConsts.h"
+#include "helper.h"
+#include <MIDI.h>
 
-MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial1, MIDI);
 
 SoftwareSerial *midiLogSerial;
 bool noteOnArray[255];
+unsigned int midiTempo = 120;
 
-void MIDIC_handleNoteOn(byte channel, byte note, byte velocity);
-void MIDIC_handleNoteOff(byte channel, byte note, byte velocity);
-void MIDIC_handleError(int8_t error);
-void MIDIC_handleSystemExclusive(byte *array, unsigned size);
-void MIDIC_handleTimeCodeQuarterFrame(byte data);
-void MIDIC_handleSongPosition(unsigned int beats);
-void MIDIC_handleSongSelect(byte songNumber);
-void MIDIC_handleTuneRequest();
+void handleSystemExclusive(byte *array, unsigned size);
+void handleTimeCodeQuarterFrame(byte data);
+void handleSongPosition(unsigned int beats);
+void handleSongSelect(byte songNumber);
+void handleTuneRequest();
+void handleNoteOn(byte channel, byte note, byte velocity);
+void handleNoteOff(byte channel, byte note, byte velocity);
+void handleError(int8_t error);
 
 void MIDIC_init(SoftwareSerial *serial) {
     midiLogSerial = serial;
@@ -25,9 +30,10 @@ void MIDIC_init(SoftwareSerial *serial) {
     MIDI.begin(MIDI_CHANNEL);
     MIDI.turnThruOff();
 
-    MIDI.setHandleNoteOn(MIDIC_handleNoteOn);
-    MIDI.setHandleNoteOff(MIDIC_handleNoteOff);
-    MIDI.setHandleError(MIDIC_handleError);
+    MIDI.setHandleNoteOn(handleNoteOn);
+    MIDI.setHandleNoteOff(handleNoteOff);
+    MIDI.setHandleError(handleError);
+    MIDI.setHandleSystemExclusive(handleSystemExclusive);
 }
 
 void MIDIC_read() {
@@ -38,16 +44,29 @@ bool* MIDIC_getNoteOnArray(){
     return noteOnArray;
 }
 
-void MIDIC_handleNoteOn(byte channel, byte note, byte velocity) {
-    serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
+unsigned int MIDIC_getTempo(){
+    return midiTempo;
+}
+
+// private
+
+void handleSystemExclusive(byte *array, unsigned size) {
+    serialPrintf(midiLogSerial, "SysEx:");
+    for(unsigned int i = 0; i < size; i++) {
+        serialPrintf(midiLogSerial, " %02X", array[i]);
+    }
+}
+
+void handleNoteOn(byte channel, byte note, byte velocity) {
+    //serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
     noteOnArray[note] = true;
 }
 
-void MIDIC_handleNoteOff(byte channel, byte note, byte velocity) {
-    serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
+void handleNoteOff(byte channel, byte note, byte velocity) {
+    //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
     noteOnArray[note] = false;
 }
 
-void MIDIC_handleError(int8_t error) {
+void handleError(int8_t error) {
     serialPrintf(midiLogSerial, "MIDI error: %d", error);
 };
