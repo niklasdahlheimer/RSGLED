@@ -26,6 +26,7 @@ static CRGBSet *groupLevel5[] = {
 };
 
 unsigned int tempo = DEFAULT_TEMPO;
+unsigned int brightness = LED_BRIGHTNESS_MAX;
 
 unsigned long timestamp = 0;
 
@@ -49,6 +50,10 @@ unsigned int getBeatLengthInMillis(unsigned int divider = 4, boolean isTriplet =
 
 void maybeSetEffectStartTime(boolean isNoteOn, unsigned long *startTimeRef, const unsigned long *curr);
 
+void maybeSetBrightness(const byte *brightnessTrimValue);
+
+void maybeSetTempo(const byte *tempoValue);
+
 void LED_arrayOn(CRGBSet *group[], size_t size);
 
 void LED_on(CRGBSet *group, const CRGB *color = &COLOR_1);
@@ -68,19 +73,23 @@ void LED_FX_levelPump();
 void LEDC_init(SoftwareSerial *serial) {
     ledLogSerial = serial;
 
-    // sanity check delay - allows reprogramming if accidentally blowing power w/leds
-    //delay(1000);
+    // sanity check delay - allows reprogramming if accidently blowing power w/leds
+    delay(2000);
+    //FastLED.setMaxPowerInVoltsAndMilliamps( 12, MAX_POWER_MILLIAMPS);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(leds, LED_NUM); // GRB ordering is typical
-    FastLED.setBrightness(LED_BRIGHTNESS_MAX);
     FastLED.clear(true);
 }
 
-void LEDC_updateStripe(const bool *note, const unsigned char *controller, const unsigned int bpm) {
+void LEDC_updateStripe(const bool *note, const byte *controller) {
     // fix time reference for all calculations
     timestamp = millis();
 
+    // Controller
+    maybeSetBrightness(&controller[CONTROLLER_INDEX_BRIGHTNESS_TRIM]);
+    maybeSetTempo(&controller[CONTROLLER_INDEX_TEMPO]);
+
     FastLED.clear();
-    FastLED.setBrightness(LED_BRIGHTNESS_MAX);
+    FastLED.setBrightness(brightness);
 
     maybeSetEffectStartTime(note[NOTE_BREATH], &breathStartMillis, &timestamp);
     maybeSetEffectStartTime(note[NOTE_STROBE], &strobeStartMillis, &timestamp);
@@ -260,7 +269,8 @@ unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned
 }
 
 unsigned int
-getBeatLengthInMillis(const unsigned int divider, const boolean isTriplet, const boolean isDotted, const unsigned int t) {
+getBeatLengthInMillis(const unsigned int divider, const boolean isTriplet, const boolean isDotted,
+                      const unsigned int t) {
     double beatLengthInMillis = 60000.0 / tempo;
     beatLengthInMillis *= 4.0 / divider;
 
@@ -281,6 +291,21 @@ void maybeSetEffectStartTime(const boolean isNoteOn, unsigned long *startTimeRef
     } else if (!isNoteOn && *startTimeRef != 0) {
         *startTimeRef = 0;
     }
+}
+
+void maybeSetBrightness(const byte *brightnessTrimValue) {
+    if (*brightnessTrimValue == 0 && brightness == LED_BRIGHTNESS_MAX) {
+        return;
+    }
+    brightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+}
+
+void maybeSetTempo(const byte *tempoValue) {
+    // ignore null value or equal tempo
+    if (*tempoValue == 0 || *tempoValue + TEMPO_OFFSET == tempo) {
+        return;
+    }
+    tempo = *tempoValue + TEMPO_OFFSET;
 }
 
 // Effects

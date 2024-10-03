@@ -2,11 +2,11 @@
 #define RSGLED_MIDICONTROLLER_H
 
 #include <SoftwareSerial.h>
+#include <Arduino.h>
 
 typedef struct {
     bool noteOn[255];               // Boolean array for note on/off states
-    unsigned char controls[128];    // Array of 128 control values (0-127)
-    unsigned int tempo;             // Tempo, default value will be set in the program
+    byte controls[128];              // Array of 128 control values (0-127)
 } MidiData;
 
 void MIDIC_init(SoftwareSerial *logSerial);

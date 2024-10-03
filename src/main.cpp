@@ -20,6 +20,6 @@ void loop() {
     if(TEST_MODE){
         midiData->noteOn[NOTE_RAINBOW] = true;
     }
-    LEDC_updateStripe(midiData->noteOn, midiData->controls, midiData->tempo);
+    LEDC_updateStripe(midiData->noteOn, midiData->controls);
     maybeDisplayCriticalRam(&logSerial);
 }

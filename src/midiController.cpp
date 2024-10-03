@@ -26,14 +26,11 @@ void handleError(int8_t error);
 void MIDIC_init(SoftwareSerial *serial) {
     midiLogSerial = serial;
 
-    data.tempo = DEFAULT_TEMPO;
-    //Serial.begin(115200);
-
     // Create and bind the MIDI interface to the default hardware Serial port
     //midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
     MIDI.begin(MIDI_CHANNEL);
     MIDI.turnThruOff();
-
+    MIDI.setHandleControlChange(handleNoteOn);
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.setHandleError(handleError);
@@ -52,6 +49,10 @@ void handleSystemExclusive(byte *array, unsigned size) {
     for(unsigned int i = 0; i < size; i++) {
         serialPrintf(midiLogSerial, " %02X", array[i]);
     }
+}
+
+void handleControlChange(byte channel, byte number, byte value){
+    data.controls[number] = value;
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {

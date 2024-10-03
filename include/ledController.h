@@ -10,7 +10,8 @@
 #define LED_DATA_PIN                7
 #define LED_CHIP                    WS2811
 #define LED_COLOR_ORDER             BRG
-#define LED_BRIGHTNESS_MAX          100
+#define LED_BRIGHTNESS_MAX          255
+#define MAX_POWER_MILLIAMPS         500
 
 #define STROBE_ON_FACTOR            0.5 // Factor between 0 and 1 how long the LEDs stay ON
 
@@ -20,7 +21,7 @@
 #define PUMP_PERIOD_IN_MILLIS       100
 
 void LEDC_init(SoftwareSerial* logSerial);
-void LEDC_updateStripe(const bool *note, unsigned long millis);
+void LEDC_updateStripe(const bool *note, const byte *controller);
 
 
 static CRGB COLOR_1 = CRGB::SkyBlue;
@@ -84,5 +85,9 @@ static CRGB COLOR_12 = CRGB::MidnightBlue;
 #define NOTE_LEVEL_3 Note_D6
 #define NOTE_LEVEL_4 Note_Dis6
 #define NOTE_LEVEL_5 Note_E6
+
+#define CONTROLLER_INDEX_BRIGHTNESS_TRIM     0
+#define CONTROLLER_INDEX_TEMPO               1
+#define TEMPO_OFFSET                         60
 
 #endif //RSGLED_LEDCONTROLLER_H
