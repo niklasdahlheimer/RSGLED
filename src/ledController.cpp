@@ -25,7 +25,7 @@ static CRGBSet *groupLevel5[] = {
         &g1, &g10, &g2, &g9, &g3, &g8, &g4, &g7, &g5, &g6
 };
 
-unsigned int tempo = 120;
+unsigned int tempo = DEFAULT_TEMPO;
 
 unsigned long timestamp = 0;
 
@@ -75,9 +75,9 @@ void LEDC_init(SoftwareSerial *serial) {
     FastLED.clear(true);
 }
 
-void LEDC_updateStripe(const bool *note, const unsigned long millis) {
+void LEDC_updateStripe(const bool *note, const unsigned char *controller, const unsigned int bpm) {
     // fix time reference for all calculations
-    timestamp = millis;
+    timestamp = millis();
 
     FastLED.clear();
     FastLED.setBrightness(LED_BRIGHTNESS_MAX);

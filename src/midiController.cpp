@@ -9,14 +9,16 @@
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
 SoftwareSerial *midiLogSerial;
-bool noteOnArray[255];
-unsigned int midiTempo = 120;
+
+MidiData data;
 
 void handleSystemExclusive(byte *array, unsigned size);
-void handleTimeCodeQuarterFrame(byte data);
 void handleSongPosition(unsigned int beats);
 void handleSongSelect(byte songNumber);
 void handleTuneRequest();
+void handleControlChange(byte channel, byte number, byte value);
+void handleProgramChange(byte channel, byte number);
+void handlePitchBend(byte channel, int bend);
 void handleNoteOn(byte channel, byte note, byte velocity);
 void handleNoteOff(byte channel, byte note, byte velocity);
 void handleError(int8_t error);
@@ -24,6 +26,7 @@ void handleError(int8_t error);
 void MIDIC_init(SoftwareSerial *serial) {
     midiLogSerial = serial;
 
+    data.tempo = DEFAULT_TEMPO;
     //Serial.begin(115200);
 
     // Create and bind the MIDI interface to the default hardware Serial port
@@ -37,16 +40,9 @@ void MIDIC_init(SoftwareSerial *serial) {
     MIDI.setHandleSystemExclusive(handleSystemExclusive);
 }
 
-void MIDIC_read() {
-    MIDI.read();
-}
-
-bool* MIDIC_getNoteOnArray(){
-    return noteOnArray;
-}
-
-unsigned int MIDIC_getTempo(){
-    return midiTempo;
+MidiData * MIDIC_read() {
+    MIDI.read(MIDI_CHANNEL);
+    return &data;
 }
 
 // private
@@ -60,12 +56,12 @@ void handleSystemExclusive(byte *array, unsigned size) {
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
-    noteOnArray[note] = true;
+    data.noteOn[note] = true;
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
-    noteOnArray[note] = false;
+    data.noteOn[note] = false;
 }
 
 void handleError(int8_t error) {

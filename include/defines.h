@@ -3,6 +3,10 @@
 
 // MAIN DEFINE FOR LETTER
 #define R
+#define DEFAULT_TEMPO 120
+#define TEST_MODE false
+
+
 
 #ifdef R
 

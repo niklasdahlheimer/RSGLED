@@ -3,9 +3,9 @@
 #include "midiController.h"
 #include "ledController.h"
 
-#define TEST_MODE false
-
 SoftwareSerial logSerial(4, 5); // RX, TX
+
+MidiData* midiData;
 
 void setup() {
     Serial.begin(9600); // Software-Serial for second Arduino
@@ -16,10 +16,10 @@ void setup() {
 }
 
 void loop() {
-    MIDIC_read();
+    midiData = MIDIC_read();
     if(TEST_MODE){
-        MIDIC_getNoteOnArray()[NOTE_RAINBOW] = true;
+        midiData->noteOn[NOTE_RAINBOW] = true;
     }
-    LEDC_updateStripe(MIDIC_getNoteOnArray(), millis());
+    LEDC_updateStripe(midiData->noteOn, midiData->controls, midiData->tempo);
     maybeDisplayCriticalRam(&logSerial);
 }
