@@ -20,7 +20,7 @@
 #define PUMP_PERIOD_IN_MILLIS       100
 
 void LEDC_init(SoftwareSerial* logSerial);
-void LEDC_updateStripe(const bool* noteOn, unsigned long triggerMillis);
+void LEDC_updateStripe(const bool *note, unsigned long millis);
 
 
 static CRGB COLOR_1 = CRGB::SkyBlue;

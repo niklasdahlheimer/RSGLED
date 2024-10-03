@@ -27,7 +27,7 @@ static CRGBSet *groupLevel5[] = {
 
 unsigned int tempo = 120;
 
-unsigned long triggerMillis = 0;
+unsigned long timestamp = 0;
 
 unsigned long strobeStartMillis = 0;
 
@@ -75,153 +75,153 @@ void LEDC_init(SoftwareSerial *serial) {
     FastLED.clear(true);
 }
 
-void LEDC_updateStripe(const bool *noteOn, const unsigned long millis) {
-    // prime values
-    triggerMillis = millis;
+void LEDC_updateStripe(const bool *note, const unsigned long millis) {
+    // fix time reference for all calculations
+    timestamp = millis;
 
     FastLED.clear();
     FastLED.setBrightness(LED_BRIGHTNESS_MAX);
 
-    maybeSetEffectStartTime(noteOn[NOTE_BREATH], &breathStartMillis, &triggerMillis);
-    maybeSetEffectStartTime(noteOn[NOTE_STROBE], &strobeStartMillis, &triggerMillis);
-    maybeSetEffectStartTime(noteOn[NOTE_RAINBOW], &rainbowStartMillis, &triggerMillis);
-    maybeSetEffectStartTime(noteOn[NOTE_PUMP], &pumpStartMillis, &triggerMillis);
+    maybeSetEffectStartTime(note[NOTE_BREATH], &breathStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[NOTE_STROBE], &strobeStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[NOTE_RAINBOW], &rainbowStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[NOTE_PUMP], &pumpStartMillis, &timestamp);
 
     // Effects
-    if (noteOn[NOTE_STROBE]) {
+    if (note[NOTE_STROBE]) {
         LED_FX_strobe();
-    } else if (noteOn[NOTE_BREATH]) {
+    } else if (note[NOTE_BREATH]) {
         LED_FX_breath();
-    } else if (noteOn[NOTE_NOISE]) {
+    } else if (note[NOTE_NOISE]) {
         LED_FX_noise();
-    } else if (noteOn[NOTE_RAINBOW]) {
+    } else if (note[NOTE_RAINBOW]) {
         LED_FX_rainbow();
-    } else if (noteOn[NOTE_PUMP]) {
+    } else if (note[NOTE_PUMP]) {
         LED_FX_levelPump();
     }
 
     // Color for All On
-    if (noteOn[NOTE_ALL_COLOR_1]) {
+    if (note[NOTE_ALL_COLOR_1]) {
         LED_on(&groupAll, &COLOR_1);
     }
-    if (noteOn[NOTE_ALL_COLOR_2]) {
+    if (note[NOTE_ALL_COLOR_2]) {
         LED_on(&groupAll, &COLOR_2);
     }
-    if (noteOn[NOTE_ALL_COLOR_3]) {
+    if (note[NOTE_ALL_COLOR_3]) {
         LED_on(&groupAll, &COLOR_3);
     }
-    if (noteOn[NOTE_ALL_COLOR_4]) {
+    if (note[NOTE_ALL_COLOR_4]) {
         LED_on(&groupAll, &COLOR_4);
     }
-    if (noteOn[NOTE_ALL_COLOR_5]) {
+    if (note[NOTE_ALL_COLOR_5]) {
         LED_on(&groupAll, &COLOR_5);
     }
-    if (noteOn[NOTE_ALL_COLOR_6]) {
+    if (note[NOTE_ALL_COLOR_6]) {
         LED_on(&groupAll, &COLOR_6);
     }
-    if (noteOn[NOTE_ALL_COLOR_7]) {
+    if (note[NOTE_ALL_COLOR_7]) {
         LED_on(&groupAll, &COLOR_7);
     }
-    if (noteOn[NOTE_ALL_COLOR_8]) {
+    if (note[NOTE_ALL_COLOR_8]) {
         LED_on(&groupAll, &COLOR_8);
     }
-    if (noteOn[NOTE_ALL_COLOR_9]) {
+    if (note[NOTE_ALL_COLOR_9]) {
         LED_on(&groupAll, &COLOR_9);
     }
-    if (noteOn[NOTE_ALL_COLOR_10]) {
+    if (note[NOTE_ALL_COLOR_10]) {
         LED_on(&groupAll, &COLOR_10);
     }
-    if (noteOn[NOTE_ALL_COLOR_11]) {
+    if (note[NOTE_ALL_COLOR_11]) {
         LED_on(&groupAll, &COLOR_11);
     }
-    if (noteOn[NOTE_ALL_COLOR_12]) {
+    if (note[NOTE_ALL_COLOR_12]) {
         LED_on(&groupAll, &COLOR_12);
     }
 
-    if (noteOn[NOTE_COLOR_SWITCH_1]) {
+    if (note[NOTE_COLOR_SWITCH_1]) {
         selectedColor = &COLOR_1;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_2]) {
+    if (note[NOTE_COLOR_SWITCH_2]) {
         selectedColor = &COLOR_2;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_3]) {
+    if (note[NOTE_COLOR_SWITCH_3]) {
         selectedColor = &COLOR_3;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_4]) {
+    if (note[NOTE_COLOR_SWITCH_4]) {
         selectedColor = &COLOR_4;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_5]) {
+    if (note[NOTE_COLOR_SWITCH_5]) {
         selectedColor = &COLOR_5;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_6]) {
+    if (note[NOTE_COLOR_SWITCH_6]) {
         selectedColor = &COLOR_6;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_7]) {
+    if (note[NOTE_COLOR_SWITCH_7]) {
         selectedColor = &COLOR_7;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_8]) {
+    if (note[NOTE_COLOR_SWITCH_8]) {
         selectedColor = &COLOR_8;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_9]) {
+    if (note[NOTE_COLOR_SWITCH_9]) {
         selectedColor = &COLOR_9;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_10]) {
+    if (note[NOTE_COLOR_SWITCH_10]) {
         selectedColor = &COLOR_10;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_11]) {
+    if (note[NOTE_COLOR_SWITCH_11]) {
         selectedColor = &COLOR_11;
     }
-    if (noteOn[NOTE_COLOR_SWITCH_12]) {
+    if (note[NOTE_COLOR_SWITCH_12]) {
         selectedColor = &COLOR_12;
     }
 
 
     // Segments On
-    if (noteOn[NOTE_GROUP_1]) {
+    if (note[NOTE_GROUP_1]) {
         LED_on(&g1, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_2]) {
+    if (note[NOTE_GROUP_2]) {
         LED_on(&g2, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_3]) {
+    if (note[NOTE_GROUP_3]) {
         LED_on(&g3, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_4]) {
+    if (note[NOTE_GROUP_4]) {
         LED_on(&g4, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_5]) {
+    if (note[NOTE_GROUP_5]) {
         LED_on(&g5, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_6]) {
+    if (note[NOTE_GROUP_6]) {
         LED_on(&g6, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_7]) {
+    if (note[NOTE_GROUP_7]) {
         LED_on(&g7, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_8]) {
+    if (note[NOTE_GROUP_8]) {
         LED_on(&g8, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_9]) {
+    if (note[NOTE_GROUP_9]) {
         LED_on(&g9, selectedColor);
     }
-    if (noteOn[NOTE_GROUP_10]) {
+    if (note[NOTE_GROUP_10]) {
         LED_on(&g10, selectedColor);
     }
 
     // level Meter
-    if (noteOn[NOTE_LEVEL_1]) {
+    if (note[NOTE_LEVEL_1]) {
         LED_arrayOn(groupLevel1, sizeof(groupLevel1) / sizeof(CRGBSet *));
     }
-    if (noteOn[NOTE_LEVEL_2]) {
+    if (note[NOTE_LEVEL_2]) {
         LED_arrayOn(groupLevel2, sizeof(groupLevel2) / sizeof(CRGBSet *));
     }
-    if (noteOn[NOTE_LEVEL_3]) {
+    if (note[NOTE_LEVEL_3]) {
         LED_arrayOn(groupLevel3, sizeof(groupLevel3) / sizeof(CRGBSet *));
     }
-    if (noteOn[NOTE_LEVEL_4]) {
+    if (note[NOTE_LEVEL_4]) {
         LED_arrayOn(groupLevel4, sizeof(groupLevel4) / sizeof(CRGBSet *));
     }
-    if (noteOn[NOTE_LEVEL_5]) {
+    if (note[NOTE_LEVEL_5]) {
         LED_arrayOn(groupLevel5, sizeof(groupLevel5) / sizeof(CRGBSet *));
     }
 
@@ -286,7 +286,7 @@ void maybeSetEffectStartTime(const boolean isNoteOn, unsigned long *startTimeRef
 // Effects
 
 void LED_FX_strobe() {
-    int state = getRectValue(triggerMillis - strobeStartMillis, getBeatLengthInMillis(16), STROBE_ON_FACTOR);
+    int state = getRectValue(timestamp - strobeStartMillis, getBeatLengthInMillis(16), STROBE_ON_FACTOR);
     if (state == 1) {
         LED_on(&groupAll, selectedColor); // Turn all LEDs on to the strobe color
     } else {
@@ -295,7 +295,7 @@ void LED_FX_strobe() {
 }
 
 void LED_FX_breath() {
-    const unsigned int millisOfCurrentSecond = (triggerMillis - breathStartMillis);
+    const unsigned int millisOfCurrentSecond = (timestamp - breathStartMillis);
 
     breathBrightnessFactor = 0.5 * (1 + sin(2 * M_PI * millisOfCurrentSecond / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
     FastLED.setBrightness(static_cast<uint8_t>(breathBrightnessFactor * LED_BRIGHTNESS_MAX));
@@ -303,8 +303,8 @@ void LED_FX_breath() {
 }
 
 void LED_FX_noise() {
-    if (triggerMillis - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
-        noiseLastUpdateMillis = triggerMillis;
+    if (timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
+        noiseLastUpdateMillis = timestamp;
         noiseCurrentVal += (random(0, 10) - 5) * 0.01;
         noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
     }
@@ -314,12 +314,12 @@ void LED_FX_noise() {
 
 void LED_FX_rainbow() {
     fill_rainbow(leds, LED_NUM,
-                 ((triggerMillis - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
+                 ((timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
                  10);
 }
 
 void LED_FX_levelPump() {
-    const unsigned int currentStep = getSteppedSawValue(triggerMillis - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
+    const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 1:
             LED_arrayOn(groupLevel1, sizeof(groupLevel1) / sizeof(groupLevel1[0]));
