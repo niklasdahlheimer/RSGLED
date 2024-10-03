@@ -260,8 +260,7 @@ unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned
 }
 
 unsigned int
-getBeatLengthInMillis(const unsigned int divider, const boolean isTriplet, const boolean isDotted,
-                      const unsigned int t) {
+getBeatLengthInMillis(const unsigned int divider, const boolean isTriplet, const boolean isDotted, const unsigned int t) {
     double beatLengthInMillis = 60000.0 / tempo;
     beatLengthInMillis *= 4.0 / divider;
 
