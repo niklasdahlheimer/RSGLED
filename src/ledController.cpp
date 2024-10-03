@@ -22,7 +22,7 @@ static CRGBSet *groupLevel2[] = {&g1, &g10, &g2, &g9};
 static CRGBSet *groupLevel3[] = {&g1, &g10, &g2, &g9, &g3, &g8};
 static CRGBSet *groupLevel4[] = {&g1, &g10, &g2, &g9, &g3, &g8, &g4, &g7};
 static CRGBSet *groupLevel5[] = {
-    &g1, &g10, &g2, &g9, &g3, &g8, &g4, &g7, &g5, &g6
+        &g1, &g10, &g2, &g9, &g3, &g8, &g4, &g7, &g5, &g6
 };
 
 unsigned int tempo = 120;
@@ -44,7 +44,8 @@ unsigned long pumpStartMillis = 0;
 
 CRGB *selectedColor = &COLOR_9;
 
-unsigned int getBeatLengthInMillis(unsigned int divider = 4, boolean isTriplet = false, boolean isDotted = false, unsigned int t = tempo);
+unsigned int getBeatLengthInMillis(unsigned int divider = 4, boolean isTriplet = false, boolean isDotted = false,
+                                   unsigned int t = tempo);
 
 void maybeSetEffectStartTime(boolean isNoteOn, unsigned long *startTimeRef, const unsigned long *curr);
 
@@ -258,9 +259,11 @@ unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned
     return (currentTime / period) % numOfSteps;
 }
 
-unsigned int getBeatLengthInMillis(const unsigned int divider = 4, const boolean isTriplet = false, const boolean isDotted = false, const unsigned int t = tempo) {
+unsigned int
+getBeatLengthInMillis(const unsigned int divider = 4, const boolean isTriplet = false, const boolean isDotted = false,
+                      const unsigned int t = tempo) {
     double beatLengthInMillis = 60000.0 / tempo;
-    beatLengthInMillis *= 4.0/divider;
+    beatLengthInMillis *= 4.0 / divider;
 
     if (isTriplet) {
         beatLengthInMillis *= 2.0 / 3.0;
