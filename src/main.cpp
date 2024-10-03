@@ -3,6 +3,8 @@
 #include "midiController.h"
 #include "ledController.h"
 
+#define TEST_MODE false
+
 SoftwareSerial logSerial(4, 5); // RX, TX
 
 void setup() {
@@ -15,7 +17,9 @@ void setup() {
 
 void loop() {
     MIDIC_read();
-    //MIDIC_getNoteOnArray()[NOTE_RAINBOW] = true;
+    if(TEST_MODE){
+        MIDIC_getNoteOnArray()[NOTE_RAINBOW] = true;
+    }
     LEDC_updateStripe(MIDIC_getNoteOnArray(), millis());
     maybeDisplayCriticalRam(&logSerial);
 }

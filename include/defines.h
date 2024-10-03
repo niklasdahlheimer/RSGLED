@@ -6,6 +6,7 @@
 
 #ifdef R
 
+#define MIDI_CHANNEL                13
 #define LED_NUM                     62
 #define LED_GROUP_INDEX_1_START     0
 #define LED_GROUP_INDEX_1_END       7
@@ -32,6 +33,7 @@
 
 #ifdef S
 
+#define MIDI_CHANNEL                14
 #define LED_NUM                     62
 #define LED_GROUP_INDEX_1_START     0
 #define LED_GROUP_INDEX_1_END       7
@@ -58,6 +60,7 @@
 
 #ifdef G
 
+#define MIDI_CHANNEL                15
 #define LED_NUM                     62
 #define LED_GROUP_INDEX_1_START     0
 #define LED_GROUP_INDEX_1_END       7

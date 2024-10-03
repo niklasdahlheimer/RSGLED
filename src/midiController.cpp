@@ -4,6 +4,7 @@
 #include "midiConsts.h"
 #include "helper.h"
 #include <MIDI.h>
+#include "defines.h"
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 

@@ -3,7 +3,6 @@
 
 #include <SoftwareSerial.h>
 
-#define MIDI_CHANNEL 1
 
 void MIDIC_init(SoftwareSerial *logSerial);
 
