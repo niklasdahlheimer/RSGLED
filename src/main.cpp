@@ -15,7 +15,7 @@ void setup() {
 
 void loop() {
     MIDIC_read();
-    MIDIC_getNoteOnArray()[NOTE_RAINBOW] = true;
+    //MIDIC_getNoteOnArray()[NOTE_RAINBOW] = true;
     LEDC_updateStripe(MIDIC_getNoteOnArray(), millis());
     maybeDisplayCriticalRam(&logSerial);
 }
