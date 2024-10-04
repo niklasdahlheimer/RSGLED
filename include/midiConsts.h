@@ -2,6 +2,19 @@
 #define MIDICONSTS_H
 #include <Arduino.h>
 
+#define Note_C_1 0
+#define Note_Cis_1 1   // C#0 / Db0
+#define Note_D_1 2
+#define Note_Dis_1 3   // D#0 / Eb0
+#define Note_E_1 4
+#define Note_F_1 5
+#define Note_Fis_1 6   // F#0 / Gb0
+#define Note_G_1 7
+#define Note_Gis_1 8   // G#0 / Ab0
+#define Note_A_1 9
+#define Note_Ais_1 10   // A#0 / Bb0
+#define Note_B_1 11
+
 #define Note_C0 12
 #define Note_Cis0 13   // C#0 / Db0
 #define Note_D0 14
