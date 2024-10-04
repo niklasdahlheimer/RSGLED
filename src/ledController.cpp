@@ -5,6 +5,22 @@ SoftwareSerial *ledLogSerial;
 
 CRGB leds[LED_NUM];
 
+// global vars
+unsigned int tempo = DEFAULT_TEMPO;
+unsigned int globalBrightness = LED_BRIGHTNESS_MAX;
+CRGB *globalColor = &COLOR_1;
+unsigned long timestamp = 0;
+
+// FX vars
+unsigned long strobeStartMillis = 0;
+unsigned long breathStartMillis = 0;
+double breathBrightnessFactor = 0.5;
+double noiseCurrentVal = 0.5;
+unsigned long noiseLastUpdateMillis = 0;
+unsigned int rainbowStartHue = 0;
+unsigned long rainbowStartMillis = 0;
+unsigned long pumpStartMillis = 0;
+
 static CRGBSet g[] = {
         CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_NUM - 1), // groupAll
         CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_GROUP_INDEX_1_END),
@@ -19,38 +35,26 @@ static CRGBSet g[] = {
         CRGBSet(leds, LED_GROUP_INDEX_10_START, LED_GROUP_INDEX_10_END)
 };
 
-static CRGBSet *gl1[] = {&g[1], &g[10]};
-static CRGBSet *gl2[] = {&g[1], &g[10], &g[2], &g[9]};
-static CRGBSet *gl3[] = {&g[1], &g[10], &g[2], &g[9], &g[3], &g[8]};
-static CRGBSet *gl4[] = {&g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7]};
-static CRGBSet *gl5[] = {
+static CRGBSet *level1[] = {&g[1], &g[10]};
+static CRGBSet *level2[] = {&g[1], &g[10], &g[2], &g[9]};
+static CRGBSet *level3[] = {&g[1], &g[10], &g[2], &g[9], &g[3], &g[8]};
+static CRGBSet *level4[] = {&g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7]};
+static CRGBSet *level5[] = {
         &g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7], &g[5], &g[6]
 };
 
-unsigned int tempo = DEFAULT_TEMPO;
-unsigned int globalBrightness = LED_BRIGHTNESS_MAX;
+static CRGB groupColor[] = {
+        *globalColor, *globalColor, *globalColor,
+        *globalColor, *globalColor, *globalColor,
+        *globalColor, *globalColor, *globalColor,
+        *globalColor, *globalColor
+};
 
-unsigned long timestamp = 0;
-
-unsigned long strobeStartMillis = 0;
-
-unsigned long breathStartMillis = 0;
-double breathBrightnessFactor = 0.5;
-
-double noiseCurrentVal = 0.5;
-unsigned long noiseLastUpdateMillis = 0;
-
-unsigned int rainbowStartHue = 0;
-unsigned long rainbowStartMillis = 0;
-
-unsigned long pumpStartMillis = 0;
-
-CRGB *globalColor = &COLOR_1;
-
+// Forward declarations
 static unsigned int getBeatLengthInMillis(unsigned int tempo, unsigned int divider = 4, boolean isTriplet = false,
                                           boolean isDotted = false);
 
-void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) ;
+void maybeSetGroupColor(const byte *note);
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
@@ -58,7 +62,11 @@ void maybeSetTempo(const byte *tempoValue);
 
 static void LED_on(CRGBSet *group, const CRGB *color = globalColor, byte brightness = 255);
 
-static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
+static void
+LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
+
+//FX
+void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr);
 
 void LED_FX_strobe();
 
@@ -70,6 +78,8 @@ void LED_FX_rainbow();
 
 void LED_FX_levelPump();
 
+// Definitions
+
 void LEDC_init(SoftwareSerial *serial) {
     ledLogSerial = serial;
 
@@ -80,13 +90,36 @@ void LEDC_init(SoftwareSerial *serial) {
     FastLED.clear(true);
 }
 
+void reset() {
+    FastLED.clear();
+    tempo = DEFAULT_TEMPO;
+    globalBrightness = LED_BRIGHTNESS_MAX;
+    timestamp = 0;
+    strobeStartMillis = 0;
+    breathStartMillis = 0;
+    breathBrightnessFactor = 0.5;
+    noiseCurrentVal = 0.5;
+    noiseLastUpdateMillis = 0;
+    rainbowStartHue = 0;
+    rainbowStartMillis = 0;
+    pumpStartMillis = 0;
+    globalColor = &COLOR_1;
+    for (int i = 0; i < 10; i++) {
+        groupColor[i] = *globalColor;
+    }
+}
+
 void LEDC_updateStripe(const byte *note, const byte *controller) {
     // fix time reference for all calculations
     timestamp = millis();
 
-    // Controller
-    maybeSetGlobalBrightness(&controller[CONTROLLER_INDEX_BRIGHTNESS_TRIM]);
-    maybeSetTempo(&controller[CONTROLLER_INDEX_TEMPO]);
+    if (note[TOTAL_RESET]) {
+        reset();
+    }
+
+    maybeSetGroupColor(note);
+    maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
+    maybeSetTempo(&note[TEMPO]);
 
     FastLED.clear();
     FastLED.setBrightness(globalBrightness);
@@ -97,40 +130,40 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetEffectStartTime(note[NOTE_PUMP], &pumpStartMillis, &timestamp);
 
     // Global Color Switch
-    if (note[NOTE_COLOR_SWITCH_1]) {
+    if (note[GLOBAL_COLOR_1]) {
         globalColor = &COLOR_1;
     }
-    if (note[NOTE_COLOR_SWITCH_2]) {
+    if (note[GLOBAL_COLOR_2]) {
         globalColor = &COLOR_2;
     }
-    if (note[NOTE_COLOR_SWITCH_3]) {
+    if (note[GLOBAL_COLOR_3]) {
         globalColor = &COLOR_3;
     }
-    if (note[NOTE_COLOR_SWITCH_4]) {
+    if (note[GLOBAL_COLOR_4]) {
         globalColor = &COLOR_4;
     }
-    if (note[NOTE_COLOR_SWITCH_5]) {
+    if (note[GLOBAL_COLOR_5]) {
         globalColor = &COLOR_5;
     }
-    if (note[NOTE_COLOR_SWITCH_6]) {
+    if (note[GLOBAL_COLOR_6]) {
         globalColor = &COLOR_6;
     }
-    if (note[NOTE_COLOR_SWITCH_7]) {
+    if (note[GLOBAL_COLOR_7]) {
         globalColor = &COLOR_7;
     }
-    if (note[NOTE_COLOR_SWITCH_8]) {
+    if (note[GLOBAL_COLOR_8]) {
         globalColor = &COLOR_8;
     }
-    if (note[NOTE_COLOR_SWITCH_9]) {
+    if (note[GLOBAL_COLOR_9]) {
         globalColor = &COLOR_9;
     }
-    if (note[NOTE_COLOR_SWITCH_10]) {
+    if (note[GLOBAL_COLOR_10]) {
         globalColor = &COLOR_10;
     }
-    if (note[NOTE_COLOR_SWITCH_11]) {
+    if (note[GLOBAL_COLOR_11]) {
         globalColor = &COLOR_11;
     }
-    if (note[NOTE_COLOR_SWITCH_12]) {
+    if (note[GLOBAL_COLOR_12]) {
         globalColor = &COLOR_12;
     }
 
@@ -148,101 +181,144 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     }
 
     // All On
-    if (note[NOTE_ALL_COLOR_1]) {
-        LED_on(&g[0], &COLOR_1, note[NOTE_ALL_COLOR_1]);
+    if (note[ALL_ON_COLOR_1]) {
+        LED_on(&g[0], &COLOR_1, note[ALL_ON_COLOR_1]);
     }
-    if (note[NOTE_ALL_COLOR_2]) {
-        LED_on(&g[0], &COLOR_2, note[NOTE_ALL_COLOR_2]);
+    if (note[ALL_ON_COLOR_2]) {
+        LED_on(&g[0], &COLOR_2, note[ALL_ON_COLOR_2]);
     }
-    if (note[NOTE_ALL_COLOR_3]) {
-        LED_on(&g[0], &COLOR_3, note[NOTE_ALL_COLOR_3]);
+    if (note[ALL_ON_COLOR_3]) {
+        LED_on(&g[0], &COLOR_3, note[ALL_ON_COLOR_3]);
     }
-    if (note[NOTE_ALL_COLOR_4]) {
-        LED_on(&g[0], &COLOR_4, note[NOTE_ALL_COLOR_4]);
+    if (note[ALL_ON_COLOR_4]) {
+        LED_on(&g[0], &COLOR_4, note[ALL_ON_COLOR_4]);
     }
-    if (note[NOTE_ALL_COLOR_5]) {
-        LED_on(&g[0], &COLOR_5, note[NOTE_ALL_COLOR_5]);
+    if (note[ALL_ON_COLOR_5]) {
+        LED_on(&g[0], &COLOR_5, note[ALL_ON_COLOR_5]);
     }
-    if (note[NOTE_ALL_COLOR_6]) {
-        LED_on(&g[0], &COLOR_6, note[NOTE_ALL_COLOR_6]);
+    if (note[ALL_ON_COLOR_6]) {
+        LED_on(&g[0], &COLOR_6, note[ALL_ON_COLOR_6]);
     }
-    if (note[NOTE_ALL_COLOR_7]) {
-        LED_on(&g[0], &COLOR_7, note[NOTE_ALL_COLOR_7]);
+    if (note[ALL_ON_COLOR_7]) {
+        LED_on(&g[0], &COLOR_7, note[ALL_ON_COLOR_7]);
     }
-    if (note[NOTE_ALL_COLOR_8]) {
-        LED_on(&g[0], &COLOR_8, note[NOTE_ALL_COLOR_8]);
+    if (note[ALL_ON_COLOR_8]) {
+        LED_on(&g[0], &COLOR_8, note[ALL_ON_COLOR_8]);
     }
-    if (note[NOTE_ALL_COLOR_9]) {
-        LED_on(&g[0], &COLOR_9, note[NOTE_ALL_COLOR_9]);
+    if (note[ALL_ON_COLOR_9]) {
+        LED_on(&g[0], &COLOR_9, note[ALL_ON_COLOR_9]);
     }
-    if (note[NOTE_ALL_COLOR_10]) {
-        LED_on(&g[0], &COLOR_10, note[NOTE_ALL_COLOR_10]);
+    if (note[ALL_ON_COLOR_10]) {
+        LED_on(&g[0], &COLOR_10, note[ALL_ON_COLOR_10]);
     }
-    if (note[NOTE_ALL_COLOR_11]) {
-        LED_on(&g[0], &COLOR_11, note[NOTE_ALL_COLOR_11]);
+    if (note[ALL_ON_COLOR_11]) {
+        LED_on(&g[0], &COLOR_11, note[ALL_ON_COLOR_11]);
     }
-    if (note[NOTE_ALL_COLOR_12]) {
-        LED_on(&g[0], &COLOR_12, note[NOTE_ALL_COLOR_12]);
+    if (note[ALL_ON_COLOR_12]) {
+        LED_on(&g[0], &COLOR_12, note[ALL_ON_COLOR_12]);
     }
 
-    // Segments On
-    if (note[NOTE_GROUP_1]) {
-        LED_on(&g[1], globalColor, note[NOTE_GROUP_1]);
+    // Groups/Segments On
+    if (note[GROUP_ON_1]) {
+        LED_on(&g[1], &groupColor[1], note[GROUP_ON_1]);
     }
-    if (note[NOTE_GROUP_2]) {
-        LED_on(&g[2], globalColor, note[NOTE_GROUP_2]);
+    if (note[GROUP_ON_2]) {
+        LED_on(&g[2], &groupColor[2], note[GROUP_ON_2]);
     }
-    if (note[NOTE_GROUP_3]) {
-        LED_on(&g[3], globalColor, note[NOTE_GROUP_3]);
+    if (note[GROUP_ON_3]) {
+        LED_on(&g[3], &groupColor[3], note[GROUP_ON_3]);
     }
-    if (note[NOTE_GROUP_4]) {
-        LED_on(&g[4], globalColor, note[NOTE_GROUP_4]);
+    if (note[GROUP_ON_4]) {
+        LED_on(&g[4], &groupColor[4], note[GROUP_ON_4]);
     }
-    if (note[NOTE_GROUP_5]) {
-        LED_on(&g[5], globalColor, note[NOTE_GROUP_5]);
+    if (note[GROUP_ON_5]) {
+        LED_on(&g[5], &groupColor[5], note[GROUP_ON_5]);
     }
-    if (note[NOTE_GROUP_6]) {
-        LED_on(&g[6], globalColor, note[NOTE_GROUP_6]);
+    if (note[GROUP_ON_6]) {
+        LED_on(&g[6], &groupColor[6], note[GROUP_ON_6]);
     }
-    if (note[NOTE_GROUP_7]) {
-        LED_on(&g[7], globalColor, note[NOTE_GROUP_7]);
+    if (note[GROUP_ON_7]) {
+        LED_on(&g[7], &groupColor[7], note[GROUP_ON_7]);
     }
-    if (note[NOTE_GROUP_8]) {
-        LED_on(&g[8], globalColor, note[NOTE_GROUP_8]);
+    if (note[GROUP_ON_8]) {
+        LED_on(&g[8], &groupColor[8], note[GROUP_ON_8]);
     }
-    if (note[NOTE_GROUP_9]) {
-        LED_on(&g[9], globalColor, note[NOTE_GROUP_9]);
+    if (note[GROUP_ON_9]) {
+        LED_on(&g[9], &groupColor[9], note[GROUP_ON_9]);
     }
-    if (note[NOTE_GROUP_10]) {
-        LED_on(&g[10], globalColor, note[NOTE_GROUP_10]);
+    if (note[GROUP_ON_10]) {
+        LED_on(&g[10], &groupColor[10], note[GROUP_ON_10]);
     }
 
     // Horizontal Segment Blocks (for Level Meter etc.)
-    if (note[NOTE_LEVEL_1]) {
-        LED_on(gl1, sizeof(gl1) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_1]);
+    if (note[LEVEL_ON_1]) {
+        LED_on(level1, sizeof(level1) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_1]);
     }
-    if (note[NOTE_LEVEL_2]) {
-        LED_on(gl2, sizeof(gl2) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_2]);
+    if (note[LEVEL_ON_2]) {
+        LED_on(level2, sizeof(level2) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_2]);
     }
-    if (note[NOTE_LEVEL_3]) {
-        LED_on(gl3, sizeof(gl3) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_3]);
+    if (note[LEVEL_ON_3]) {
+        LED_on(level3, sizeof(level3) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_3]);
     }
-    if (note[NOTE_LEVEL_4]) {
-        LED_on(gl4, sizeof(gl4) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_4]);
+    if (note[LEVEL_ON_4]) {
+        LED_on(level4, sizeof(level4) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_4]);
     }
-    if (note[NOTE_LEVEL_5]) {
-        LED_on(gl5, sizeof(gl5) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_5]);
+    if (note[LEVEL_ON_5]) {
+        LED_on(level5, sizeof(level5) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_5]);
     }
 
     // Finally push all changes to Stripe
     FastLED.show();
 }
 
+void maybeSetGroupColor(const byte *note) {
+    if (note[GROUP_HUE_1]) {
+        groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_2]) {
+        groupColor[2] = CHSV(note[GROUP_HUE_2], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_3]) {
+        groupColor[3] = CHSV(note[GROUP_HUE_3], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_4]) {
+        groupColor[4] = CHSV(note[GROUP_HUE_4], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_5]) {
+        groupColor[5] = CHSV(note[GROUP_HUE_5], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_6]) {
+        groupColor[6] = CHSV(note[GROUP_HUE_6], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_7]) {
+        groupColor[7] = CHSV(note[GROUP_HUE_7], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_8]) {
+        groupColor[8] = CHSV(note[GROUP_HUE_8], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_9]) {
+        groupColor[9] = CHSV(note[GROUP_HUE_9], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                             255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+    if (note[GROUP_HUE_10]) {
+        groupColor[10] = CHSV(note[GROUP_HUE_10], 255 - note[GROUP_COLOR_TRIM_SATURATION],
+                              255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+    }
+}
+
 // PRIVATE
 
 // LED control helpers
 
-static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color,  byte brightness) {
+static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color, byte brightness) {
     for (unsigned int i = 0; i < size; i++) {
         LED_on(groupArray[i], color, brightness);
     }
@@ -325,7 +401,6 @@ void LED_FX_strobe() {
 
 void LED_FX_breath() {
     const unsigned int millisOfCurrentSecond = (timestamp - breathStartMillis);
-
     breathBrightnessFactor = 0.5 * (1 + sin(2 * M_PI * millisOfCurrentSecond / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
     FastLED.setBrightness(static_cast<uint8_t>(breathBrightnessFactor * LED_BRIGHTNESS_MAX));
     LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
@@ -351,19 +426,19 @@ void LED_FX_levelPump() {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 1:
-            LED_on(gl1, sizeof(gl1) / sizeof(gl1[0]));
+            LED_on(level1, sizeof(level1) / sizeof(level1[0]));
             break;
         case 2:
-            LED_on(gl2, sizeof(gl2) / sizeof(gl2[0]));
+            LED_on(level2, sizeof(level2) / sizeof(level2[0]));
             break;
         case 3:
-            LED_on(gl3, sizeof(gl3) / sizeof(gl3[0]));
+            LED_on(level3, sizeof(level3) / sizeof(level3[0]));
             break;
         case 4:
-            LED_on(gl4, sizeof(gl4) / sizeof(gl4[0]));
+            LED_on(level4, sizeof(level4) / sizeof(level4[0]));
             break;
         case 5:
-            LED_on(gl5, sizeof(gl5) / sizeof(gl5[0]));
+            LED_on(level5, sizeof(level5) / sizeof(level5[0]));
             break;
         default:
             break;
