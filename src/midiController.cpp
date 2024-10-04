@@ -57,12 +57,12 @@ void handleControlChange(byte channel, byte number, byte value){
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
-    data.noteOn[note] = true;
+    data.noteOn[note] = 2*velocity;
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
-    data.noteOn[note] = false;
+    data.noteOn[note] = 0;
 }
 
 void handleError(int8_t error) {

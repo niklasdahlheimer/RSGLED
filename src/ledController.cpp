@@ -27,10 +27,8 @@ static CRGBSet *gl5[] = {
         &g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7], &g[5], &g[6]
 };
 
-
-
 unsigned int tempo = DEFAULT_TEMPO;
-unsigned int brightness = LED_BRIGHTNESS_MAX;
+unsigned int globalBrightness = LED_BRIGHTNESS_MAX;
 
 unsigned long timestamp = 0;
 
@@ -47,19 +45,20 @@ unsigned long rainbowStartMillis = 0;
 
 unsigned long pumpStartMillis = 0;
 
-CRGB *selectedColor = &COLOR_9;
+CRGB *globalColor = &COLOR_9;
 
-static unsigned int getBeatLengthInMillis(unsigned int tempo, unsigned int divider = 4, boolean isTriplet = false, boolean isDotted = false);
+static unsigned int getBeatLengthInMillis(unsigned int tempo, unsigned int divider = 4, boolean isTriplet = false,
+                                          boolean isDotted = false);
 
-void maybeSetEffectStartTime(boolean isNoteOn, unsigned long *startTimeRef, const unsigned long *curr);
+void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) ;
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
 void maybeSetTempo(const byte *tempoValue);
 
-static void LED_arrayOn(CRGBSet* group[], size_t size);
+static void LED_on(CRGBSet *groupArray[], size_t size, byte brightness = 255); // For Arrays
 
-static void LED_on(CRGBSet *group, const CRGB *color = &COLOR_1);
+static void LED_on(CRGBSet *group, const CRGB *color = &COLOR_1, byte brightness = 255);
 
 void LED_FX_strobe();
 
@@ -81,7 +80,7 @@ void LEDC_init(SoftwareSerial *serial) {
     FastLED.clear(true);
 }
 
-void LEDC_updateStripe(const bool *note, const byte *controller) {
+void LEDC_updateStripe(const byte *note, const byte *controller) {
     // fix time reference for all calculations
     timestamp = millis();
 
@@ -90,12 +89,51 @@ void LEDC_updateStripe(const bool *note, const byte *controller) {
     maybeSetTempo(&controller[CONTROLLER_INDEX_TEMPO]);
 
     FastLED.clear();
-    FastLED.setBrightness(brightness);
+    FastLED.setBrightness(globalBrightness);
 
     maybeSetEffectStartTime(note[NOTE_BREATH], &breathStartMillis, &timestamp);
     maybeSetEffectStartTime(note[NOTE_STROBE], &strobeStartMillis, &timestamp);
     maybeSetEffectStartTime(note[NOTE_RAINBOW], &rainbowStartMillis, &timestamp);
     maybeSetEffectStartTime(note[NOTE_PUMP], &pumpStartMillis, &timestamp);
+
+    // Global Color Switch
+    if (note[NOTE_COLOR_SWITCH_1]) {
+        globalColor = &COLOR_1;
+    }
+    if (note[NOTE_COLOR_SWITCH_2]) {
+        globalColor = &COLOR_2;
+    }
+    if (note[NOTE_COLOR_SWITCH_3]) {
+        globalColor = &COLOR_3;
+    }
+    if (note[NOTE_COLOR_SWITCH_4]) {
+        globalColor = &COLOR_4;
+    }
+    if (note[NOTE_COLOR_SWITCH_5]) {
+        globalColor = &COLOR_5;
+    }
+    if (note[NOTE_COLOR_SWITCH_6]) {
+        globalColor = &COLOR_6;
+    }
+    if (note[NOTE_COLOR_SWITCH_7]) {
+        globalColor = &COLOR_7;
+    }
+    if (note[NOTE_COLOR_SWITCH_8]) {
+        globalColor = &COLOR_8;
+    }
+    if (note[NOTE_COLOR_SWITCH_9]) {
+        globalColor = &COLOR_9;
+    }
+    if (note[NOTE_COLOR_SWITCH_10]) {
+        globalColor = &COLOR_10;
+    }
+    if (note[NOTE_COLOR_SWITCH_11]) {
+        globalColor = &COLOR_11;
+    }
+    if (note[NOTE_COLOR_SWITCH_12]) {
+        globalColor = &COLOR_12;
+    }
+
 
     // Effects
     if (note[NOTE_STROBE]) {
@@ -110,132 +148,94 @@ void LEDC_updateStripe(const bool *note, const byte *controller) {
         LED_FX_levelPump();
     }
 
-    // Color for All On
+    // All On
     if (note[NOTE_ALL_COLOR_1]) {
-        LED_on(&g[0], &COLOR_1);
+        LED_on(&g[0], &COLOR_1, note[NOTE_ALL_COLOR_1]);
     }
     if (note[NOTE_ALL_COLOR_2]) {
-        LED_on(&g[0], &COLOR_2);
+        LED_on(&g[0], &COLOR_2, note[NOTE_ALL_COLOR_2]);
     }
     if (note[NOTE_ALL_COLOR_3]) {
-        LED_on(&g[0], &COLOR_3);
+        LED_on(&g[0], &COLOR_3, note[NOTE_ALL_COLOR_3]);
     }
     if (note[NOTE_ALL_COLOR_4]) {
-        LED_on(&g[0], &COLOR_4);
+        LED_on(&g[0], &COLOR_4, note[NOTE_ALL_COLOR_4]);
     }
     if (note[NOTE_ALL_COLOR_5]) {
-        LED_on(&g[0], &COLOR_5);
+        LED_on(&g[0], &COLOR_5, note[NOTE_ALL_COLOR_5]);
     }
     if (note[NOTE_ALL_COLOR_6]) {
-        LED_on(&g[0], &COLOR_6);
+        LED_on(&g[0], &COLOR_6, note[NOTE_ALL_COLOR_6]);
     }
     if (note[NOTE_ALL_COLOR_7]) {
-        LED_on(&g[0], &COLOR_7);
+        LED_on(&g[0], &COLOR_7, note[NOTE_ALL_COLOR_7]);
     }
     if (note[NOTE_ALL_COLOR_8]) {
-        LED_on(&g[0], &COLOR_8);
+        LED_on(&g[0], &COLOR_8, note[NOTE_ALL_COLOR_8]);
     }
     if (note[NOTE_ALL_COLOR_9]) {
-        LED_on(&g[0], &COLOR_9);
+        LED_on(&g[0], &COLOR_9, note[NOTE_ALL_COLOR_9]);
     }
     if (note[NOTE_ALL_COLOR_10]) {
-        LED_on(&g[0], &COLOR_10);
+        LED_on(&g[0], &COLOR_10, note[NOTE_ALL_COLOR_10]);
     }
     if (note[NOTE_ALL_COLOR_11]) {
-        LED_on(&g[0], &COLOR_11);
+        LED_on(&g[0], &COLOR_11, note[NOTE_ALL_COLOR_11]);
     }
     if (note[NOTE_ALL_COLOR_12]) {
-        LED_on(&g[0], &COLOR_12);
+        LED_on(&g[0], &COLOR_12, note[NOTE_ALL_COLOR_12]);
     }
-
-    // Global Color Switch
-    if (note[NOTE_COLOR_SWITCH_1]) {
-        selectedColor = &COLOR_1;
-    }
-    if (note[NOTE_COLOR_SWITCH_2]) {
-        selectedColor = &COLOR_2;
-    }
-    if (note[NOTE_COLOR_SWITCH_3]) {
-        selectedColor = &COLOR_3;
-    }
-    if (note[NOTE_COLOR_SWITCH_4]) {
-        selectedColor = &COLOR_4;
-    }
-    if (note[NOTE_COLOR_SWITCH_5]) {
-        selectedColor = &COLOR_5;
-    }
-    if (note[NOTE_COLOR_SWITCH_6]) {
-        selectedColor = &COLOR_6;
-    }
-    if (note[NOTE_COLOR_SWITCH_7]) {
-        selectedColor = &COLOR_7;
-    }
-    if (note[NOTE_COLOR_SWITCH_8]) {
-        selectedColor = &COLOR_8;
-    }
-    if (note[NOTE_COLOR_SWITCH_9]) {
-        selectedColor = &COLOR_9;
-    }
-    if (note[NOTE_COLOR_SWITCH_10]) {
-        selectedColor = &COLOR_10;
-    }
-    if (note[NOTE_COLOR_SWITCH_11]) {
-        selectedColor = &COLOR_11;
-    }
-    if (note[NOTE_COLOR_SWITCH_12]) {
-        selectedColor = &COLOR_12;
-    }
-
 
     // Segments On
     if (note[NOTE_GROUP_1]) {
-        LED_on(&g[1], selectedColor);
+        LED_on(&g[1], globalColor, note[NOTE_GROUP_1]);
     }
     if (note[NOTE_GROUP_2]) {
-        LED_on(&g[2], selectedColor);
+        LED_on(&g[2], globalColor, note[NOTE_GROUP_2]);
     }
     if (note[NOTE_GROUP_3]) {
-        LED_on(&g[3], selectedColor);
+        LED_on(&g[3], globalColor, note[NOTE_GROUP_3]);
     }
     if (note[NOTE_GROUP_4]) {
-        LED_on(&g[4], selectedColor);
+        LED_on(&g[4], globalColor, note[NOTE_GROUP_4]);
     }
     if (note[NOTE_GROUP_5]) {
-        LED_on(&g[5], selectedColor);
+        LED_on(&g[5], globalColor, note[NOTE_GROUP_5]);
     }
     if (note[NOTE_GROUP_6]) {
-        LED_on(&g[6], selectedColor);
+        LED_on(&g[6], globalColor, note[NOTE_GROUP_6]);
     }
     if (note[NOTE_GROUP_7]) {
-        LED_on(&g[7], selectedColor);
+        LED_on(&g[7], globalColor, note[NOTE_GROUP_7]);
     }
     if (note[NOTE_GROUP_8]) {
-        LED_on(&g[8], selectedColor);
+        LED_on(&g[8], globalColor, note[NOTE_GROUP_8]);
     }
     if (note[NOTE_GROUP_9]) {
-        LED_on(&g[9], selectedColor);
+        LED_on(&g[9], globalColor, note[NOTE_GROUP_9]);
     }
     if (note[NOTE_GROUP_10]) {
-        LED_on(&g[10], selectedColor);
+        LED_on(&g[10], globalColor, note[NOTE_GROUP_10]);
     }
 
-    // Horizontal Segments (for Level Meter etc.)
+    // Horizontal Segment Blocks (for Level Meter etc.)
     if (note[NOTE_LEVEL_1]) {
-        LED_arrayOn(gl1, sizeof(gl1) / sizeof(CRGBSet *));
+        LED_on(gl1, sizeof(gl1) / sizeof(CRGBSet *), note[NOTE_LEVEL_1]);
     }
     if (note[NOTE_LEVEL_2]) {
-        LED_arrayOn(gl2, sizeof(gl2) / sizeof(CRGBSet *));
+        LED_on(gl2, sizeof(gl2) / sizeof(CRGBSet *), note[NOTE_LEVEL_2]);
     }
     if (note[NOTE_LEVEL_3]) {
-        LED_arrayOn(gl3, sizeof(gl3) / sizeof(CRGBSet *));
+        LED_on(gl3, sizeof(gl3) / sizeof(CRGBSet *), note[NOTE_LEVEL_3]);
     }
     if (note[NOTE_LEVEL_4]) {
-        LED_arrayOn(gl4, sizeof(gl4) / sizeof(CRGBSet *));
+        LED_on(gl4, sizeof(gl4) / sizeof(CRGBSet *), note[NOTE_LEVEL_4]);
     }
     if (note[NOTE_LEVEL_5]) {
-        LED_arrayOn(gl5, sizeof(gl5) / sizeof(CRGBSet *));
+        LED_on(gl5, sizeof(gl5) / sizeof(CRGBSet *), note[NOTE_LEVEL_5]);
     }
 
+    // Finally push all changes to Stripe
     FastLED.show();
 }
 
@@ -243,14 +243,15 @@ void LEDC_updateStripe(const bool *note, const byte *controller) {
 
 // LED control helpers
 
-static void LED_arrayOn(CRGBSet *group[], size_t size) {
+static void LED_on(CRGBSet *groupArray[], size_t size, byte brightness) {
     for (unsigned int i = 0; i < size; i++) {
-        LED_on(group[i], selectedColor);
+        LED_on(groupArray[i], globalColor, brightness);
     }
 }
 
-static void LED_on(CRGBSet *group, const CRGB *color) {
+static void LED_on(CRGBSet *group, const CRGB *color, byte brightness) {
     *group = *color;
+    *group->nscale8(brightness);
 }
 
 // timing helpers
@@ -271,7 +272,8 @@ unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned
 }
 
 static unsigned int
-getBeatLengthInMillis(const unsigned int t, const unsigned int divider, const boolean isTriplet, const boolean isDotted) {
+getBeatLengthInMillis(const unsigned int t, const unsigned int divider, const boolean isTriplet,
+                      const boolean isDotted) {
     double beatLengthInMillis = 60000.0 / t;
     beatLengthInMillis *= 4.0 / divider; // a quarter is equivalent to 1 "beat" for simplicity
 
@@ -288,10 +290,10 @@ getBeatLengthInMillis(const unsigned int t, const unsigned int divider, const bo
 // Global param setters
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
-    if (*brightnessTrimValue == 0 && brightness == LED_BRIGHTNESS_MAX) {
+    if (*brightnessTrimValue == 0 && globalBrightness == LED_BRIGHTNESS_MAX) {
         return;
     }
-    brightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+    globalBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
 }
 
 void maybeSetTempo(const byte *tempoValue) {
@@ -304,10 +306,11 @@ void maybeSetTempo(const byte *tempoValue) {
 
 // Effects
 
-void maybeSetEffectStartTime(const boolean isNoteOn, unsigned long *startTimeRef, const unsigned long *curr) {
-    if (isNoteOn && *startTimeRef == 0) {
+void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) {
+    bool noteOn = noteValue > 0;
+    if (noteOn && *startTimeRef == 0) {
         *startTimeRef = *curr;
-    } else if (!isNoteOn && *startTimeRef != 0) {
+    } else if (!noteOn && *startTimeRef != 0) {
         *startTimeRef = 0;
     }
 }
@@ -315,7 +318,7 @@ void maybeSetEffectStartTime(const boolean isNoteOn, unsigned long *startTimeRef
 void LED_FX_strobe() {
     int state = getRectValue(timestamp - strobeStartMillis, getBeatLengthInMillis(tempo, 16), STROBE_ON_FACTOR);
     if (state == 1) {
-        LED_on(&g[0], selectedColor); // Turn all LEDs on to the strobe color
+        LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
     } else {
         FastLED.clear(); // Turn all LEDs off
     }
@@ -326,7 +329,7 @@ void LED_FX_breath() {
 
     breathBrightnessFactor = 0.5 * (1 + sin(2 * M_PI * millisOfCurrentSecond / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
     FastLED.setBrightness(static_cast<uint8_t>(breathBrightnessFactor * LED_BRIGHTNESS_MAX));
-    LED_on(&g[0], selectedColor); // Turn all LEDs on to the strobe color
+    LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
 }
 
 void LED_FX_noise() {
@@ -336,7 +339,7 @@ void LED_FX_noise() {
         noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
     }
     FastLED.setBrightness(LED_BRIGHTNESS_MAX * noiseCurrentVal);
-    LED_on(&g[0], selectedColor); // Turn all LEDs on to the strobe color
+    LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
 }
 
 void LED_FX_rainbow() {
@@ -349,19 +352,19 @@ void LED_FX_levelPump() {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 1:
-            LED_arrayOn(gl1, sizeof(gl1) / sizeof(gl1[0]));
+            LED_on(gl1, sizeof(gl1) / sizeof(gl1[0]));
             break;
         case 2:
-            LED_arrayOn(gl2, sizeof(gl2) / sizeof(gl2[0]));
+            LED_on(gl2, sizeof(gl2) / sizeof(gl2[0]));
             break;
         case 3:
-            LED_arrayOn(gl3, sizeof(gl3) / sizeof(gl3[0]));
+            LED_on(gl3, sizeof(gl3) / sizeof(gl3[0]));
             break;
         case 4:
-            LED_arrayOn(gl4, sizeof(gl4) / sizeof(gl4[0]));
+            LED_on(gl4, sizeof(gl4) / sizeof(gl4[0]));
             break;
         case 5:
-            LED_arrayOn(gl5, sizeof(gl5) / sizeof(gl5[0]));
+            LED_on(gl5, sizeof(gl5) / sizeof(gl5[0]));
             break;
         default:
             break;

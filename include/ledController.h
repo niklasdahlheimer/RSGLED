@@ -21,7 +21,7 @@
 #define PUMP_PERIOD_IN_MILLIS       100
 
 void LEDC_init(SoftwareSerial* logSerial);
-void LEDC_updateStripe(const bool *note, const byte *controller);
+void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
 
 static CRGB COLOR_1 = CRGB::SkyBlue;

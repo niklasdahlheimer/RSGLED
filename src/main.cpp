@@ -17,9 +17,6 @@ void setup() {
 
 void loop() {
     midiData = MIDIC_read();
-    if(TEST_MODE){
-        midiData->noteOn[NOTE_RAINBOW] = true;
-    }
     LEDC_updateStripe(midiData->noteOn, midiData->controls);
     maybeDisplayCriticalRam(&logSerial);
 }
