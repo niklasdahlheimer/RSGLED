@@ -147,6 +147,7 @@ void LEDC_updateStripe(const bool *note, const byte *controller) {
         LED_on(&groupAll, &COLOR_12);
     }
 
+    // Global Color Switch
     if (note[NOTE_COLOR_SWITCH_1]) {
         selectedColor = &COLOR_1;
     }
@@ -217,7 +218,7 @@ void LEDC_updateStripe(const bool *note, const byte *controller) {
         LED_on(&g10, selectedColor);
     }
 
-    // level Meter
+    // Horizontal Segments (for Level Meter etc.)
     if (note[NOTE_LEVEL_1]) {
         LED_arrayOn(groupLevel1, sizeof(groupLevel1) / sizeof(CRGBSet *));
     }
