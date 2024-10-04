@@ -45,7 +45,7 @@ unsigned long rainbowStartMillis = 0;
 
 unsigned long pumpStartMillis = 0;
 
-CRGB *globalColor = &COLOR_9;
+CRGB *globalColor = &COLOR_1;
 
 static unsigned int getBeatLengthInMillis(unsigned int tempo, unsigned int divider = 4, boolean isTriplet = false,
                                           boolean isDotted = false);
@@ -56,9 +56,9 @@ void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
 void maybeSetTempo(const byte *tempoValue);
 
-static void LED_on(CRGBSet *groupArray[], size_t size, byte brightness = 255); // For Arrays
+static void LED_on(CRGBSet *group, const CRGB *color = globalColor, byte brightness = 255);
 
-static void LED_on(CRGBSet *group, const CRGB *color = &COLOR_1, byte brightness = 255);
+static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
 
 void LED_FX_strobe();
 
@@ -133,7 +133,6 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     if (note[NOTE_COLOR_SWITCH_12]) {
         globalColor = &COLOR_12;
     }
-
 
     // Effects
     if (note[NOTE_STROBE]) {
@@ -220,19 +219,19 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // Horizontal Segment Blocks (for Level Meter etc.)
     if (note[NOTE_LEVEL_1]) {
-        LED_on(gl1, sizeof(gl1) / sizeof(CRGBSet *), note[NOTE_LEVEL_1]);
+        LED_on(gl1, sizeof(gl1) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_1]);
     }
     if (note[NOTE_LEVEL_2]) {
-        LED_on(gl2, sizeof(gl2) / sizeof(CRGBSet *), note[NOTE_LEVEL_2]);
+        LED_on(gl2, sizeof(gl2) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_2]);
     }
     if (note[NOTE_LEVEL_3]) {
-        LED_on(gl3, sizeof(gl3) / sizeof(CRGBSet *), note[NOTE_LEVEL_3]);
+        LED_on(gl3, sizeof(gl3) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_3]);
     }
     if (note[NOTE_LEVEL_4]) {
-        LED_on(gl4, sizeof(gl4) / sizeof(CRGBSet *), note[NOTE_LEVEL_4]);
+        LED_on(gl4, sizeof(gl4) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_4]);
     }
     if (note[NOTE_LEVEL_5]) {
-        LED_on(gl5, sizeof(gl5) / sizeof(CRGBSet *), note[NOTE_LEVEL_5]);
+        LED_on(gl5, sizeof(gl5) / sizeof(CRGBSet *), globalColor, note[NOTE_LEVEL_5]);
     }
 
     // Finally push all changes to Stripe
@@ -243,9 +242,9 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
 // LED control helpers
 
-static void LED_on(CRGBSet *groupArray[], size_t size, byte brightness) {
+static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color,  byte brightness) {
     for (unsigned int i = 0; i < size; i++) {
-        LED_on(groupArray[i], globalColor, brightness);
+        LED_on(groupArray[i], color, brightness);
     }
 }
 
