@@ -61,8 +61,6 @@ static void LED_arrayOn(CRGBSet* group[], size_t size);
 
 static void LED_on(CRGBSet *group, const CRGB *color = &COLOR_1);
 
-void LED_off(CRGBSet *group);
-
 void LED_FX_strobe();
 
 void LED_FX_breath();
@@ -241,7 +239,9 @@ void LEDC_updateStripe(const bool *note, const byte *controller) {
     FastLED.show();
 }
 
-// private
+// PRIVATE
+
+// LED control helpers
 
 static void LED_arrayOn(CRGBSet *group[], size_t size) {
     for (unsigned int i = 0; i < size; i++) {
@@ -253,9 +253,7 @@ static void LED_on(CRGBSet *group, const CRGB *color) {
     *group = *color;
 }
 
-void LED_off(CRGBSet *group) {
-    *group = CRGB::Black;
-}
+// timing helpers
 
 int getRectValue(const unsigned long currentTime, const unsigned int period, const float onFactor) {
     const unsigned long phase = currentTime % period;
@@ -287,13 +285,7 @@ getBeatLengthInMillis(const unsigned int t, const unsigned int divider, const bo
     return static_cast<unsigned int>(beatLengthInMillis);
 }
 
-void maybeSetEffectStartTime(const boolean isNoteOn, unsigned long *startTimeRef, const unsigned long *curr) {
-    if (isNoteOn && *startTimeRef == 0) {
-        *startTimeRef = *curr;
-    } else if (!isNoteOn && *startTimeRef != 0) {
-        *startTimeRef = 0;
-    }
-}
+// Global param setters
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
     if (*brightnessTrimValue == 0 && brightness == LED_BRIGHTNESS_MAX) {
@@ -311,6 +303,14 @@ void maybeSetTempo(const byte *tempoValue) {
 }
 
 // Effects
+
+void maybeSetEffectStartTime(const boolean isNoteOn, unsigned long *startTimeRef, const unsigned long *curr) {
+    if (isNoteOn && *startTimeRef == 0) {
+        *startTimeRef = *curr;
+    } else if (!isNoteOn && *startTimeRef != 0) {
+        *startTimeRef = 0;
+    }
+}
 
 void LED_FX_strobe() {
     int state = getRectValue(timestamp - strobeStartMillis, getBeatLengthInMillis(tempo, 16), STROBE_ON_FACTOR);
