@@ -13,13 +13,19 @@ unsigned long timestamp = 0;
 
 // FX vars
 unsigned long strobeStartMillis = 0;
+
 unsigned long breathStartMillis = 0;
 double breathBrightnessFactor = 0.5;
+
 double noiseCurrentVal = 0.5;
 unsigned long noiseLastUpdateMillis = 0;
+
 unsigned int rainbowStartHue = 0;
 unsigned long rainbowStartMillis = 0;
+
 unsigned long pumpStartMillis = 0;
+
+unsigned long rotateStartMillis = 0;
 
 static CRGBSet g[] = {
         CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_NUM - 1), // groupAll
@@ -68,15 +74,17 @@ LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte
 //FX
 void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr);
 
-void LED_FX_strobe();
+void LED_FX_strobe(byte velo);
 
-void LED_FX_breath();
+void LED_FX_breath(byte velo);
 
-void LED_FX_noise();
+void LED_FX_noise(byte velo);
 
-void LED_FX_rainbow();
+void LED_FX_rainbow(byte velo);
 
-void LED_FX_levelPump();
+void LED_FX_levelPump(byte velo);
+
+void LED_FX_rotate(byte velo);
 
 // Definitions
 
@@ -103,6 +111,7 @@ void reset() {
     rainbowStartHue = 0;
     rainbowStartMillis = 0;
     pumpStartMillis = 0;
+    rotateStartMillis = 0;
     globalColor = &COLOR_1;
     for (int i = 0; i < 10; i++) {
         groupColor[i] = *globalColor;
@@ -124,10 +133,11 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     FastLED.clear();
     FastLED.setBrightness(globalBrightness);
 
-    maybeSetEffectStartTime(note[NOTE_BREATH], &breathStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[NOTE_STROBE], &strobeStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[NOTE_RAINBOW], &rainbowStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[NOTE_PUMP], &pumpStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[BREATH], &breathStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[STROBE], &strobeStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[RAINBOW], &rainbowStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &timestamp);
 
     // Global Color Switch
     if (note[GLOBAL_COLOR_1]) {
@@ -168,16 +178,18 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     }
 
     // Effects
-    if (note[NOTE_STROBE]) {
-        LED_FX_strobe();
-    } else if (note[NOTE_BREATH]) {
-        LED_FX_breath();
-    } else if (note[NOTE_NOISE]) {
-        LED_FX_noise();
-    } else if (note[NOTE_RAINBOW]) {
-        LED_FX_rainbow();
-    } else if (note[NOTE_PUMP]) {
-        LED_FX_levelPump();
+    if (note[STROBE]) {
+        LED_FX_strobe(note[STROBE]);
+    } else if (note[BREATH]) {
+        LED_FX_breath(note[BREATH]);
+    } else if (note[NOISE]) {
+        LED_FX_noise(note[NOISE]);
+    } else if (note[RAINBOW]) {
+        LED_FX_rainbow(note[RAINBOW]);
+    } else if (note[PUMP]) {
+        LED_FX_levelPump(note[PUMP]);
+    } else if (note[ROTATE]) {
+        LED_FX_rotate(note[ROTATE]);
     }
 
     // All On
@@ -390,57 +402,65 @@ void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const 
     }
 }
 
-void LED_FX_strobe() {
+void LED_FX_strobe(byte velo) {
     int state = getRectValue(timestamp - strobeStartMillis, getBeatLengthInMillis(tempo, 16), STROBE_ON_FACTOR);
     if (state == 1) {
-        LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
+        LED_on(&g[0], globalColor, velo); // Turn all LEDs on to the strobe color
     } else {
         FastLED.clear(); // Turn all LEDs off
     }
 }
 
-void LED_FX_breath() {
-    const unsigned int millisOfCurrentSecond = (timestamp - breathStartMillis);
-    breathBrightnessFactor = 0.5 * (1 + sin(2 * M_PI * millisOfCurrentSecond / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
-    FastLED.setBrightness(static_cast<uint8_t>(breathBrightnessFactor * LED_BRIGHTNESS_MAX));
-    LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
+void LED_FX_breath(byte velo) {
+    double timeFactor = (1 +
+                         sin(2 * M_PI * (double) (timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
+    double currBrightness = (velo / 127.0) * timeFactor * LED_BRIGHTNESS_MAX;
+    LED_on(&g[0], globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
 }
 
-void LED_FX_noise() {
+void LED_FX_noise(byte velo) {
     if (timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
         noiseLastUpdateMillis = timestamp;
-        noiseCurrentVal += (random(0, 10) - 5) * 0.01;
+        noiseCurrentVal += ((double) random(0, 10) - 5) * 0.01;
         noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
     }
-    FastLED.setBrightness(LED_BRIGHTNESS_MAX * noiseCurrentVal);
-    LED_on(&g[0], globalColor); // Turn all LEDs on to the strobe color
+    LED_on(&g[0], globalColor,
+           LED_BRIGHTNESS_MAX * noiseCurrentVal * (velo / 127.0)); // Turn all LEDs on to the strobe color
 }
 
-void LED_FX_rainbow() {
+void LED_FX_rainbow(byte velo) {
     fill_rainbow(leds, LED_NUM,
                  ((timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
-                 10);
+                 (uint8_t) (10 * (velo / 127.0)));
 }
 
-void LED_FX_levelPump() {
+void LED_FX_levelPump(byte velo) {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 1:
-            LED_on(level1, sizeof(level1) / sizeof(level1[0]));
+            LED_on(level1, sizeof(level1) / sizeof(level1[0]), globalColor, velo);
             break;
         case 2:
-            LED_on(level2, sizeof(level2) / sizeof(level2[0]));
+            LED_on(level2, sizeof(level2) / sizeof(level2[0]), globalColor, velo);
             break;
         case 3:
-            LED_on(level3, sizeof(level3) / sizeof(level3[0]));
+            LED_on(level3, sizeof(level3) / sizeof(level3[0]), globalColor, velo);
             break;
         case 4:
-            LED_on(level4, sizeof(level4) / sizeof(level4[0]));
+            LED_on(level4, sizeof(level4) / sizeof(level4[0]), globalColor, velo);
             break;
         case 5:
-            LED_on(level5, sizeof(level5) / sizeof(level5[0]));
+            LED_on(level5, sizeof(level5) / sizeof(level5[0]), globalColor, velo);
             break;
         default:
             break;
     }
+
+}
+
+void LED_FX_rotate(byte velo) {
+    const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis,
+                                                        getBeatLengthInMillis(tempo, 16),
+                                                        10);
+    LED_on(&g[currentStep], globalColor, velo);
 }

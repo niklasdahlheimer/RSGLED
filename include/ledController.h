@@ -102,10 +102,11 @@ static CRGB COLOR_12 = CRGB::MidnightBlue;
 #define LEVEL_ON_4 Note_Dis4
 #define LEVEL_ON_5 Note_E4
 
-#define NOTE_STROBE Note_C5
-#define NOTE_BREATH Note_D5
-#define NOTE_NOISE Note_E5
-#define NOTE_RAINBOW Note_F5
-#define NOTE_PUMP Note_G5
+#define STROBE Note_C5
+#define BREATH Note_D5
+#define NOISE Note_E5
+#define RAINBOW Note_F5
+#define PUMP Note_G5
+#define ROTATE Note_A5
 
 #endif //RSGLED_LEDCONTROLLER_H
