@@ -91,9 +91,9 @@ void LED_FX_rotate(byte velo);
 void LEDC_init(SoftwareSerial *serial) {
     ledLogSerial = serial;
 
-    // sanity check delay - allows reprogramming if accidently blowing power w/leds
+    // sanity check delay - allows reprogramming if accidentally blowing power w/leds
     delay(2000);
-    //FastLED.setMaxPowerInVoltsAndMilliamps( 12, MAX_POWER_MILLIAMPS);
+    //FastLED.setMaxPowerInMilliWatts( 250*1000);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(leds, LED_NUM); // GRB ordering is typical
     FastLED.clear(true);
 }
