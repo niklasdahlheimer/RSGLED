@@ -61,8 +61,8 @@ static CRGB groupColor[] = {
 };
 
 // Forward declarations
-static unsigned int getBeatLengthInMillis(unsigned int tempo, unsigned int divider = 4, boolean isTriplet = false,
-                                          boolean isDotted = false);
+static unsigned int
+getBeatLenInMillis(unsigned int tempo, unsigned int div = 4, boolean isTrip = false, boolean isDot = false);
 
 void maybeSetGroupColor(const byte *note);
 
@@ -90,7 +90,7 @@ void LED_FX_levelPump(byte velo);
 
 void LED_FX_rotate(byte velo);
 
-void LED_FX_fill_gradient(byte velo, CRGB* color1, CRGB* color2);
+void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 
 // Definitions
 
@@ -352,13 +352,13 @@ static void LED_on(CRGBSet *group, const CRGB *color, byte brightness) {
 
 // timing helpers
 
-int getRectValue(const unsigned long currentTime, const unsigned int period, const float onFactor) {
+static int getRectValue(const unsigned long currentTime, const unsigned int period, const float onFactor) {
     const unsigned long phase = currentTime % period;
     const unsigned long onPeriod = period * onFactor;
     return phase < onPeriod ? 1 : 0;
 }
 
-unsigned long getSteppedValue(const unsigned long currentTime, const unsigned int period) {
+static unsigned long getSteppedValue(const unsigned long currentTime, const unsigned int period) {
     return (currentTime / period);
 }
 
@@ -371,15 +371,15 @@ static unsigned long getSteppedSawValue(const unsigned long currentTime, const u
 }
 
 static unsigned int
-getBeatLengthInMillis(const unsigned int t, const unsigned int divider, const boolean isTriplet,
-                      const boolean isDotted) {
-    double beatLengthInMillis = 60000.0 / t;
-    beatLengthInMillis *= 4.0 / divider; // a quarter is equivalent to 1 "beat" for simplicity
+getBeatLenInMillis(unsigned int tempo, unsigned int div, boolean isTrip,
+                   boolean isDot) {
+    double beatLengthInMillis = 60000.0 / tempo;
+    beatLengthInMillis *= 4.0 / div; // a quarter is equivalent to 1 "beat" for simplicity
 
-    if (isTriplet) {
+    if (isTrip) {
         beatLengthInMillis *= 2.0 / 3.0;
     }
-    if (isDotted) {
+    if (isDot) {
         beatLengthInMillis *= 1.5;
     }
 
@@ -405,9 +405,8 @@ void maybeSetTempo(const byte *tempoValue) {
 
 // Effects
 
-void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) {
-    bool noteOn = noteValue > 0;
-    if (noteOn && *startTimeRef == 0) {
+static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) {
+    if (noteValue && *startTimeRef == 0) {
         *startTimeRef = *curr;
     } else if (!noteOn && *startTimeRef != 0) {
         *startTimeRef = 0;
@@ -415,7 +414,7 @@ void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const 
 }
 
 void LED_FX_strobe(byte velo) {
-    int state = getRectValue(timestamp - strobeStartMillis, getBeatLengthInMillis(tempo, 16), STROBE_ON_FACTOR);
+    int state = getRectValue(timestamp - strobeStartMillis, getBeatLenInMillis(tempo, 16), STROBE_ON_FACTOR);
     if (state == 1) {
         LED_on(&g[0], globalColor, velo); // Turn all LEDs on to the strobe color
     } else {
@@ -474,7 +473,7 @@ void LED_FX_levelPump(byte velo) {
 
 void LED_FX_rotate(byte velo) {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis,
-                                                        getBeatLengthInMillis(tempo, 16),
+                                                        getBeatLenInMillis(tempo, 16),
                                                         10);
     LED_on(&g[currentStep], globalColor, velo);
 }
@@ -485,7 +484,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
         fill_gradient_RGB(gradientLEDs, LED_NUM/2, *color1, *color2);
     }
     const unsigned int step = getSteppedSawValue(timestamp - gradientWalkStartMillis,
-                                                 getBeatLengthInMillis(tempo, 32),
+                                                 getBeatLenInMillis(tempo, 32),
                                                  LED_NUM);
     // circling offset
     for (int i = 0; i < LED_NUM; i++) {
