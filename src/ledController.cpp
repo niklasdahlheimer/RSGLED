@@ -347,7 +347,7 @@ static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color, byte b
 
 static void LED_on(CRGBSet *group, const CRGB *color, byte brightness) {
     *group = *color;
-    *group->nscale8(brightness);
+    *group->nscale8_video(brightness);
 }
 
 // timing helpers
