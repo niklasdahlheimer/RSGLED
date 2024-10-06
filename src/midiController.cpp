@@ -20,6 +20,7 @@ void handleControlChange(byte channel, byte number, byte value);
 void handleProgramChange(byte channel, byte number);
 void handlePitchBend(byte channel, int bend);
 void handleNoteOn(byte channel, byte note, byte velocity);
+void handleAfterTouchPoly(byte channel, byte note, byte pressure);
 void handleNoteOff(byte channel, byte note, byte velocity);
 void handleError(int8_t error);
 
@@ -35,6 +36,7 @@ void MIDIC_init(SoftwareSerial *serial) {
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.setHandleError(handleError);
     MIDI.setHandleSystemExclusive(handleSystemExclusive);
+    MIDI.setHandleAfterTouchPoly(handleAfterTouchPoly);
 }
 
 MidiData * MIDIC_read() {
@@ -58,6 +60,10 @@ void handleControlChange(byte channel, byte number, byte value){
 void handleNoteOn(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
     data.noteOn[note] = 2*velocity;
+}
+
+void handleAfterTouchPoly(byte channel, byte note, byte pressure) {
+    data.noteOn[note] = 2*pressure;
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
