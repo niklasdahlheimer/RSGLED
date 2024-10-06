@@ -108,5 +108,6 @@ static CRGB COLOR_12 = CRGB::Aqua;
 #define RAINBOW Note_F5
 #define PUMP Note_G5
 #define ROTATE Note_A5
+#define GRADIENT Note_B5
 
 #endif //RSGLED_LEDCONTROLLER_H

@@ -27,6 +27,10 @@ unsigned long pumpStartMillis = 0;
 
 unsigned long rotateStartMillis = 0;
 
+unsigned long gradientWalkStartMillis = 0;
+
+CRGB gradientLEDs[LED_NUM/2];
+
 static CRGBSet g[] = {
         CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_NUM - 1), // groupAll
         CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_GROUP_INDEX_1_END),
@@ -86,6 +90,8 @@ void LED_FX_levelPump(byte velo);
 
 void LED_FX_rotate(byte velo);
 
+void LED_FX_fill_gradient(byte velo, CRGB* color1, CRGB* color2);
+
 // Definitions
 
 void LEDC_init(SoftwareSerial *serial) {
@@ -138,6 +144,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetEffectStartTime(note[RAINBOW], &rainbowStartMillis, &timestamp);
     maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &timestamp);
     maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[GRADIENT], &gradientWalkStartMillis, &timestamp);
 
     // Global Color Switch
     if (note[GLOBAL_COLOR_1]) {
@@ -190,6 +197,8 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
         LED_FX_levelPump(note[PUMP]);
     } else if (note[ROTATE]) {
         LED_FX_rotate(note[ROTATE]);
+    } else if (note[GRADIENT]) {
+        LED_FX_fill_gradient(note[GRADIENT], &COLOR_1, &COLOR_6);
     }
 
     // All On
@@ -466,4 +475,19 @@ void LED_FX_rotate(byte velo) {
                                                         getBeatLengthInMillis(tempo, 16),
                                                         10);
     LED_on(&g[currentStep], globalColor, velo);
+}
+
+void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
+    if (gradientWalkStartMillis == timestamp) {
+        // fill preset array
+        fill_gradient_RGB(gradientLEDs, LED_NUM/2, *color1, *color2);
+    }
+    const unsigned int step = getSteppedSawValue(timestamp - gradientWalkStartMillis,
+                                                 getBeatLengthInMillis(tempo, 32),
+                                                 LED_NUM);
+    // circling offset
+    for (int i = 0; i < LED_NUM; i++) {
+        leds[(i + step) % LED_NUM] = gradientLEDs[i/2];
+        g[0].nscale8_video(velo);
+    }
 }
