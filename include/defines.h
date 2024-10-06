@@ -11,7 +11,7 @@
 #ifdef R
 
 #define MIDI_CHANNEL                13
-#define LED_NUM                     62
+
 #define LED_GROUP_INDEX_1_START     0
 #define LED_GROUP_INDEX_1_END       7
 #define LED_GROUP_INDEX_2_START     8
@@ -32,6 +32,8 @@
 #define LED_GROUP_INDEX_9_END       53
 #define LED_GROUP_INDEX_10_START    54
 #define LED_GROUP_INDEX_10_END      61
+
+#define LED_NUM                     (LED_GROUP_INDEX_10_END+1)
 
 #endif
 
