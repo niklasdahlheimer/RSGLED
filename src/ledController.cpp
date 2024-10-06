@@ -6,8 +6,8 @@ SoftwareSerial *ledLogSerial;
 CRGB leds[LED_NUM];
 
 // global vars
-unsigned int tempo = DEFAULT_TEMPO;
-unsigned int globalBrightness = LED_BRIGHTNESS_MAX;
+byte tempo = DEFAULT_TEMPO;
+byte globalBrightness = LED_BRIGHTNESS_MAX;
 CRGB *globalColor = &COLOR_1;
 unsigned long timestamp = 0;
 
@@ -353,9 +353,12 @@ unsigned long getSteppedValue(const unsigned long currentTime, const unsigned in
     return (currentTime / period);
 }
 
-unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned int period,
-                                 const unsigned int numOfSteps) {
-    return (currentTime / period) % numOfSteps;
+/**
+ * Returns periodic stepped value from 0 to numOfSteps-1
+ */
+static unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned int period,
+                                        const unsigned int numOfSteps) {
+    return getSteppedValue(currentTime, period) % numOfSteps;
 }
 
 static unsigned int
