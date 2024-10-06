@@ -3,7 +3,6 @@
 
 #include <SoftwareSerial.h>
 
-
 void MIDIC_init(SoftwareSerial *logSerial);
 
 void MIDIC_read();
