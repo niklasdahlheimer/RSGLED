@@ -449,6 +449,8 @@ void LED_FX_rainbow(byte velo) {
 void LED_FX_levelPump(byte velo) {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
+        case 0:
+            break; // all off
         case 1:
             LED_on(level1, sizeof(level1) / sizeof(level1[0]), globalColor, velo);
             break;
