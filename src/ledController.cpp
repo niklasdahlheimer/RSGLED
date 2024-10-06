@@ -32,17 +32,17 @@ unsigned long gradientWalkStartMillis = 0;
 CRGB gradientLEDs[LED_NUM/2];
 
 static CRGBSet g[] = {
-        CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_NUM - 1), // groupAll
-        CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_GROUP_INDEX_1_END),
-        CRGBSet(leds, LED_GROUP_INDEX_2_START, LED_GROUP_INDEX_2_END),
-        CRGBSet(leds, LED_GROUP_INDEX_3_START, LED_GROUP_INDEX_3_END),
-        CRGBSet(leds, LED_GROUP_INDEX_4_START, LED_GROUP_INDEX_4_END),
-        CRGBSet(leds, LED_GROUP_INDEX_5_START, LED_GROUP_INDEX_5_END),
-        CRGBSet(leds, LED_GROUP_INDEX_6_START, LED_GROUP_INDEX_6_END),
-        CRGBSet(leds, LED_GROUP_INDEX_7_START, LED_GROUP_INDEX_7_END),
-        CRGBSet(leds, LED_GROUP_INDEX_8_START, LED_GROUP_INDEX_8_END),
-        CRGBSet(leds, LED_GROUP_INDEX_9_START, LED_GROUP_INDEX_9_END),
-        CRGBSet(leds, LED_GROUP_INDEX_10_START, LED_GROUP_INDEX_10_END)
+    CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_NUM - 1), // groupAll
+    CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_GROUP_INDEX_1_END),
+    CRGBSet(leds, LED_GROUP_INDEX_2_START, LED_GROUP_INDEX_2_END),
+    CRGBSet(leds, LED_GROUP_INDEX_3_START, LED_GROUP_INDEX_3_END),
+    CRGBSet(leds, LED_GROUP_INDEX_4_START, LED_GROUP_INDEX_4_END),
+    CRGBSet(leds, LED_GROUP_INDEX_5_START, LED_GROUP_INDEX_5_END),
+    CRGBSet(leds, LED_GROUP_INDEX_6_START, LED_GROUP_INDEX_6_END),
+    CRGBSet(leds, LED_GROUP_INDEX_7_START, LED_GROUP_INDEX_7_END),
+    CRGBSet(leds, LED_GROUP_INDEX_8_START, LED_GROUP_INDEX_8_END),
+    CRGBSet(leds, LED_GROUP_INDEX_9_START, LED_GROUP_INDEX_9_END),
+    CRGBSet(leds, LED_GROUP_INDEX_10_START, LED_GROUP_INDEX_10_END)
 };
 
 static CRGBSet *level1[] = {&g[1], &g[10]};
@@ -50,14 +50,14 @@ static CRGBSet *level2[] = {&g[1], &g[10], &g[2], &g[9]};
 static CRGBSet *level3[] = {&g[1], &g[10], &g[2], &g[9], &g[3], &g[8]};
 static CRGBSet *level4[] = {&g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7]};
 static CRGBSet *level5[] = {
-        &g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7], &g[5], &g[6]
+    &g[1], &g[10], &g[2], &g[9], &g[3], &g[8], &g[4], &g[7], &g[5], &g[6]
 };
 
 static CRGB groupColor[] = {
-        *globalColor, *globalColor, *globalColor,
-        *globalColor, *globalColor, *globalColor,
-        *globalColor, *globalColor, *globalColor,
-        *globalColor, *globalColor
+    *globalColor, *globalColor, *globalColor,
+    *globalColor, *globalColor, *globalColor,
+    *globalColor, *globalColor, *globalColor,
+    *globalColor, *globalColor
 };
 
 // Forward declarations
@@ -468,7 +468,6 @@ void LED_FX_levelPump(byte velo) {
         default:
             break;
     }
-
 }
 
 void LED_FX_rotate(byte velo) {
