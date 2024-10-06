@@ -23,18 +23,18 @@
 void LEDC_init(SoftwareSerial* logSerial);
 void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
-static CRGB COLOR_1 = CRGB::SkyBlue;
-static CRGB COLOR_2 = CRGB::White;
-static CRGB COLOR_3 = CRGB::Green;
+static CRGB COLOR_1 = CRGB::LightSkyBlue;
+static CRGB COLOR_2 = CRGB::Fuchsia;
+static CRGB COLOR_3 = CRGB::Lime;
 static CRGB COLOR_4 = CRGB::Pink;
-static CRGB COLOR_5 = CRGB::Yellow;
+static CRGB COLOR_5 = CRGB::Gold;
 static CRGB COLOR_6 = CRGB::Purple;
 static CRGB COLOR_7 = CRGB::Red;
 static CRGB COLOR_8 = CRGB::HotPink;
 static CRGB COLOR_9 = CRGB::Blue;
-static CRGB COLOR_10 = CRGB::Orange;
+static CRGB COLOR_10 = CRGB::OrangeRed;
 static CRGB COLOR_11 = CRGB::Teal;
-static CRGB COLOR_12 = CRGB::MidnightBlue;
+static CRGB COLOR_12 = CRGB::Aqua;
 
 #define TOTAL_RESET                 Note_C_1
 
