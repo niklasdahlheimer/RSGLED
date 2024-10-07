@@ -408,7 +408,7 @@ void maybeSetTempo(const byte *tempoValue) {
 static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) {
     if (noteValue && *startTimeRef == 0) {
         *startTimeRef = *curr;
-    } else if (!noteOn && *startTimeRef != 0) {
+    } else if (!noteValue && *startTimeRef != 0) {
         *startTimeRef = 0;
     }
 }
