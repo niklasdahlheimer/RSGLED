@@ -73,7 +73,7 @@ static void
 LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
 
 //FX
-void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr);
+static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr);
 
 void LED_FX_strobe(byte velo);
 
