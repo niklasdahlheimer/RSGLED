@@ -1,14 +1,11 @@
 #include "midiController.h"
 #include "ledController.h"
 #include <Arduino.h>
-#include "midiConsts.h"
-#include "helper.h"
 #include <MIDI.h>
 #include "defines.h"
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 
-SoftwareSerial *midiLogSerial;
 
 MidiData data;
 
@@ -24,8 +21,7 @@ void handleAfterTouchPoly(byte channel, byte note, byte pressure);
 void handleNoteOff(byte channel, byte note, byte velocity);
 void handleError(int8_t error);
 
-void MIDIC_init(SoftwareSerial *serial) {
-    midiLogSerial = serial;
+void MIDIC_init() {
 
     // Create and bind the MIDI interface to the default hardware Serial port
     //midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
@@ -47,10 +43,10 @@ MidiData * MIDIC_read() {
 // private
 
 void handleSystemExclusive(byte *array, unsigned size) {
-    serialPrintf(midiLogSerial, "SysEx:");
+    /*serialPrintf(midiLogSerial, "SysEx:");
     for(unsigned int i = 0; i < size; i++) {
         serialPrintf(midiLogSerial, " %02X", array[i]);
-    }
+    }*/
 }
 
 void handleControlChange(byte channel, byte number, byte value){
@@ -72,5 +68,5 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void handleError(int8_t error) {
-    serialPrintf(midiLogSerial, "MIDI error: %d", error);
+    /*serialPrintf(midiLogSerial, "MIDI error: %d", error);*/
 };

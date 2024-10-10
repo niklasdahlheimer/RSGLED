@@ -1,7 +1,4 @@
 #include "ledController.h"
-#include "helper.h"
-
-SoftwareSerial *ledLogSerial;
 
 CRGB leds[LED_NUM];
 
@@ -94,8 +91,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 
 // Definitions
 
-void LEDC_init(SoftwareSerial *serial) {
-    ledLogSerial = serial;
+void LEDC_init() {
 
     // sanity check delay - allows reprogramming if accidentally blowing power w/leds
     delay(2000);

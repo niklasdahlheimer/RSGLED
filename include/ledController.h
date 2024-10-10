@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <FastLED.h>
-#include <SoftwareSerial.h>
 #include "midiConsts.h"
 #include "defines.h"
 
@@ -20,7 +19,7 @@
 #define RAINBOW_PERIOD_IN_MILLIS    10
 #define PUMP_PERIOD_IN_MILLIS       100
 
-void LEDC_init(SoftwareSerial* logSerial);
+void LEDC_init();
 void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
 static CRGB COLOR_1 = CRGB::LightSkyBlue;
