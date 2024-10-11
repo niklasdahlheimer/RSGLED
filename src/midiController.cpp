@@ -10,19 +10,28 @@ MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
 MidiData data;
 
 void handleSystemExclusive(byte *array, unsigned size);
+
 void handleSongPosition(unsigned int beats);
+
 void handleSongSelect(byte songNumber);
+
 void handleTuneRequest();
+
 void handleControlChange(byte channel, byte number, byte value);
+
 void handleProgramChange(byte channel, byte number);
+
 void handlePitchBend(byte channel, int bend);
+
 void handleNoteOn(byte channel, byte note, byte velocity);
+
 void handleAfterTouchPoly(byte channel, byte note, byte pressure);
+
 void handleNoteOff(byte channel, byte note, byte velocity);
+
 void handleError(int8_t error);
 
 void MIDIC_init() {
-
     // Create and bind the MIDI interface to the default hardware Serial port
     //midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
     MIDI.begin(MIDI_CHANNEL);
@@ -35,7 +44,7 @@ void MIDIC_init() {
     MIDI.setHandleAfterTouchPoly(handleAfterTouchPoly);
 }
 
-MidiData * MIDIC_read() {
+MidiData *MIDIC_read() {
     MIDI.read(MIDI_CHANNEL);
     return &data;
 }
@@ -49,13 +58,13 @@ void handleSystemExclusive(byte *array, unsigned size) {
     }*/
 }
 
-void handleControlChange(byte channel, byte number, byte value){
+void handleControlChange(byte channel, byte number, byte value) {
     data.controls[number] = value;
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
-    data.noteOn[note] = 2*velocity;
+    data.noteOn[note] = 2 * velocity;
 }
 
 void handleAfterTouchPoly(byte channel, byte note, byte pressure) {
