@@ -1,4 +1,5 @@
 #include "ledController.h"
+#include "defines.h"
 
 CRGB leds[LED_NUM];
 
@@ -26,7 +27,7 @@ unsigned long rotateStartMillis = 0;
 
 unsigned long gradientWalkStartMillis = 0;
 
-CRGB gradientLEDs[LED_NUM/2];
+CRGB gradientLEDs[LED_NUM];
 
 static CRGBSet g[] = {
     CRGBSet(leds, LED_GROUP_INDEX_1_START, LED_NUM - 1), // groupAll
@@ -476,14 +477,14 @@ void LED_FX_rotate(byte velo) {
 void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
     if (gradientWalkStartMillis == timestamp) {
         // fill preset array
-        fill_gradient_RGB(gradientLEDs, LED_NUM/2, *color1, *color2);
+        fill_gradient_RGB(gradientLEDs, LED_NUM, *color1, *color2);
     }
     const unsigned int step = getSteppedSawValue(timestamp - gradientWalkStartMillis,
                                                  getBeatLenInMillis(tempo, 32),
                                                  LED_NUM);
     // circling offset
     for (int i = 0; i < LED_NUM; i++) {
-        leds[(i + step) % LED_NUM] = gradientLEDs[i/2];
+        leds[(i + step) % LED_NUM] = gradientLEDs[i];
         g[0].nscale8_video(velo);
     }
 }
