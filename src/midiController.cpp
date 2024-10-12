@@ -4,8 +4,7 @@
 #include <MIDI.h>
 #include "defines.h"
 
-MIDI_CREATE_INSTANCE(HardwareSerial, Serial, MIDI);
-
+MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
 
 MidiData data;
 
