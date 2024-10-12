@@ -1,6 +1,8 @@
 #ifndef RSGLED_DEFINES_H
 #define RSGLED_DEFINES_H
 
+#define LED_BUILTIN 2
+
 // MAIN DEFINE FOR LETTER
 #define R
 #define DEFAULT_TEMPO 120
