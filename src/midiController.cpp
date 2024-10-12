@@ -62,13 +62,12 @@ void handleControlChange(byte channel, byte number, byte value) {
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
-    //serialPrintf(midiLogSerial, "NoteOn: %d %d %d", channel, note, velocity);
     data.noteOn[note] = 2 * velocity;
     digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void handleAfterTouchPoly(byte channel, byte note, byte pressure) {
-    data.noteOn[note] = 2*pressure;
+    //data.noteOn[note] = 2 * pressure;
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
@@ -78,5 +77,5 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
 }
 
 void handleError(int8_t error) {
-    /*serialPrintf(midiLogSerial, "MIDI error: %d", error);*/
+    Serial.printf("MIDI error "+error);
 };
