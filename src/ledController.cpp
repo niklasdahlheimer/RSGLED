@@ -5,7 +5,7 @@ CRGB leds[LED_NUM];
 
 // global vars
 byte tempo = DEFAULT_TEMPO;
-byte globalBrightness = LED_BRIGHTNESS_MAX;
+byte globBrightness = LED_BRIGHTNESS_MAX;
 CRGB *globalColor = &COLOR_1;
 unsigned long timestamp = 0;
 
@@ -104,7 +104,7 @@ void LEDC_init() {
 void reset() {
     FastLED.clear();
     tempo = DEFAULT_TEMPO;
-    globalBrightness = LED_BRIGHTNESS_MAX;
+    globBrightness = LED_BRIGHTNESS_MAX;
     timestamp = 0;
     strobeStartMillis = 0;
     breathStartMillis = 0;
@@ -134,7 +134,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetTempo(&note[TEMPO]);
 
     FastLED.clear();
-    FastLED.setBrightness(globalBrightness);
+    FastLED.setBrightness(globBrightness);
 
     maybeSetEffectStartTime(note[BREATH], &breathStartMillis, &timestamp);
     maybeSetEffectStartTime(note[STROBE], &strobeStartMillis, &timestamp);
@@ -386,10 +386,10 @@ getBeatLenInMillis(unsigned int tempo, unsigned int div, boolean isTrip,
 // Global param setters
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
-    if (*brightnessTrimValue == 0 && globalBrightness == LED_BRIGHTNESS_MAX) {
+    if (*brightnessTrimValue == 0 && globBrightness == LED_BRIGHTNESS_MAX) {
         return;
     }
-    globalBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+    globBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
 }
 
 void maybeSetTempo(const byte *tempoValue) {
