@@ -6,7 +6,7 @@
 #include "midiConsts.h"
 #include "defines.h"
 
-#define LED_DATA_PIN                7
+#define LED_DATA_PIN                5
 #define LED_CHIP                    WS2811
 #define LED_COLOR_ORDER             BRG
 #define LED_BRIGHTNESS_MAX          255
