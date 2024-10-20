@@ -95,7 +95,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 void LEDC_init() {
 
     // sanity check delay - allows reprogramming if accidentally blowing power w/leds
-    delay(2000);
+    //delay(2000);
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(leds, LED_NUM); // GRB ordering is typical
     FastLED.clear(true);

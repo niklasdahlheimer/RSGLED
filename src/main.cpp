@@ -7,9 +7,7 @@
 MidiData* midiData;
 
 void setup() {
-    Serial.begin(9600); // Software-Serial for second Arduino
-    //serialPrintf(&logSerial, "Hello from Arduino 1!");
-
+    Serial.begin(115200);
     LEDC_init();
     MIDIC_init();
 }
@@ -19,6 +17,8 @@ void loop() {
     if(TEST_MODE){
         midiData->noteOn[RAINBOW] = true;
     }
+    midiData->noteOn[RAINBOW] = true;
     LEDC_updateStripe(midiData->noteOn, midiData->controls);
     //maybeDisplayCriticalRam(&logSerial);
+    delay(10000);
 }

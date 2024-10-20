@@ -41,6 +41,7 @@ void MIDIC_init() {
     MIDI.setHandleError(handleError);
     MIDI.setHandleSystemExclusive(handleSystemExclusive);
     MIDI.setHandleAfterTouchPoly(handleAfterTouchPoly);
+    pinMode(LED_BUILTIN, OUTPUT);
 }
 
 MidiData *MIDIC_read() {
@@ -64,6 +65,7 @@ void handleControlChange(byte channel, byte number, byte value) {
 void handleNoteOn(byte channel, byte note, byte velocity) {
     data.noteOn[note] = 2 * velocity;
     digitalWrite(LED_BUILTIN, HIGH);
+    log_i("note on %d", note);
 }
 
 void handleAfterTouchPoly(byte channel, byte note, byte pressure) {
@@ -74,8 +76,9 @@ void handleNoteOff(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
     data.noteOn[note] = 0;
     digitalWrite(LED_BUILTIN, LOW);
+    log_i("note off %d", note);
 }
 
 void handleError(int8_t error) {
-    Serial.printf("MIDI error "+error);
+    log_i("MIDI error %d", error);
 };
