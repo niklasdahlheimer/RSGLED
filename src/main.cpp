@@ -1,10 +1,7 @@
-
 #include "midiController.h"
 #include "ledController.h"
 
-
-
-MidiData* midiData;
+MidiData *midiData;
 
 void setup() {
     Serial.begin(115200);
@@ -17,8 +14,5 @@ void loop() {
     if(TEST_MODE){
         midiData->noteOn[RAINBOW] = true;
     }
-    midiData->noteOn[RAINBOW] = true;
     LEDC_updateStripe(midiData->noteOn, midiData->controls);
-    //maybeDisplayCriticalRam(&logSerial);
-    delay(10000);
 }
