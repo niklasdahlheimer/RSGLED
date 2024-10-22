@@ -1,7 +1,7 @@
 #ifndef RSGLED_DEFINES_H
 #define RSGLED_DEFINES_H
 
-#define LED_BUILTIN 2
+#define MIDI_INPUT_LED 2
 
 // MAIN DEFINE FOR LETTER
 #define R
