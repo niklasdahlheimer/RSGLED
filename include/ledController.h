@@ -14,6 +14,8 @@
 
 #define DEFAULT_TEMPO               120
 
+#define MAX_LED_NUM                 100
+
 #define STROBE_ON_FACTOR            0.5 // Factor between 0 and 1 how long the LEDs stay ON
 
 #define BREATH_PERIOD_IN_MILLIS     5000

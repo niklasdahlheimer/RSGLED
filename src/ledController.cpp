@@ -1,7 +1,5 @@
 #include "ledController.h"
 
-#define MAX_LED_NUM  100
-
 typedef struct {
     byte LED_NUM = MAX_LED_NUM;
     CRGB LEDs[MAX_LED_NUM]{};
