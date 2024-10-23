@@ -492,11 +492,11 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
         fill_gradient_RGB(ledConfig.gradientLEDs, ledConfig.LED_NUM, *color1, *color2);
     }
     const unsigned int step = getSteppedSawValue(timestamp - gradientWalkStartMillis,
-                                                 getBeatLenInMillis(tempo, 32),
+                                                 getBeatLenInMillis(tempo, 64),
                                                  ledConfig.LED_NUM);
     // circling offset
     for (int i = 0; i < ledConfig.LED_NUM; i++) {
         ledConfig.LEDs[(i + step) % ledConfig.LED_NUM] = ledConfig.gradientLEDs[i];
-        //ledConfig.g[0].nscale8_video(velo);
+        ledConfig.groups[0]->nscale8_video(velo);
     }
 }
