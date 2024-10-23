@@ -5,12 +5,12 @@
 
 typedef struct {
     byte LED_NUM = MAX_LED_NUM;
-    CRGB leds[MAX_LED_NUM];
-    CRGB gradientLEDs[MAX_LED_NUM];
-    CRGBSet* groups[11];
-    CRGBSet** levels[5];
-    byte levelsSize[5];
-    CRGB groupColor[11];
+    CRGB LEDs[MAX_LED_NUM]{};
+    CRGB gradientLEDs[MAX_LED_NUM]{};
+    CRGBSet* groups[11]{};
+    CRGBSet** levels[5]{};
+    byte levelsSize[5]{};
+    CRGB groupColor[11]{};
 } LEDConfig;
 
 static LEDConfig ledConfig;
@@ -70,17 +70,17 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 void LEDC_init(const Config *config) {
     ledConfig.LED_NUM = config->LED_NUM;
 
-    ledConfig.groups[0] = new CRGBSet(ledConfig.leds, config->LED_NUM - 1);
-    ledConfig.groups[1] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_1_START, config->LED_GROUP_INDEX_1_END);
-    ledConfig.groups[2] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_2_START, config->LED_GROUP_INDEX_2_END);
-    ledConfig.groups[3] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_3_START, config->LED_GROUP_INDEX_3_END);
-    ledConfig.groups[4] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_4_START, config->LED_GROUP_INDEX_4_END);
-    ledConfig.groups[5] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_5_START, config->LED_GROUP_INDEX_5_END);
-    ledConfig.groups[6] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_6_START, config->LED_GROUP_INDEX_6_END);
-    ledConfig.groups[7] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_7_START, config->LED_GROUP_INDEX_7_END);
-    ledConfig.groups[8] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_8_START, config->LED_GROUP_INDEX_8_END);
-    ledConfig.groups[9] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_9_START, config->LED_GROUP_INDEX_9_END);
-    ledConfig.groups[10] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_10_START, config->LED_GROUP_INDEX_10_END);
+    ledConfig.groups[0] = new CRGBSet(ledConfig.LEDs, config->LED_NUM - 1);
+    ledConfig.groups[1] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_1_START, config->LED_GROUP_INDEX_1_END);
+    ledConfig.groups[2] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_2_START, config->LED_GROUP_INDEX_2_END);
+    ledConfig.groups[3] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_3_START, config->LED_GROUP_INDEX_3_END);
+    ledConfig.groups[4] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_4_START, config->LED_GROUP_INDEX_4_END);
+    ledConfig.groups[5] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_5_START, config->LED_GROUP_INDEX_5_END);
+    ledConfig.groups[6] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_6_START, config->LED_GROUP_INDEX_6_END);
+    ledConfig.groups[7] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_7_START, config->LED_GROUP_INDEX_7_END);
+    ledConfig.groups[8] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_8_START, config->LED_GROUP_INDEX_8_END);
+    ledConfig.groups[9] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_9_START, config->LED_GROUP_INDEX_9_END);
+    ledConfig.groups[10] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_10_START, config->LED_GROUP_INDEX_10_END);
 
     ledConfig.levels[0] = new CRGBSet*[2] {ledConfig.groups[1], ledConfig.groups[10]};
     ledConfig.levels[1] = new CRGBSet*[4] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9]};
@@ -94,7 +94,7 @@ void LEDC_init(const Config *config) {
     ledConfig.levelsSize[4] = 10;
 
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
-    FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.leds, ledConfig.LED_NUM);
+    FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.LEDs, ledConfig.LED_NUM);
     // GRB ordering is typical
     FastLED.clear(true);
 }
@@ -435,7 +435,7 @@ void LED_FX_noise(byte velo) {
 }
 
 void LED_FX_rainbow(byte velo) {
-    fill_rainbow(ledConfig.leds, ledConfig.LED_NUM,
+    fill_rainbow(ledConfig.LEDs, ledConfig.LED_NUM,
                  ((timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
                  (uint8_t) (10 * (velo / 127.0)));
 }
@@ -482,7 +482,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
                                                  ledConfig.LED_NUM);
     // circling offset
     for (int i = 0; i < ledConfig.LED_NUM; i++) {
-        ledConfig.leds[(i + step) % ledConfig.LED_NUM] = ledConfig.gradientLEDs[i];
+        ledConfig.LEDs[(i + step) % ledConfig.LED_NUM] = ledConfig.gradientLEDs[i];
         //ledConfig.g[0].nscale8_video(velo);
     }
 }
