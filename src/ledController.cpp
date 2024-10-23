@@ -1,5 +1,4 @@
 #include "ledController.h"
-#include "defines.h"
 
 #define MAX_LED_NUM  100
 

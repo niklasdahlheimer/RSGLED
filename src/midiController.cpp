@@ -2,7 +2,8 @@
 #include "ledController.h"
 #include <Arduino.h>
 #include <MIDI.h>
-#include "defines.h"
+
+#define MIDI_INPUT_LED 2
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
 

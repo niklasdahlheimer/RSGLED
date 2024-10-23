@@ -1,12 +1,5 @@
-#ifndef RSGLED_DEFINES_H
-#define RSGLED_DEFINES_H
-
-#define MIDI_INPUT_LED 2
-
-// MAIN DEFINE FOR LETTER
-#define R
-#define DEFAULT_TEMPO 120
-#define TEST_MODE false
+#ifndef RSGLED_CONFIG_H
+#define RSGLED_CONFIG_H
 
 typedef struct {
     byte MIDI_CHANNEL;
@@ -115,4 +108,4 @@ inline Config getConfig(const byte index) {
 }
 
 
-#endif //RSGLED_DEFINES_H
+#endif //RSGLED_CONFIG_H

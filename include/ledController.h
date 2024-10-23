@@ -4,13 +4,15 @@
 #include <Arduino.h>
 #include <FastLED.h>
 #include "midiConsts.h"
-#include "defines.h"
+#include "config.h"
 
 #define LED_DATA_PIN                5
 #define LED_CHIP                    WS2811
 #define LED_COLOR_ORDER             BRG
 #define LED_BRIGHTNESS_MAX          255
 //#define MAX_POWER_MILLIAMPS       500
+
+#define DEFAULT_TEMPO               120
 
 #define STROBE_ON_FACTOR            0.5 // Factor between 0 and 1 how long the LEDs stay ON
 

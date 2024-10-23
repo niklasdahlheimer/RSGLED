@@ -1,12 +1,13 @@
 #include "midiController.h"
 #include <Arduino.h>
-#include "defines.h"
 #include <BLEMidi.h>
+
+#define MIDI_INPUT_LED 2
 
 static MidiData bleMidiData;
 static byte midiChannel;
 
-// forward declaration
+// forward declarations
 
 void handleConnect();
 
