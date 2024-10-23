@@ -41,7 +41,7 @@ void maybeSetGroupColor(const byte *note);
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
-void maybeSetTempo(const byte *tempoValue);
+void maybeSetTempo(byte tempoValue);
 
 static void LED_on(CRGBSet *group, const CRGB *color = globalColor, byte brightness = 255);
 
@@ -141,7 +141,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     maybeSetGroupColor(note);
     maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo(&note[TEMPO]);
+    maybeSetTempo(note[TEMPO]/2);
 
     FastLED.clear();
     FastLED.setBrightness(globBrightness);
@@ -399,14 +399,16 @@ void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
         return;
     }
     globBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+    Serial.printf("set globBrightness to %d\n", globBrightness);
 }
 
-void maybeSetTempo(const byte *tempoValue) {
+void maybeSetTempo(const byte tempoValue) {
     // ignore null value or equal tempo
-    if (*tempoValue == 0 || *tempoValue + TEMPO_OFFSET == tempo) {
+    if (tempoValue == 0 || tempoValue + TEMPO_OFFSET == tempo) {
         return;
     }
-    tempo = *tempoValue + TEMPO_OFFSET;
+    tempo = tempoValue + TEMPO_OFFSET;
+    Serial.printf("set tempo to %d bpm (value was %d)\n", tempo, tempoValue);
 }
 
 // Effects
