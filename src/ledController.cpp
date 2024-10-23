@@ -7,8 +7,8 @@ typedef struct {
     byte LED_NUM = MAX_LED_NUM;
     CRGB LEDs[MAX_LED_NUM]{};
     CRGB gradientLEDs[MAX_LED_NUM]{};
-    CRGBSet* groups[11]{};
-    CRGBSet** levels[5]{};
+    CRGBSet *groups[11]{};
+    CRGBSet **levels[5]{};
     byte levelsSize[5]{};
     CRGB groupColor[11]{};
 } LEDConfig;
@@ -83,17 +83,29 @@ void LEDC_init(const Config *config) {
     ledConfig.groups[7] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_7_START, config->LED_GROUP_INDEX_7_END);
     ledConfig.groups[8] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_8_START, config->LED_GROUP_INDEX_8_END);
     ledConfig.groups[9] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_9_START, config->LED_GROUP_INDEX_9_END);
-    ledConfig.groups[10] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_10_START, config->LED_GROUP_INDEX_10_END);
+    ledConfig.groups[10] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_10_START,
+                                       config->LED_GROUP_INDEX_10_END);
 
-    ledConfig.levels[0] = new CRGBSet*[2] {ledConfig.groups[1], ledConfig.groups[10]};
-    ledConfig.levels[1] = new CRGBSet*[4] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9]};
-    ledConfig.levels[2] = new CRGBSet*[6] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3], ledConfig.groups[8]};
-    ledConfig.levels[3] = new CRGBSet*[8] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3], ledConfig.groups[8], ledConfig.groups[4], ledConfig.groups[7]};
-    ledConfig.levels[4] = new CRGBSet*[10] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3], ledConfig.groups[8], ledConfig.groups[4], ledConfig.groups[7], ledConfig.groups[5], ledConfig.groups[6]};
+    ledConfig.levels[0] = new CRGBSet *[2]{ledConfig.groups[1], ledConfig.groups[10]};
     ledConfig.levelsSize[0] = 2;
+    ledConfig.levels[1] = new CRGBSet *[4]{
+        ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9]
+    };
     ledConfig.levelsSize[1] = 4;
+    ledConfig.levels[2] = new CRGBSet *[6]{
+        ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3],
+        ledConfig.groups[8]
+    };
     ledConfig.levelsSize[2] = 6;
+    ledConfig.levels[3] = new CRGBSet *[8]{
+        ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3],
+        ledConfig.groups[8], ledConfig.groups[4], ledConfig.groups[7]
+    };
     ledConfig.levelsSize[3] = 8;
+    ledConfig.levels[4] = new CRGBSet *[10]{
+        ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3],
+        ledConfig.groups[8], ledConfig.groups[4], ledConfig.groups[7], ledConfig.groups[5], ledConfig.groups[6]
+    };
     ledConfig.levelsSize[4] = 10;
 
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
@@ -117,7 +129,7 @@ void reset() {
     pumpStartMillis = 0;
     rotateStartMillis = 0;
     globalColor = &COLOR_1;
-    for (auto & i : ledConfig.groupColor) {
+    for (auto &i: ledConfig.groupColor) {
         i = *globalColor;
     }
 }
@@ -331,7 +343,6 @@ void maybeSetGroupColor(const byte *note) {
         ledConfig.groupColor[10] = CHSV(note[GROUP_HUE_10], 255 - note[GROUP_COLOR_TRIM_SATURATION],
                                         255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
     }
-
 }
 
 // PRIVATE
