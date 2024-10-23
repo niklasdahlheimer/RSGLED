@@ -4,6 +4,7 @@
 #include "ledController.h"
 #include "midiControllerBle.h"
 
+#define EEPROM_SIZE 100
 #define EEPROM_ADD_LETTER 0
 
 static MidiData *midiData;
@@ -14,6 +15,7 @@ static unsigned long ALIVE_INFO_INTERVAL_MILLIS = 5000;
 
 
 void primeConfig(const byte value) {
+    delay(5000);
     EEPROM.write(EEPROM_ADD_LETTER, value);
     EEPROM.commit();
     Serial.printf("written config value %d\n", value);
@@ -26,11 +28,10 @@ Config readConfig() {
 }
 
 void setup() {
+    EEPROM.begin(EEPROM_SIZE);
     Serial.begin(115200);
     Serial.println("start init");
-
-    //delay(5000);
-
+    
     // 0 for R, 1 for S, 2 for G
     //primeConfig(0);
 
