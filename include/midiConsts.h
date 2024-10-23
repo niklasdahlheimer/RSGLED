@@ -2,145 +2,144 @@
 #define MIDICONSTS_H
 #include <Arduino.h>
 
-#define Note_C_1 0
-#define Note_Cis_1 1   // C#0 / Db0
-#define Note_D_1 2
-#define Note_Dis_1 3   // D#0 / Eb0
-#define Note_E_1 4
-#define Note_F_1 5
-#define Note_Fis_1 6   // F#0 / Gb0
-#define Note_G_1 7
-#define Note_Gis_1 8   // G#0 / Ab0
-#define Note_A_1 9
-#define Note_Ais_1 10   // A#0 / Bb0
-#define Note_B_1 11
+#define Note_C_2 0
+#define Note_Cis_2 1
+#define Note_D_2 2
+#define Note_Dis_2 3
+#define Note_E_2 4
+#define Note_F_2 5
+#define Note_Fis_2 6
+#define Note_G_2 7
+#define Note_Gis_2 8
+#define Note_A_2 9
+#define Note_Ais_2 10
+#define Note_B_2 11
 
-#define Note_C0 12
-#define Note_Cis0 13   // C#0 / Db0
-#define Note_D0 14
-#define Note_Dis0 15   // D#0 / Eb0
-#define Note_E0 16
-#define Note_F0 17
-#define Note_Fis0 18   // F#0 / Gb0
-#define Note_G0 19
-#define Note_Gis0 20   // G#0 / Ab0
-#define Note_A0 21
-#define Note_Ais0 22   // A#0 / Bb0
-#define Note_B0 23
+#define Note_C_1 12
+#define Note_Cis_1 13
+#define Note_D_1 14
+#define Note_Dis_1 15
+#define Note_E_1 16
+#define Note_F_1 17
+#define Note_Fis_1 18
+#define Note_G_1 19
+#define Note_Gis_1 20
+#define Note_A_1 21
+#define Note_Ais_1 22
+#define Note_B_1 23
 
-#define Note_C1 24
-#define Note_Cis1 25   // C#1 / Db1
-#define Note_D1 26
-#define Note_Dis1 27   // D#1 / Eb1
-#define Note_E1 28
-#define Note_F1 29
-#define Note_Fis1 30   // F#1 / Gb1
-#define Note_G1 31
-#define Note_Gis1 32   // G#1 / Ab1
-#define Note_A1 33
-#define Note_Ais1 34   // A#1 / Bb1
-#define Note_B1 35
+#define Note_C0 24
+#define Note_Cis0 25
+#define Note_D0 26
+#define Note_Dis0 27
+#define Note_E0 28
+#define Note_F0 29
+#define Note_Fis0 30
+#define Note_G0 31
+#define Note_Gis0 32
+#define Note_A0 33
+#define Note_Ais0 34
+#define Note_B0 35
 
-#define Note_C2 36
-#define Note_Cis2 37   // C#2 / Db2
-#define Note_D2 38
-#define Note_Dis2 39   // D#2 / Eb2
-#define Note_E2 40
-#define Note_F2 41
-#define Note_Fis2 42   // F#2 / Gb2
-#define Note_G2 43
-#define Note_Gis2 44   // G#2 / Ab2
-#define Note_A2 45
-#define Note_Ais2 46   // A#2 / Bb2
-#define Note_B2 47
+#define Note_C1 36
+#define Note_Cis1 37
+#define Note_D1 38
+#define Note_Dis1 39
+#define Note_E1 40
+#define Note_F1 41
+#define Note_Fis1 42
+#define Note_G1 43
+#define Note_Gis1 44
+#define Note_A1 45
+#define Note_Ais1 46
+#define Note_B1 47
 
-#define Note_C3 48
-#define Note_Cis3 49   // C#3 / Db3
-#define Note_D3 50
-#define Note_Dis3 51   // D#3 / Eb3
-#define Note_E3 52
-#define Note_F3 53
-#define Note_Fis3 54   // F#3 / Gb3
-#define Note_G3 55
-#define Note_Gis3 56   // G#3 / Ab3
-#define Note_A3 57
-#define Note_Ais3 58   // A#3 / Bb3
-#define Note_B3 59
+#define Note_C2 48
+#define Note_Cis2 49
+#define Note_D2 50
+#define Note_Dis2 51
+#define Note_E2 52
+#define Note_F2 53
+#define Note_Fis2 54
+#define Note_G2 55
+#define Note_Gis2 56
+#define Note_A2 57
+#define Note_Ais2 58
+#define Note_B2 59
 
-#define Note_C4 60
-#define Note_Cis4 61   // C#4 / Db4
-#define Note_D4 62
-#define Note_Dis4 63   // D#4 / Eb4
-#define Note_E4 64
-#define Note_F4 65
-#define Note_Fis4 66   // F#4 / Gb4
-#define Note_G4 67
-#define Note_Gis4 68   // G#4 / Ab4
-#define Note_A4 69
-#define Note_Ais4 70   // A#4 / Bb4
-#define Note_B4 71
+#define Note_C3 60
+#define Note_Cis3 61
+#define Note_D3 62
+#define Note_Dis3 63
+#define Note_E3 64
+#define Note_F3 65
+#define Note_Fis3 66
+#define Note_G3 67
+#define Note_Gis3 68
+#define Note_A3 69
+#define Note_Ais3 70
+#define Note_B3 71
 
-#define Note_C5 72
-#define Note_Cis5 73   // C#5 / Db5
-#define Note_D5 74
-#define Note_Dis5 75   // D#5 / Eb5
-#define Note_E5 76
-#define Note_F5 77
-#define Note_Fis5 78   // F#5 / Gb5
-#define Note_G5 79
-#define Note_Gis5 80   // G#5 / Ab5
-#define Note_A5 81
-#define Note_Ais5 82   // A#5 / Bb5
-#define Note_B5 83
+#define Note_C4 72
+#define Note_Cis4 73
+#define Note_D4 74
+#define Note_Dis4 75
+#define Note_E4 76
+#define Note_F4 77
+#define Note_Fis4 78
+#define Note_G4 79
+#define Note_Gis4 80
+#define Note_A4 81
+#define Note_Ais4 82
+#define Note_B4 83
 
-#define Note_C6 84
-#define Note_Cis6 85   // C#6 / Db6
-#define Note_D6 86
-#define Note_Dis6 87   // D#6 / Eb6
-#define Note_E6 88
-#define Note_F6 89
-#define Note_Fis6 90   // F#6 / Gb6
-#define Note_G6 91
-#define Note_Gis6 92   // G#6 / Ab6
-#define Note_A6 93
-#define Note_Ais6 94   // A#6 / Bb6
-#define Note_B6 95
+#define Note_C5 84
+#define Note_Cis5 85
+#define Note_D5 86
+#define Note_Dis5 87
+#define Note_E5 88
+#define Note_F5 89
+#define Note_Fis5 90
+#define Note_G5 91
+#define Note_Gis5 92
+#define Note_A5 93
+#define Note_Ais5 94
+#define Note_B5 95
 
-#define Note_C7 96
-#define Note_Cis7 97   // C#7 / Db7
-#define Note_D7 98
-#define Note_Dis7 99   // D#7 / Eb7
-#define Note_E7 100
-#define Note_F7 101
-#define Note_Fis7 102  // F#7 / Gb7
-#define Note_G7 103
-#define Note_Gis7 104  // G#7 / Ab7
-#define Note_A7 105
-#define Note_Ais7 106  // A#7 / Bb7
-#define Note_B7 107
+#define Note_C6 96
+#define Note_Cis6 97
+#define Note_D6 98
+#define Note_Dis6 99
+#define Note_E6 100
+#define Note_F6 101
+#define Note_Fis6 102
+#define Note_G6 103
+#define Note_Gis6 104
+#define Note_A6 105
+#define Note_Ais6 106
+#define Note_B6 107
 
-#define Note_C8 108
-#define Note_Cis8 109  // C#8 / Db8
-#define Note_D8 110
-#define Note_Dis8 111  // D#8 / Eb8
-#define Note_E8 112
-#define Note_F8 113
-#define Note_Fis8 114  // F#8 / Gb8
-#define Note_G8 115
-#define Note_Gis8 116  // G#8 / Ab8
-#define Note_A8 117
-#define Note_Ais8 118  // A#8 / Bb8
-#define Note_B8 119
+#define Note_C7 108
+#define Note_Cis7 109
+#define Note_D7 110
+#define Note_Dis7 111
+#define Note_E7 112
+#define Note_F7 113
+#define Note_Fis7 114
+#define Note_G7 115
+#define Note_Gis7 116
+#define Note_A7 117
+#define Note_Ais7 118
+#define Note_B7 119
 
-#define Note_C9 120
-#define Note_Cis9 121  // C#9 / Db9
-#define Note_D9 122
-#define Note_Dis9 123  // D#9 / Eb9
-#define Note_E9 124
-#define Note_F9 125
-#define Note_Fis9 126  // F#9 / Gb9
-#define Note_G9 127
-
+#define Note_C8 120
+#define Note_Cis8 121
+#define Note_D8 122
+#define Note_Dis8 123
+#define Note_E8 124
+#define Note_F8 125
+#define Note_Fis8 126
+#define Note_G8 127
 
 
 #endif //MIDICONSTS_H
