@@ -8,11 +8,8 @@ typedef struct {
     CRGB leds[MAX_LED_NUM];
     CRGB gradientLEDs[MAX_LED_NUM];
     CRGBSet* groups[11];
-    CRGBSet *level1[2];
-    CRGBSet *level2[4];
-    CRGBSet *level3[6];
-    CRGBSet *level4[8];
-    CRGBSet *level5[10];
+    CRGBSet** levels[5];
+    byte levelsSize[5];
     CRGB groupColor[11];
 } LEDConfig;
 
@@ -72,6 +69,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 
 void LEDC_init(const Config *config) {
     ledConfig.LED_NUM = config->LED_NUM;
+
     ledConfig.groups[0] = new CRGBSet(ledConfig.leds, config->LED_NUM - 1);
     ledConfig.groups[1] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_1_START, config->LED_GROUP_INDEX_1_END);
     ledConfig.groups[2] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_2_START, config->LED_GROUP_INDEX_2_END);
@@ -84,45 +82,16 @@ void LEDC_init(const Config *config) {
     ledConfig.groups[9] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_9_START, config->LED_GROUP_INDEX_9_END);
     ledConfig.groups[10] = new CRGBSet(ledConfig.leds, config->LED_GROUP_INDEX_10_START, config->LED_GROUP_INDEX_10_END);
 
-    // Assign pointers to level1
-    ledConfig.level1[0] = ledConfig.groups[1];
-    ledConfig.level1[1] = ledConfig.groups[10];
-
-    // Assign pointers to level2
-    ledConfig.level2[0] = ledConfig.groups[1];
-    ledConfig.level2[1] = ledConfig.groups[10];
-    ledConfig.level2[2] = ledConfig.groups[2];
-    ledConfig.level2[3] = ledConfig.groups[9];
-
-    // Assign pointers to level3
-    ledConfig.level3[0] = ledConfig.groups[1];
-    ledConfig.level3[1] = ledConfig.groups[10];
-    ledConfig.level3[2] = ledConfig.groups[2];
-    ledConfig.level3[3] = ledConfig.groups[9];
-    ledConfig.level3[4] = ledConfig.groups[3];
-    ledConfig.level3[5] = ledConfig.groups[8];
-
-    // Assign pointers to level4
-    ledConfig.level4[0] = ledConfig.groups[1];
-    ledConfig.level4[1] = ledConfig.groups[10];
-    ledConfig.level4[2] = ledConfig.groups[2];
-    ledConfig.level4[3] = ledConfig.groups[9];
-    ledConfig.level4[4] = ledConfig.groups[3];
-    ledConfig.level4[5] = ledConfig.groups[8];
-    ledConfig.level4[6] = ledConfig.groups[4];
-    ledConfig.level4[7] = ledConfig.groups[7];
-
-    // Assign pointers to level5
-    ledConfig.level5[0] = ledConfig.groups[1];
-    ledConfig.level5[1] = ledConfig.groups[10];
-    ledConfig.level5[2] = ledConfig.groups[2];
-    ledConfig.level5[3] = ledConfig.groups[9];
-    ledConfig.level5[4] = ledConfig.groups[3];
-    ledConfig.level5[5] = ledConfig.groups[8];
-    ledConfig.level5[6] = ledConfig.groups[4];
-    ledConfig.level5[7] = ledConfig.groups[7];
-    ledConfig.level5[8] = ledConfig.groups[5];
-    ledConfig.level5[9] = ledConfig.groups[6];
+    ledConfig.levels[0] = new CRGBSet*[2] {ledConfig.groups[1], ledConfig.groups[10]};
+    ledConfig.levels[1] = new CRGBSet*[4] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9]};
+    ledConfig.levels[2] = new CRGBSet*[6] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3], ledConfig.groups[8]};
+    ledConfig.levels[3] = new CRGBSet*[8] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3], ledConfig.groups[8], ledConfig.groups[4], ledConfig.groups[7]};
+    ledConfig.levels[4] = new CRGBSet*[10] {ledConfig.groups[1], ledConfig.groups[10], ledConfig.groups[2], ledConfig.groups[9], ledConfig.groups[3], ledConfig.groups[8], ledConfig.groups[4], ledConfig.groups[7], ledConfig.groups[5], ledConfig.groups[6]};
+    ledConfig.levelsSize[0] = 2;
+    ledConfig.levelsSize[1] = 4;
+    ledConfig.levelsSize[2] = 6;
+    ledConfig.levelsSize[3] = 8;
+    ledConfig.levelsSize[4] = 10;
 
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.leds, ledConfig.LED_NUM);
@@ -299,19 +268,19 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // Horizontal Segment Blocks (for Level Meter etc.)
     if (note[LEVEL_ON_1]) {
-        LED_on(ledConfig.level1, sizeof(ledConfig.level1) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_1]);
+        LED_on(ledConfig.levels[0], ledConfig.levelsSize[0], globalColor, note[LEVEL_ON_1]);
     }
     if (note[LEVEL_ON_2]) {
-        LED_on(ledConfig.level2, sizeof(ledConfig.level2) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_2]);
+        LED_on(ledConfig.levels[1], ledConfig.levelsSize[1], globalColor, note[LEVEL_ON_2]);
     }
     if (note[LEVEL_ON_3]) {
-        LED_on(ledConfig.level3, sizeof(ledConfig.level3) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_3]);
+        LED_on(ledConfig.levels[2], ledConfig.levelsSize[2], globalColor, note[LEVEL_ON_3]);
     }
     if (note[LEVEL_ON_4]) {
-        LED_on(ledConfig.level4, sizeof(ledConfig.level4) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_4]);
+        LED_on(ledConfig.levels[3], ledConfig.levelsSize[3], globalColor, note[LEVEL_ON_4]);
     }
     if (note[LEVEL_ON_5]) {
-        LED_on(ledConfig.level5, sizeof(ledConfig.level5) / sizeof(CRGBSet *), globalColor, note[LEVEL_ON_5]);
+        LED_on(ledConfig.levels[4], ledConfig.levelsSize[4], globalColor, note[LEVEL_ON_5]);
     }
 
     // Finally push all changes to Stripe
@@ -477,19 +446,19 @@ void LED_FX_levelPump(byte velo) {
         case 0:
             break; // all off
         case 1:
-            LED_on(ledConfig.level1, sizeof(ledConfig.level1) / sizeof(ledConfig.level1[0]), globalColor, velo);
+            LED_on(ledConfig.levels[0], ledConfig.levelsSize[0], globalColor, velo);
             break;
         case 2:
-            LED_on(ledConfig.level2, sizeof(ledConfig.level2) / sizeof(ledConfig.level2[0]), globalColor, velo);
+            LED_on(ledConfig.levels[1], ledConfig.levelsSize[1], globalColor, velo);
             break;
         case 3:
-            LED_on(ledConfig.level3, sizeof(ledConfig.level3) / sizeof(ledConfig.level3[0]), globalColor, velo);
+            LED_on(ledConfig.levels[2], ledConfig.levelsSize[2], globalColor, velo);
             break;
         case 4:
-            LED_on(ledConfig.level4, sizeof(ledConfig.level4) / sizeof(ledConfig.level4[0]), globalColor, velo);
+            LED_on(ledConfig.levels[3], ledConfig.levelsSize[3], globalColor, velo);
             break;
         case 5:
-            LED_on(ledConfig.level5, sizeof(ledConfig.level5) / sizeof(ledConfig.level5[0]), globalColor, velo);
+            LED_on(ledConfig.levels[4], ledConfig.levelsSize[4], globalColor, velo);
             break;
         default:
             break;
