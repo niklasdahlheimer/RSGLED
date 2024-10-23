@@ -45,10 +45,12 @@ MidiData *MIDICBLE_read() {
 void handleConnect() {
     Serial.println("MIDI BLE Controller connected!");
     Serial.printf("listening for midi on channel %d\n",midiChannel+1);
+    digitalWrite(MIDI_INPUT_LED, HIGH);
 }
 
 void handleDisconnect() {
     Serial.println("MIDI BLE Controller disconnected!");
+    digitalWrite(MIDI_INPUT_LED, LOW);
 }
 
 void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
@@ -61,7 +63,7 @@ void handleControlChange(byte channel, byte number, byte value, uint16_t timesta
 void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timestamp) {
     if(channel == midiChannel) {
         bleMidiData.noteOn[note] = 2 * velocity;
-        digitalWrite(MIDI_INPUT_LED, velocity > 0 ? HIGH : LOW);
+        digitalWrite(MIDI_INPUT_LED, velocity > 0 ? LOW : HIGH);
         Serial.printf("note on %d, velocity %d\n", note, velocity);
     }
 }
@@ -69,7 +71,7 @@ void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timestamp) {
 void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
     if(channel == midiChannel) {
         bleMidiData.noteOn[note] = 0;
-        digitalWrite(MIDI_INPUT_LED, LOW);
+        digitalWrite(MIDI_INPUT_LED, HIGH);
         Serial.printf("note off %d\n", note);
     }
 }
