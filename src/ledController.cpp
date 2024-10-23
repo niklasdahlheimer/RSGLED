@@ -34,6 +34,9 @@ static unsigned long rotateStartMillis = 0;
 static unsigned long gradientWalkStartMillis = 0;
 
 // Forward declarations
+
+void reset();
+
 static unsigned int
 getBeatLenInMillis(unsigned int tempo, unsigned int div = 4, boolean isTrip = false, boolean isDot = false);
 
@@ -70,7 +73,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 void LEDC_init(const Config *config) {
     ledConfig.LED_NUM = config->LED_NUM;
 
-    ledConfig.groups[0] = new CRGBSet(ledConfig.LEDs, config->LED_NUM - 1);
+    ledConfig.groups[0] = new CRGBSet(ledConfig.LEDs, ledConfig.LED_NUM - 1);
     ledConfig.groups[1] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_1_START, config->LED_GROUP_INDEX_1_END);
     ledConfig.groups[2] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_2_START, config->LED_GROUP_INDEX_2_END);
     ledConfig.groups[3] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_3_START, config->LED_GROUP_INDEX_3_END);
@@ -96,11 +99,11 @@ void LEDC_init(const Config *config) {
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.LEDs, ledConfig.LED_NUM);
     // GRB ordering is typical
-    FastLED.clear(true);
+    reset();
 }
 
 void reset() {
-    FastLED.clear();
+    FastLED.clear(true);
     tempo = DEFAULT_TEMPO;
     globBrightness = LED_BRIGHTNESS_MAX;
     timestamp = 0;
@@ -343,7 +346,7 @@ static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color, byte b
 
 static void LED_on(CRGBSet *group, const CRGB *color, byte brightness) {
     *group = *color;
-    //group->nscale8_video(brightness);
+    group->nscale8_video(brightness);
 }
 
 // timing helpers
