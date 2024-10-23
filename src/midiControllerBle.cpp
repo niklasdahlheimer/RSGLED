@@ -3,7 +3,8 @@
 #include "defines.h"
 #include <BLEMidi.h>
 
-MidiData data;
+static MidiData bleMidiData;
+static byte midiChannel;
 
 // forward declaration
 
@@ -19,11 +20,14 @@ void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp);
 
 // public
 
-void MIDICBLE_init() {
+void MIDICBLE_init(const byte _midiChannel) {
+    midiChannel = _midiChannel;
+    char name[16];
+    sprintf(name, "RSGLED%02d", midiChannel);
     pinMode(MIDI_INPUT_LED, OUTPUT);
-
-    BLEMidiServer.begin("Basic MIDI device");
-    BLEMidiServer.enableDebugging(Serial);
+    Serial.println("init BleController");
+    BLEMidiServer.begin(name);
+    //BLEMidiServer.enableDebugging(Serial);
 
     BLEMidiServer.setOnConnectCallback(handleConnect);
     BLEMidiServer.setOnDisconnectCallback(handleDisconnect);
@@ -33,24 +37,39 @@ void MIDICBLE_init() {
 }
 
 MidiData *MIDICBLE_read() {
-    return &data;
+    return &bleMidiData;
 }
 
 // private
 
+void handleConnect() {
+    Serial.println("MIDI BLE Controller connected!");
+    Serial.printf("listening for midi on channel %d\n",midiChannel+1);
+}
+
+void handleDisconnect() {
+    Serial.println("MIDI BLE Controller disconnected!");
+}
+
 void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
-    data.controls[number] = value;
+    if(channel == midiChannel) {
+        bleMidiData.controls[number] = value;
+        Serial.printf("control change %d %d\n", number, value);
+    }
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timestamp) {
-    data.noteOn[note] = 2 * velocity;
-    digitalWrite(MIDI_INPUT_LED, HIGH);
-    Serial.printf("note on %d", note);
+    if(channel == midiChannel) {
+        bleMidiData.noteOn[note] = 2 * velocity;
+        digitalWrite(MIDI_INPUT_LED, velocity > 0 ? HIGH : LOW);
+        Serial.printf("note on %d, velocity %d\n", note, velocity);
+    }
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
-    //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
-    data.noteOn[note] = 0;
-    digitalWrite(MIDI_INPUT_LED, LOW);
-    Serial.printf("note off %d", note);
+    if(channel == midiChannel) {
+        bleMidiData.noteOn[note] = 0;
+        digitalWrite(MIDI_INPUT_LED, LOW);
+        Serial.printf("note off %d\n", note);
+    }
 }

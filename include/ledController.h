@@ -10,7 +10,7 @@
 #define LED_CHIP                    WS2811
 #define LED_COLOR_ORDER             BRG
 #define LED_BRIGHTNESS_MAX          255
-//#define MAX_POWER_MILLIAMPS         500
+//#define MAX_POWER_MILLIAMPS       500
 
 #define STROBE_ON_FACTOR            0.5 // Factor between 0 and 1 how long the LEDs stay ON
 
@@ -19,7 +19,7 @@
 #define RAINBOW_PERIOD_IN_MILLIS    10
 #define PUMP_PERIOD_IN_MILLIS       100
 
-void LEDC_init();
+void LEDC_init(const Config* config);
 void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
 static CRGB COLOR_1 = CRGB::LightSkyBlue;

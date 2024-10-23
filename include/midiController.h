@@ -8,7 +8,7 @@ typedef struct {
     byte controls[128];              // Array of 128 control values (0-127)
 } MidiData;
 
-void MIDIC_init();
+void MIDIC_init(byte _midiChannel);
 
 MidiData * MIDIC_read();
 
