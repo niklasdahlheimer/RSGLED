@@ -49,7 +49,7 @@ static void
 LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
 
 //FX
-static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr);
+static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr, byte* increaseVal = nullptr);
 
 void LED_FX_strobe(byte velo);
 
@@ -413,9 +413,12 @@ void maybeSetTempo(const byte tempoValue) {
 
 // Effects
 
-static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTimeRef, const unsigned long *curr) {
+static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTimeRef, const unsigned long *curr, byte* increaseVal) {
     if (noteValue && *startTimeRef == 0) {
         *startTimeRef = *curr;
+        if(increaseVal != nullptr) {
+            (*increaseVal)++;
+        }
     } else if (!noteValue && *startTimeRef != 0) {
         *startTimeRef = 0;
     }
