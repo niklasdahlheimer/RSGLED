@@ -37,7 +37,7 @@ void reset();
 static unsigned int
 getBeatLenInMillis(unsigned int tempo, unsigned int div = 4, boolean isTrip = false, boolean isDot = false);
 
-void maybeSetGroupColor(const byte *note);
+void maybeSetGroupColor(const byte *note, const byte* controller);
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
@@ -139,7 +139,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
         reset();
     }
 
-    maybeSetGroupColor(note);
+    maybeSetGroupColor(note, controller);
     maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
     maybeSetTempo(note[TEMPO]/2);
 
@@ -277,6 +277,18 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     if (note[GROUP_ON_10]) {
         LED_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_10]);
     }
+    if (note[GROUP_ON_ALL]) {
+        LED_on(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_ALL]);
+        LED_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_ALL]);
+    }
 
     // Horizontal Segment Blocks (for Level Meter etc.)
     if (note[LEVEL_ON_1]) {
@@ -299,46 +311,46 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     FastLED.show();
 }
 
-void maybeSetGroupColor(const byte *note) {
+void maybeSetGroupColor(const byte *note, const byte* controller) {
     if (note[GROUP_HUE_1]) {
-        ledConfig.groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_2]) {
-        ledConfig.groupColor[2] = CHSV(note[GROUP_HUE_2], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[2] = CHSV(note[GROUP_HUE_2], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_3]) {
-        ledConfig.groupColor[3] = CHSV(note[GROUP_HUE_3], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[3] = CHSV(note[GROUP_HUE_3], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_4]) {
-        ledConfig.groupColor[4] = CHSV(note[GROUP_HUE_4], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[4] = CHSV(note[GROUP_HUE_4], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_5]) {
-        ledConfig.groupColor[5] = CHSV(note[GROUP_HUE_5], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[5] = CHSV(note[GROUP_HUE_5], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_6]) {
-        ledConfig.groupColor[6] = CHSV(note[GROUP_HUE_6], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[6] = CHSV(note[GROUP_HUE_6], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_7]) {
-        ledConfig.groupColor[7] = CHSV(note[GROUP_HUE_7], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[7] = CHSV(note[GROUP_HUE_7], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_8]) {
-        ledConfig.groupColor[8] = CHSV(note[GROUP_HUE_8], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[8] = CHSV(note[GROUP_HUE_8], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_9]) {
-        ledConfig.groupColor[9] = CHSV(note[GROUP_HUE_9], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                       255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[9] = CHSV(note[GROUP_HUE_9], 255 - controller[CONTROLLER_HUE_GROUP],
+                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
     if (note[GROUP_HUE_10]) {
-        ledConfig.groupColor[10] = CHSV(note[GROUP_HUE_10], 255 - note[GROUP_COLOR_TRIM_SATURATION],
-                                        255 - note[GROUP_COLOR_TRIM_BRIGHTNESS]);
+        ledConfig.groupColor[10] = CHSV(note[GROUP_HUE_10], 255 - controller[CONTROLLER_HUE_GROUP],
+                                        255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
     }
 }
 

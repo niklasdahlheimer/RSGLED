@@ -46,9 +46,6 @@ static CRGB COLOR_12 = CRGB::Aqua;
 
 #define GLOBAL_BRIGHTNESS_TRIM      Note_E_2
 
-#define GROUP_COLOR_TRIM_SATURATION Note_F_2
-#define GROUP_COLOR_TRIM_BRIGHTNESS Note_G_2
-
 #define GLOBAL_COLOR_1              Note_C_1
 #define GLOBAL_COLOR_2              Note_Cis_1
 #define GLOBAL_COLOR_3              Note_D_1
@@ -85,8 +82,8 @@ static CRGB COLOR_12 = CRGB::Aqua;
 #define GROUP_HUE_8                 Note_G1
 #define GROUP_HUE_9                 Note_Gis1
 #define GROUP_HUE_10                Note_A1
-#define GROUP_HUE_ALL               Note_Ais1
-#define GROUP_SAT_TRIM_ALL          Note_B1
+#define GROUP_SATURATION_TRIM_ALL   Note_Ais1
+#define GROUP_BRIGHTNESS_TRIM_ALL   Note_B1
 
 #define GROUP_ON_1                  Note_C2
 #define GROUP_ON_2                  Note_Cis2
@@ -98,6 +95,7 @@ static CRGB COLOR_12 = CRGB::Aqua;
 #define GROUP_ON_8                  Note_G2
 #define GROUP_ON_9                  Note_Gis2
 #define GROUP_ON_10                 Note_A2
+#define GROUP_ON_ALL                Note_Ais2
 
 #define LEVEL_ON_1                  Note_C3
 #define LEVEL_ON_2                  Note_Cis3
@@ -112,5 +110,8 @@ static CRGB COLOR_12 = CRGB::Aqua;
 #define PUMP                        Note_G4
 #define ROTATE                      Note_A4
 #define GRADIENT                    Note_B4
+
+#define CONTROLLER_HUE_GROUP        10
+#define CONTROLLER_BRIGHTNESS_GROUP 70
 
 #endif //RSGLED_LEDCONTROLLER_H
