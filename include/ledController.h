@@ -105,10 +105,12 @@ static CRGB COLOR_12 = CRGB::Aqua;
 
 #define STROBE                      Note_C4
 #define BREATH                      Note_D4
+#define SPARKLE                     Note_Dis4
 #define NOISE                       Note_E4
 #define RAINBOW                     Note_F4
 #define PUMP                        Note_G4
 #define ROTATE                      Note_A4
+#define PALETTE                     Note_Ais4
 #define GRADIENT                    Note_B4
 
 #define CONTROLLER_HUE_GROUP        10

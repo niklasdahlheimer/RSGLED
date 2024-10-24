@@ -18,6 +18,9 @@ static byte globBrightness = LED_BRIGHTNESS_MAX;
 static CRGB *globalColor = &COLOR_1;
 static unsigned long timestamp = 0;
 
+// palettes
+static CRGBPalette16 palettes[] = {OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p,LavaColors_p,CloudColors_p};
+
 // FX vars
 static unsigned long strobeStartMillis = 0;
 static unsigned long breathStartMillis = 0;
@@ -29,6 +32,8 @@ static unsigned long rainbowStartMillis = 0;
 static unsigned long pumpStartMillis = 0;
 static unsigned long rotateStartMillis = 0;
 static unsigned long gradientWalkStartMillis = 0;
+static unsigned long paletteWalkStartMillis = 0;
+static byte currentPalette = 0;
 
 // Forward declarations
 
@@ -62,6 +67,10 @@ void LED_FX_rainbow(byte velo);
 void LED_FX_levelPump(byte velo);
 
 void LED_FX_rotate(byte velo);
+
+void LED_FX_sparkle(byte velo);
+
+void LED_FX_palette(byte velocity, const CRGBPalette16* pal);
 
 void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 
@@ -125,6 +134,8 @@ void reset() {
     rainbowStartMillis = 0;
     pumpStartMillis = 0;
     rotateStartMillis = 0;
+    gradientWalkStartMillis = 0;
+    paletteWalkStartMillis = 0;
     globalColor = &COLOR_1;
     for (auto &i: ledConfig.groupColor) {
         i = *globalColor;
@@ -152,6 +163,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &timestamp);
     maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &timestamp);
     maybeSetEffectStartTime(note[GRADIENT], &gradientWalkStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[PALETTE], &paletteWalkStartMillis, &timestamp, &currentPalette);
 
     // Global Color Switch
     if (note[GLOBAL_COLOR_1]) {
@@ -204,6 +216,10 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
         LED_FX_levelPump(note[PUMP]);
     } else if (note[ROTATE]) {
         LED_FX_rotate(note[ROTATE]);
+    }else if (note[SPARKLE]) {
+        LED_FX_sparkle(note[SPARKLE]);
+    }else if (note[PALETTE]) {
+        LED_FX_palette(note[PALETTE], &palettes[currentPalette%6]);
     } else if (note[GRADIENT]) {
         LED_FX_fill_gradient(note[GRADIENT], &COLOR_1, &COLOR_6);
     }
@@ -512,5 +528,42 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
     for (int i = 0; i < ledConfig.LED_NUM; i++) {
         ledConfig.LEDs[(i + step) % ledConfig.LED_NUM] = ledConfig.gradientLEDs[i];
         ledConfig.groups[0]->nscale8_video(velo);
+    }
+}
+
+void LED_FX_palette(byte velocity, const CRGBPalette16* pal) {
+    const unsigned int step = getSteppedSawValue(timestamp - paletteWalkStartMillis,
+                                                 getBeatLenInMillis(tempo, 64),
+                                                 ledConfig.LED_NUM);
+    // circling offset
+    for (int i = 0; i < ledConfig.LED_NUM; i++) {
+        byte paletteIndex = map(i, 0, ledConfig.LED_NUM, 0, 255);
+        ledConfig.LEDs[(i + step) % ledConfig.LED_NUM] = ColorFromPalette(*pal, paletteIndex);
+        ledConfig.groups[0]->nscale8_video(velocity);
+    }
+}
+
+void LED_FX_sparkle(byte velocity) {
+    // Define the density and brightness of the sparkles based on the velocity
+    byte density = map(velocity, 0, 255, 1, 20); // Adjust sparkle density with velocity
+    byte sparkleBrightness = velocity; // Adjust brightness with velocity
+
+    // Iterate through the LEDs and randomly assign sparkles
+    for (int i = 0; i < density; i++) {
+        int ledIndex = random(ledConfig.LED_NUM); // Randomly select an LED index
+
+        // Choose whether to make the sparkle colorful or white
+        bool makeWhite = random(100) < 50; // 30% chance of white sparkles, adjust as needed
+        if (makeWhite) {
+            ledConfig.LEDs[ledIndex] = CRGB::White;
+        } else {
+            // Randomly choose a vibrant color using HSV
+            ledConfig.LEDs[ledIndex] = CHSV(random(0, 255), 200, sparkleBrightness); // High saturation for vibrant colors
+        }
+    }
+
+    // Fade out all LEDs gradually to create a subtle sparkle effect
+    for (int i = 0; i < ledConfig.LED_NUM; i++) {
+        ledConfig.LEDs[i].fadeToBlackBy(100); // Adjust fade speed as needed
     }
 }
