@@ -3,6 +3,7 @@
 #include <BLEMidi.h>
 
 #define MIDI_INPUT_LED 2
+#define MIDI_CHANNEL_ALL 11
 
 static MidiData bleMidiData;
 static byte midiChannel;
@@ -45,7 +46,7 @@ MidiData *MIDICBLE_read() {
 
 void handleConnect() {
     Serial.println("MIDI BLE Controller connected!");
-    Serial.printf("listening for midi on channel %d\n",midiChannel+1);
+    Serial.printf("listening for midi on channel %d and %d\n", midiChannel + 1, MIDI_CHANNEL_ALL + 1);
     digitalWrite(MIDI_INPUT_LED, HIGH);
 }
 
@@ -55,14 +56,14 @@ void handleDisconnect() {
 }
 
 void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
-    if(channel == midiChannel) {
-        bleMidiData.controls[number] = value;
+    if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
+        bleMidiData.controls[number] = value * 2;
         Serial.printf("control change %d %d\n", number, value);
     }
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timestamp) {
-    if(channel == midiChannel) {
+    if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
         bleMidiData.noteOn[note] = 2 * velocity;
         digitalWrite(MIDI_INPUT_LED, velocity > 0 ? LOW : HIGH);
         Serial.printf("note on %d, velocity %d\n", note, velocity);
@@ -70,7 +71,7 @@ void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timestamp) {
 }
 
 void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
-    if(channel == midiChannel) {
+    if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
         bleMidiData.noteOn[note] = 0;
         digitalWrite(MIDI_INPUT_LED, HIGH);
         Serial.printf("note off %d\n", note);
