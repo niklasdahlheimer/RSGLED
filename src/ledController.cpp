@@ -1,7 +1,7 @@
 #include "ledController.h"
 
 typedef struct {
-    byte LED_NUM = MAX_LED_NUM;
+    int LED_NUM = MAX_LED_NUM;
     CRGB LEDs[MAX_LED_NUM]{};
     CRGB gradientLEDs[MAX_LED_NUM]{};
     CRGBSet *groups[11]{};

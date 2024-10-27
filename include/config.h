@@ -3,36 +3,36 @@
 
 typedef struct {
     byte MIDI_CHANNEL;
-    byte LED_NUM;
-    byte LED_GROUP_INDEX_1_START;
-    byte LED_GROUP_INDEX_1_END;
-    byte LED_GROUP_INDEX_2_START;
-    byte LED_GROUP_INDEX_2_END;
-    byte LED_GROUP_INDEX_3_START;
-    byte LED_GROUP_INDEX_3_END;
-    byte LED_GROUP_INDEX_4_START;
-    byte LED_GROUP_INDEX_4_END;
-    byte LED_GROUP_INDEX_5_START;
-    byte LED_GROUP_INDEX_5_END;
-    byte LED_GROUP_INDEX_6_START;
-    byte LED_GROUP_INDEX_6_END;
-    byte LED_GROUP_INDEX_7_START;
-    byte LED_GROUP_INDEX_7_END;
-    byte LED_GROUP_INDEX_8_START;
-    byte LED_GROUP_INDEX_8_END;
-    byte LED_GROUP_INDEX_9_START;
-    byte LED_GROUP_INDEX_9_END;
-    byte LED_GROUP_INDEX_10_START;
-    byte LED_GROUP_INDEX_10_END;
+    int LED_NUM;
+    int LED_GROUP_INDEX_1_START;
+    int LED_GROUP_INDEX_1_END;
+    int LED_GROUP_INDEX_2_START;
+    int LED_GROUP_INDEX_2_END;
+    int LED_GROUP_INDEX_3_START;
+    int LED_GROUP_INDEX_3_END;
+    int LED_GROUP_INDEX_4_START;
+    int LED_GROUP_INDEX_4_END;
+    int LED_GROUP_INDEX_5_START;
+    int LED_GROUP_INDEX_5_END;
+    int LED_GROUP_INDEX_6_START;
+    int LED_GROUP_INDEX_6_END;
+    int LED_GROUP_INDEX_7_START;
+    int LED_GROUP_INDEX_7_END;
+    int LED_GROUP_INDEX_8_START;
+    int LED_GROUP_INDEX_8_END;
+    int LED_GROUP_INDEX_9_START;
+    int LED_GROUP_INDEX_9_END;
+    int LED_GROUP_INDEX_10_START;
+    int LED_GROUP_INDEX_10_END;
 } Config;
 
-inline Config getConfig(const byte index) {
+inline Config getConfig(const int index) {
     switch (index) {
         case 0:
         default:
             return (Config){
                 .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
-                .LED_NUM = 55,
+                .LED_NUM = 320,
                 .LED_GROUP_INDEX_1_START = 0,
                 .LED_GROUP_INDEX_1_END = 3,
                 .LED_GROUP_INDEX_2_START = 4,
@@ -52,7 +52,7 @@ inline Config getConfig(const byte index) {
                 .LED_GROUP_INDEX_9_START = 43,
                 .LED_GROUP_INDEX_9_END = 47,
                 .LED_GROUP_INDEX_10_START = 48,
-                .LED_GROUP_INDEX_10_END = 54
+                .LED_GROUP_INDEX_10_END = 319
             };
         case 1:
             return (Config){

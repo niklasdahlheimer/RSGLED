@@ -14,7 +14,7 @@
 
 #define DEFAULT_TEMPO               120
 
-#define MAX_LED_NUM                 100
+#define MAX_LED_NUM                 350
 
 #define STROBE_ON_FACTOR            0.2 // Factor between 0 and 1 how long the LEDs stay ON
 
