@@ -19,7 +19,9 @@ static CRGB *globalColor = &COLOR_1;
 static unsigned long timestamp = 0;
 
 // palettes
-static CRGBPalette16 palettes[] = {OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p,LavaColors_p,CloudColors_p};
+static CRGBPalette16 palettes[] = {
+    OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p, LavaColors_p, CloudColors_p
+};
 
 // FX vars
 static unsigned long strobeStartMillis = 0;
@@ -42,7 +44,7 @@ void reset();
 static unsigned int
 getBeatLenInMillis(unsigned int tempo, unsigned int div = 4, boolean isTrip = false, boolean isDot = false);
 
-void maybeSetGroupColor(const byte *note, const byte* controller);
+void maybeSetGroupColor(const byte *note, const byte *controller);
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
@@ -54,7 +56,8 @@ static void
 LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
 
 //FX
-static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr, byte* increaseVal = nullptr);
+static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
+                                    byte *increaseVal = nullptr);
 
 void LED_FX_strobe(byte velo);
 
@@ -70,7 +73,7 @@ void LED_FX_rotate(byte velo);
 
 void LED_FX_sparkle(byte velo);
 
-void LED_FX_palette(byte velocity, const CRGBPalette16* pal);
+void LED_FX_palette(byte velocity, const CRGBPalette16 *pal);
 
 void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 
@@ -152,7 +155,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     maybeSetGroupColor(note, controller);
     maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo(note[TEMPO]/2);
+    maybeSetTempo(note[TEMPO] / 2);
 
     FastLED.clear();
     FastLED.setBrightness(globBrightness);
@@ -216,10 +219,10 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
         LED_FX_levelPump(note[PUMP]);
     } else if (note[ROTATE]) {
         LED_FX_rotate(note[ROTATE]);
-    }else if (note[SPARKLE]) {
+    } else if (note[SPARKLE]) {
         LED_FX_sparkle(note[SPARKLE]);
-    }else if (note[PALETTE]) {
-        LED_FX_palette(note[PALETTE], &palettes[currentPalette%6]);
+    } else if (note[PALETTE]) {
+        LED_FX_palette(note[PALETTE], &palettes[currentPalette % 6]);
     } else if (note[GRADIENT]) {
         LED_FX_fill_gradient(note[GRADIENT], &COLOR_1, &COLOR_6);
     }
@@ -327,7 +330,8 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     FastLED.show();
 }
 
-void maybeSetGroupColor(const byte *note, const byte* controller) {
+
+void maybeSetGroupColor(const byte *note, const byte *controller) {
     if (note[GROUP_HUE_1]) {
         ledConfig.groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - controller[CONTROLLER_HUE_GROUP],
                                        255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
@@ -441,10 +445,11 @@ void maybeSetTempo(const byte tempoValue) {
 
 // Effects
 
-static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTimeRef, const unsigned long *curr, byte* increaseVal) {
+static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
+                                    byte *increaseVal) {
     if (noteValue && *startTimeRef == 0) {
         *startTimeRef = *curr;
-        if(increaseVal != nullptr) {
+        if (increaseVal != nullptr) {
             (*increaseVal)++;
         }
     } else if (!noteValue && *startTimeRef != 0) {
@@ -531,7 +536,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
     }
 }
 
-void LED_FX_palette(byte velocity, const CRGBPalette16* pal) {
+void LED_FX_palette(byte velocity, const CRGBPalette16 *pal) {
     const unsigned int step = getSteppedSawValue(timestamp - paletteWalkStartMillis,
                                                  getBeatLenInMillis(tempo, 64),
                                                  ledConfig.LED_NUM);
@@ -558,7 +563,8 @@ void LED_FX_sparkle(byte velocity) {
             ledConfig.LEDs[ledIndex] = CRGB::White;
         } else {
             // Randomly choose a vibrant color using HSV
-            ledConfig.LEDs[ledIndex] = CHSV(random(0, 255), 200, sparkleBrightness); // High saturation for vibrant colors
+            ledConfig.LEDs[ledIndex] = CHSV(random(0, 255), 200, sparkleBrightness);
+            // High saturation for vibrant colors
         }
     }
 
