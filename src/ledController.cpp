@@ -29,7 +29,6 @@ typedef struct {
     double tempoTrim = 1.0;
     byte lastControllerValues[128]{};
     unsigned long timestamp = 0;
-
 } LEDConfig;
 
 static LEDConfig ledConfig;
@@ -78,7 +77,7 @@ static void maybeSetLevelOn(const byte *note, const byte *controller);
 
 void maybeSetTempo(byte tempoValue);
 
-void maybeSetTempoTrim(const byte* controller);
+void maybeSetTempoTrim(const byte *controller);
 
 static void LED_line_on(CRGB *line[], const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
 
@@ -268,7 +267,7 @@ static void maybeSetFX(const byte *note, const byte *controller) {
         fxRotate(note[ROTATE]);
     } else if (note[GRADIENT_FADE]) {
         fxGradientFade(note[GRADIENT_FADE], &COLOR_1, &COLOR_6);
-    }else if (note[PALETTE]) {
+    } else if (note[PALETTE]) {
         fxPalette(note[PALETTE], &palettes[currentPalette % 6]);
     } else if (note[GRADIENT_WALK]) {
         fxGradientWalk(note[GRADIENT_WALK], &COLOR_1, &COLOR_6);
@@ -521,19 +520,19 @@ void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
     Serial.printf("set globBrightness to %d\n", ledConfig.globBrightness);
 }
 
-void maybeSetTempoTrim(const byte* controller) {
+void maybeSetTempoTrim(const byte *controller) {
     const byte trimValue = controller[CONTROLLER_TEMPO_TRIM];
     //Serial.printf("hello from maybeSetTempoTrim with %d\n", trimValue);
-    if(trimValue == ledConfig.lastControllerValues[CONTROLLER_TEMPO_TRIM]) return;
+    if (trimValue == ledConfig.lastControllerValues[CONTROLLER_TEMPO_TRIM]) return;
 
     if (trimValue == 0 || trimValue == 128) {
         ledConfig.tempoTrim = 1;
-    }else if (trimValue < 128) {
+    } else if (trimValue < 128) {
         long mappedValue = map(trimValue, 1, 127, 125, 1000);
-        ledConfig.tempoTrim = static_cast<double>(mappedValue)/ 1000.0;
-    }else if (trimValue > 128) {
+        ledConfig.tempoTrim = static_cast<double>(mappedValue) / 1000.0;
+    } else if (trimValue > 128) {
         long mappedValue = map(trimValue, 129, 254, 1000, 8000);
-        ledConfig.tempoTrim = static_cast<double>(mappedValue)/ 1000.0;
+        ledConfig.tempoTrim = static_cast<double>(mappedValue) / 1000.0;
     }
     Serial.printf("set tempo trim to %f \n", ledConfig.tempoTrim);
 }
@@ -562,7 +561,8 @@ static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTi
 }
 
 static void fxStrobe(byte velo) {
-    int state = getRectValue(ledConfig.timestamp - strobeStartMillis, getBeatLenInMillis(ledConfig.tempo, 16), STROBE_ON_FACTOR);
+    int state = getRectValue(ledConfig.timestamp - strobeStartMillis, getBeatLenInMillis(ledConfig.tempo, 16),
+                             STROBE_ON_FACTOR);
     if (state == 1) {
         LED_all_on(ledConfig.globalColor, velo); // Turn all LEDs on to the strobe color
     } else {
@@ -572,7 +572,8 @@ static void fxStrobe(byte velo) {
 
 static void fxBreath(byte velo) {
     double timeFactor = (1 +
-                         sin(2 * M_PI * (double) (ledConfig.timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
+                         sin(2 * M_PI * (double) (ledConfig.timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS -
+                             M_PI / 2));
     double currBrightness = (velo / 127.0) * timeFactor * LED_BRIGHTNESS_MAX;
     LED_all_on(ledConfig.globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
 }
@@ -589,12 +590,13 @@ static void fxNoise(byte velo) {
 
 static void fxRainbow(byte velo) {
     fill_rainbow_circular(ledConfig.LEDs, ledConfig.LED_NUM,
-                 ((ledConfig.timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
-                 (uint8_t) (10 * (velo / 127.0)));
+                          ((ledConfig.timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
+                          (uint8_t) (10 * (velo / 127.0)));
 }
 
 static void fxLevelPump(byte velo) {
-    const unsigned int currentStep = getSteppedSawValue(ledConfig.timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
+    const unsigned int currentStep =
+            getSteppedSawValue(ledConfig.timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 0:
             break; // all off
@@ -650,7 +652,8 @@ static void fxGradientWalk(byte velo, CRGB *color1, CRGB *color2) {
 
     // circling offset
     for (int i = 0; i < ledConfig.LINE_NUM; i++) {
-        LED_line_on(ledConfig.lines[(i + gradientWalkLastStep) % ledConfig.LINE_NUM], &ledConfig.lineGradientLEDs[i], velo);
+        LED_line_on(ledConfig.lines[(i + gradientWalkLastStep) % ledConfig.LINE_NUM], &ledConfig.lineGradientLEDs[i],
+                    velo);
     }
 }
 
