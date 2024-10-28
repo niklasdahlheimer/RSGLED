@@ -4,26 +4,8 @@
 typedef struct {
     byte MIDI_CHANNEL;
     int LED_NUM;
-    int LED_GROUP_INDEX_1_START;
-    int LED_GROUP_INDEX_1_END;
-    int LED_GROUP_INDEX_2_START;
-    int LED_GROUP_INDEX_2_END;
-    int LED_GROUP_INDEX_3_START;
-    int LED_GROUP_INDEX_3_END;
-    int LED_GROUP_INDEX_4_START;
-    int LED_GROUP_INDEX_4_END;
-    int LED_GROUP_INDEX_5_START;
-    int LED_GROUP_INDEX_5_END;
-    int LED_GROUP_INDEX_6_START;
-    int LED_GROUP_INDEX_6_END;
-    int LED_GROUP_INDEX_7_START;
-    int LED_GROUP_INDEX_7_END;
-    int LED_GROUP_INDEX_8_START;
-    int LED_GROUP_INDEX_8_END;
-    int LED_GROUP_INDEX_9_START;
-    int LED_GROUP_INDEX_9_END;
-    int LED_GROUP_INDEX_10_START;
-    int LED_GROUP_INDEX_10_END;
+    short lines[48][10];
+    short groups[11][48];
 } Config;
 
 inline Config getConfig(const int index) {
@@ -32,77 +14,58 @@ inline Config getConfig(const int index) {
         default:
             return (Config){
                 .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
-                .LED_NUM = 320,
-                .LED_GROUP_INDEX_1_START = 0,
-                .LED_GROUP_INDEX_1_END = 3,
-                .LED_GROUP_INDEX_2_START = 4,
-                .LED_GROUP_INDEX_2_END = 7,
-                .LED_GROUP_INDEX_3_START = 8,
-                .LED_GROUP_INDEX_3_END = 11,
-                .LED_GROUP_INDEX_4_START = 12,
-                .LED_GROUP_INDEX_4_END = 15,
-                .LED_GROUP_INDEX_5_START = 16,
-                .LED_GROUP_INDEX_5_END = 24,
-                .LED_GROUP_INDEX_6_START = 25,
-                .LED_GROUP_INDEX_6_END = 31,
-                .LED_GROUP_INDEX_7_START = 32,
-                .LED_GROUP_INDEX_7_END = 36,
-                .LED_GROUP_INDEX_8_START = 37,
-                .LED_GROUP_INDEX_8_END = 42,
-                .LED_GROUP_INDEX_9_START = 43,
-                .LED_GROUP_INDEX_9_END = 47,
-                .LED_GROUP_INDEX_10_START = 48,
-                .LED_GROUP_INDEX_10_END = 319
+                .LED_NUM = 361,
+                .lines = {
+                    {1, 40, 41, 80}, // 1
+                    {2, 39, 42, 79}, // 2
+                    {3, 38, 43, 78}, // 3
+                    {4, 37, 44, 77}, // 4
+                    {5, 36, 45, 76}, // 5
+                    {6, 35, 46, 75}, // 6
+                    {7, 34, 47, 74}, // 7
+                    {8, 33, 48, 73}, // 8
+                    {9, 32, 49, 72}, // 9
+                    {10, 31, 50, 71}, // 10
+                    {11, 30, 51, 70}, // 11
+                    {12, 29, 52, 69}, // 12
+                    {13, 28, 53, 68}, // 13
+                    {14, 27, 54, 67}, // 14
+                    {15, 26, 55, 66}, // 15
+                    {16, 25, 56, 65}, // 16
+                    {17, 24, 57, 64}, // 17
+                    {18, 23, 58, 63}, // 18
+                    {19, 22, 59, 62}, // 19
+                    {20, 21, 60, 61}, // 20
+                },
+                .groups = {
+                    {}, // 0 default all group
+                    {1, 2, 3, 4, 5}, // 1
+                    {6, 7, 8, 9, 10}, // 2
+                    {11, 12, 13, 14, 15}, // 3
+                    {16, 17, 18, 19, 20}, // 4
+                },
+
             };
         case 1:
             return (Config){
                 .MIDI_CHANNEL = 13, // has to be MidiChannel - 1
                 .LED_NUM = 55,
-                .LED_GROUP_INDEX_1_START = 0,
-                .LED_GROUP_INDEX_1_END = 3,
-                .LED_GROUP_INDEX_2_START = 4,
-                .LED_GROUP_INDEX_2_END = 7,
-                .LED_GROUP_INDEX_3_START = 8,
-                .LED_GROUP_INDEX_3_END = 11,
-                .LED_GROUP_INDEX_4_START = 12,
-                .LED_GROUP_INDEX_4_END = 15,
-                .LED_GROUP_INDEX_5_START = 16,
-                .LED_GROUP_INDEX_5_END = 24,
-                .LED_GROUP_INDEX_6_START = 25,
-                .LED_GROUP_INDEX_6_END = 31,
-                .LED_GROUP_INDEX_7_START = 32,
-                .LED_GROUP_INDEX_7_END = 36,
-                .LED_GROUP_INDEX_8_START = 37,
-                .LED_GROUP_INDEX_8_END = 42,
-                .LED_GROUP_INDEX_9_START = 43,
-                .LED_GROUP_INDEX_9_END = 47,
-                .LED_GROUP_INDEX_10_START = 48,
-                .LED_GROUP_INDEX_10_END = 54
+                .lines = {},
+                .groups = {
+                    {}, // 0 default all group
+                    {}, // 1
+                },
+
             };
         case 2:
             return (Config){
                 .MIDI_CHANNEL = 14, // has to be MidiChannel - 1
                 .LED_NUM = 55,
-                .LED_GROUP_INDEX_1_START = 0,
-                .LED_GROUP_INDEX_1_END = 3,
-                .LED_GROUP_INDEX_2_START = 4,
-                .LED_GROUP_INDEX_2_END = 7,
-                .LED_GROUP_INDEX_3_START = 8,
-                .LED_GROUP_INDEX_3_END = 11,
-                .LED_GROUP_INDEX_4_START = 12,
-                .LED_GROUP_INDEX_4_END = 15,
-                .LED_GROUP_INDEX_5_START = 16,
-                .LED_GROUP_INDEX_5_END = 24,
-                .LED_GROUP_INDEX_6_START = 25,
-                .LED_GROUP_INDEX_6_END = 31,
-                .LED_GROUP_INDEX_7_START = 32,
-                .LED_GROUP_INDEX_7_END = 36,
-                .LED_GROUP_INDEX_8_START = 37,
-                .LED_GROUP_INDEX_8_END = 42,
-                .LED_GROUP_INDEX_9_START = 43,
-                .LED_GROUP_INDEX_9_END = 47,
-                .LED_GROUP_INDEX_10_START = 48,
-                .LED_GROUP_INDEX_10_END = 54
+                .lines = {},
+                .groups = {
+                    {}, // 0 default all group
+                    {}, // 1
+                },
             };
     }
 }

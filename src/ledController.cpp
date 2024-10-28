@@ -1,11 +1,20 @@
 #include "ledController.h"
 
+#define MAX_LED_NUM 400
+#define MAX_LINE_NUM 48
+#define MAX_PIXEL_PER_LINE 10
+#define MAX_LINES_PER_GROUP 10
+#define MAX_GROUP_COUNT 11
+
 typedef struct {
-    int LED_NUM = MAX_LED_NUM;
+    int LED_NUM = 0;
+    int LINE_NUM = 0;
+    int GROUP_NUM = 0;
     CRGB LEDs[MAX_LED_NUM]{};
-    CRGB gradientLEDs[MAX_LED_NUM]{};
-    CRGBSet *groups[11]{};
-    CRGB groupColor[11]{};
+    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE]{};
+    CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
+    CRGB gradientLEDs[MAX_LINE_NUM]{};
+    CRGB groupColor[MAX_GROUP_COUNT]{};
 } LEDConfig;
 
 static LEDConfig ledConfig;
@@ -48,10 +57,11 @@ void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
 void maybeSetTempo(byte tempoValue);
 
-static void LED_on(CRGBSet *group, const CRGB *color = globalColor, byte brightness = 255);
+static void LED_line_on(CRGB *line[], const CRGB *color = globalColor, byte brightness = 255);
 
-static void
-LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color = globalColor, byte brightness = 255); // For Arrays
+static void LED_group_on(CRGB **group[], const CRGB *color= globalColor, byte brightness = 255);
+
+static void LED_all_on(const CRGB *color = globalColor, byte brightness= 255);
 
 //FX
 static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
@@ -80,18 +90,34 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
 void LEDC_init(const Config *config) {
     ledConfig.LED_NUM = config->LED_NUM;
 
-    ledConfig.groups[0] = new CRGBSet(ledConfig.LEDs, ledConfig.LED_NUM - 1);
-    ledConfig.groups[1] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_1_START, config->LED_GROUP_INDEX_1_END);
-    ledConfig.groups[2] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_2_START, config->LED_GROUP_INDEX_2_END);
-    ledConfig.groups[3] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_3_START, config->LED_GROUP_INDEX_3_END);
-    ledConfig.groups[4] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_4_START, config->LED_GROUP_INDEX_4_END);
-    ledConfig.groups[5] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_5_START, config->LED_GROUP_INDEX_5_END);
-    ledConfig.groups[6] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_6_START, config->LED_GROUP_INDEX_6_END);
-    ledConfig.groups[7] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_7_START, config->LED_GROUP_INDEX_7_END);
-    ledConfig.groups[8] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_8_START, config->LED_GROUP_INDEX_8_END);
-    ledConfig.groups[9] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_9_START, config->LED_GROUP_INDEX_9_END);
-    ledConfig.groups[10] = new CRGBSet(ledConfig.LEDs, config->LED_GROUP_INDEX_10_START,
-                                       config->LED_GROUP_INDEX_10_END);
+    // assign ledConfig.lines
+    for (int i = 0; i < MAX_LINE_NUM; i++) {
+        if (!config->lines[i][0]) break;
+        ledConfig.LINE_NUM++;
+        for (int j = 0; j < MAX_PIXEL_PER_LINE; j++) {
+            if (!config->lines[i][j]) break;
+            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1];
+        }
+    }
+
+    // "all" group
+    int pos = 0;
+    for (int i = 0; i < ledConfig.LINE_NUM; i++) {
+        if (!ledConfig.lines[i][0]) break; // should not happen
+        ledConfig.groups[0][pos] = ledConfig.lines[i];
+        Serial.printf("%d: assigned line %d to group 0\n", pos, i);
+        pos++;
+    }
+    // assign ledConfig.groups
+    for (int i = 1; i < MAX_GROUP_COUNT; i++) {
+        if (!config->groups[i][0]) break;
+        ledConfig.GROUP_NUM++;
+        for (int j = 0; j < MAX_LINE_NUM; j++) {
+            if (!config->groups[i][j]) break;
+            ledConfig.groups[i][j] = &ledConfig.lines[config->groups[i][j] - 1][0];
+        }
+    }
+    Serial.printf("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n", ledConfig.LED_NUM, ledConfig.LINE_NUM, ledConfig.GROUP_NUM);
 
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.LEDs, ledConfig.LED_NUM);
@@ -122,32 +148,32 @@ void reset() {
 }
 
 void level1_On(const CRGB *color, const byte velocity) {
-    LED_on(ledConfig.groups[1], color, velocity);
-    LED_on(ledConfig.groups[10], color, velocity);
+    LED_group_on(ledConfig.groups[1], color, velocity);
+    LED_group_on(ledConfig.groups[10], color, velocity);
 }
 
 void level2_On(const CRGB *color, const byte velocity) {
     level1_On(color, velocity);
-    LED_on(ledConfig.groups[2], color, velocity);
-    LED_on(ledConfig.groups[9], color, velocity);
+    LED_group_on(ledConfig.groups[2], color, velocity);
+    LED_group_on(ledConfig.groups[9], color, velocity);
 }
 
 void level3_On(const CRGB *color, const byte velocity) {
     level2_On(color, velocity);
-    LED_on(ledConfig.groups[3], color, velocity);
-    LED_on(ledConfig.groups[8], color, velocity);
+    LED_group_on(ledConfig.groups[3], color, velocity);
+    LED_group_on(ledConfig.groups[8], color, velocity);
 }
 
 void level4_On(const CRGB *color, const byte velocity) {
     level3_On(color, velocity);
-    LED_on(ledConfig.groups[4], color, velocity);
-    LED_on(ledConfig.groups[7], color, velocity);
+    LED_group_on(ledConfig.groups[4], color, velocity);
+    LED_group_on(ledConfig.groups[7], color, velocity);
 }
 
 void level5_On(const CRGB *color, const byte velocity) {
     level4_On(color, velocity);
-    LED_on(ledConfig.groups[5], color, velocity);
-    LED_on(ledConfig.groups[6], color, velocity);
+    LED_group_on(ledConfig.groups[5], color, velocity);
+    LED_group_on(ledConfig.groups[6], color, velocity);
 }
 
 void LEDC_updateStripe(const byte *note, const byte *controller) {
@@ -234,84 +260,84 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // All On
     if (note[ALL_ON_COLOR_1]) {
-        LED_on(ledConfig.groups[0], &COLOR_1, note[ALL_ON_COLOR_1]);
+        LED_all_on(&COLOR_1, note[ALL_ON_COLOR_1]);
     }
     if (note[ALL_ON_COLOR_2]) {
-        LED_on(ledConfig.groups[0], &COLOR_2, note[ALL_ON_COLOR_2]);
+        LED_all_on(&COLOR_2, note[ALL_ON_COLOR_2]);
     }
     if (note[ALL_ON_COLOR_3]) {
-        LED_on(ledConfig.groups[0], &COLOR_3, note[ALL_ON_COLOR_3]);
+        LED_all_on(&COLOR_3, note[ALL_ON_COLOR_3]);
     }
     if (note[ALL_ON_COLOR_4]) {
-        LED_on(ledConfig.groups[0], &COLOR_4, note[ALL_ON_COLOR_4]);
+        LED_all_on(&COLOR_4, note[ALL_ON_COLOR_4]);
     }
     if (note[ALL_ON_COLOR_5]) {
-        LED_on(ledConfig.groups[0], &COLOR_5, note[ALL_ON_COLOR_5]);
+        LED_all_on(&COLOR_5, note[ALL_ON_COLOR_5]);
     }
     if (note[ALL_ON_COLOR_6]) {
-        LED_on(ledConfig.groups[0], &COLOR_6, note[ALL_ON_COLOR_6]);
+        LED_all_on(&COLOR_6, note[ALL_ON_COLOR_6]);
     }
     if (note[ALL_ON_COLOR_7]) {
-        LED_on(ledConfig.groups[0], &COLOR_7, note[ALL_ON_COLOR_7]);
+        LED_all_on(&COLOR_7, note[ALL_ON_COLOR_7]);
     }
     if (note[ALL_ON_COLOR_8]) {
-        LED_on(ledConfig.groups[0], &COLOR_8, note[ALL_ON_COLOR_8]);
+        LED_all_on(&COLOR_8, note[ALL_ON_COLOR_8]);
     }
     if (note[ALL_ON_COLOR_9]) {
-        LED_on(ledConfig.groups[0], &COLOR_9, note[ALL_ON_COLOR_9]);
+        LED_all_on(&COLOR_9, note[ALL_ON_COLOR_9]);
     }
     if (note[ALL_ON_COLOR_10]) {
-        LED_on(ledConfig.groups[0], &COLOR_10, note[ALL_ON_COLOR_10]);
+        LED_all_on(&COLOR_10, note[ALL_ON_COLOR_10]);
     }
     if (note[ALL_ON_COLOR_11]) {
-        LED_on(ledConfig.groups[0], &COLOR_11, note[ALL_ON_COLOR_11]);
+        LED_all_on(&COLOR_11, note[ALL_ON_COLOR_11]);
     }
     if (note[ALL_ON_COLOR_12]) {
-        LED_on(ledConfig.groups[0], &COLOR_12, note[ALL_ON_COLOR_12]);
+        LED_all_on(&COLOR_12, note[ALL_ON_COLOR_12]);
     }
 
     // Groups/Segments On
     if (note[GROUP_ON_1]) {
-        LED_on(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_1]);
+        LED_group_on(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_1]);
     }
     if (note[GROUP_ON_2]) {
-        LED_on(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_2]);
+        LED_group_on(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_2]);
     }
     if (note[GROUP_ON_3]) {
-        LED_on(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_3]);
+        LED_group_on(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_3]);
     }
     if (note[GROUP_ON_4]) {
-        LED_on(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_4]);
+        LED_group_on(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_4]);
     }
     if (note[GROUP_ON_5]) {
-        LED_on(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_5]);
+        LED_group_on(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_5]);
     }
     if (note[GROUP_ON_6]) {
-        LED_on(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_6]);
+        LED_group_on(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_6]);
     }
     if (note[GROUP_ON_7]) {
-        LED_on(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_7]);
+        LED_group_on(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_7]);
     }
     if (note[GROUP_ON_8]) {
-        LED_on(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_8]);
+        LED_group_on(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_8]);
     }
     if (note[GROUP_ON_9]) {
-        LED_on(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_9]);
+        LED_group_on(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_9]);
     }
     if (note[GROUP_ON_10]) {
-        LED_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_10]);
+        LED_group_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_10]);
     }
     if (note[GROUP_ON_ALL]) {
-        LED_on(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_ALL]);
-        LED_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_ALL]);
+        LED_group_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_ALL]);
     }
 
     // Horizontal Segment Blocks (for Level Meter etc.)
@@ -383,16 +409,25 @@ void maybeSetGroupColor(const byte *note, const byte *controller) {
 
 // LED control helpers
 
-static void LED_on(CRGBSet *groupArray[], size_t size, const CRGB *color, byte brightness) {
-    for (unsigned int i = 0; i < size; i++) {
-        LED_on(groupArray[i], color, brightness);
+static void LED_line_on(CRGB *line[], const CRGB *color, byte brightness) {
+    for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
+        if (!line[i]) break;
+        *(line[i]) = *color;
+        line[i]->nscale8_video(brightness);
     }
 }
 
-static void LED_on(CRGBSet *group, const CRGB *color, byte brightness) {
-    *group = *color;
-    group->nscale8_video(brightness);
+static void LED_group_on(CRGB **group[], const CRGB *color, byte brightness) {
+    for (int line = 0; line < ledConfig.LINE_NUM; ++line) {
+        if (!group[line]) break;
+        LED_line_on(group[line], color, brightness); // LED_line_on
+    }
 }
+
+static void LED_all_on(const CRGB *color, byte brightness) {
+    LED_group_on(ledConfig.groups[0], color, brightness);
+}
+
 
 // timing helpers
 
@@ -465,7 +500,7 @@ static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTi
 void LED_FX_strobe(byte velo) {
     int state = getRectValue(timestamp - strobeStartMillis, getBeatLenInMillis(tempo, 16), STROBE_ON_FACTOR);
     if (state == 1) {
-        LED_on(ledConfig.groups[0], globalColor, velo); // Turn all LEDs on to the strobe color
+        LED_all_on(globalColor, velo); // Turn all LEDs on to the strobe color
     } else {
         FastLED.clear(); // Turn all LEDs off
     }
@@ -475,7 +510,7 @@ void LED_FX_breath(byte velo) {
     double timeFactor = (1 +
                          sin(2 * M_PI * (double) (timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
     double currBrightness = (velo / 127.0) * timeFactor * LED_BRIGHTNESS_MAX;
-    LED_on(ledConfig.groups[0], globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
+    LED_all_on(globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
 }
 
 void LED_FX_noise(byte velo) {
@@ -484,7 +519,7 @@ void LED_FX_noise(byte velo) {
         noiseCurrentVal += ((double) random(0, 10) - 5) * 0.01;
         noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
     }
-    LED_on(ledConfig.groups[0], globalColor,
+    LED_all_on(globalColor,
            LED_BRIGHTNESS_MAX * noiseCurrentVal * (velo / 127.0)); // Turn all LEDs on to the strobe color
 }
 
@@ -523,33 +558,32 @@ void LED_FX_rotate(byte velo) {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis,
                                                         getBeatLenInMillis(tempo, 16),
                                                         10);
-    LED_on(ledConfig.groups[currentStep], globalColor, velo);
+    LED_group_on(ledConfig.groups[currentStep], globalColor, velo);
 }
 
 void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
     if (gradientWalkStartMillis == timestamp) {
         // fill preset array
-        fill_gradient_RGB(ledConfig.gradientLEDs, ledConfig.LED_NUM, *color1, *color2);
+        fill_gradient_RGB(ledConfig.gradientLEDs, ledConfig.LINE_NUM, *color1, *color2);
     }
     const unsigned int step = getSteppedSawValue(timestamp - gradientWalkStartMillis,
                                                  getBeatLenInMillis(tempo, 64),
-                                                 ledConfig.LED_NUM);
+                                                 ledConfig.LINE_NUM);
     // circling offset
-    for (int i = 0; i < ledConfig.LED_NUM; i++) {
-        ledConfig.LEDs[(i + step) % ledConfig.LED_NUM] = ledConfig.gradientLEDs[i];
-        ledConfig.groups[0]->nscale8_video(velo);
+    for (int i = 0; i < ledConfig.LINE_NUM; i++) {
+        LED_line_on(ledConfig.lines[(i + step) % ledConfig.LINE_NUM], &ledConfig.gradientLEDs[i], velo);
     }
 }
 
 void LED_FX_palette(byte velocity, const CRGBPalette16 *pal) {
     const unsigned int step = getSteppedSawValue(timestamp - paletteWalkStartMillis,
                                                  getBeatLenInMillis(tempo, 64),
-                                                 ledConfig.LED_NUM);
+                                                 ledConfig.LINE_NUM);
     // circling offset
-    for (int i = 0; i < ledConfig.LED_NUM; i++) {
-        byte paletteIndex = map(i, 0, ledConfig.LED_NUM, 0, 255);
-        ledConfig.LEDs[(i + step) % ledConfig.LED_NUM] = ColorFromPalette(*pal, paletteIndex);
-        ledConfig.groups[0]->nscale8_video(velocity);
+    for (int i = 0; i < ledConfig.LINE_NUM; i++) {
+        byte paletteIndex = map(i, 0, ledConfig.LINE_NUM, 0, 255);
+        CRGB colorFromPalette = ColorFromPalette(*pal, paletteIndex);
+        LED_line_on(ledConfig.lines[(i + step) % ledConfig.LINE_NUM], &colorFromPalette, velocity);
     }
 }
 
