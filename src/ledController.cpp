@@ -6,6 +6,13 @@
 #define MAX_LINES_PER_GROUP 10
 #define MAX_GROUP_COUNT 11
 
+#define FULL_GRADIENT_STEPS 200
+#define DEFAULT_COLOR &COLOR_1
+
+CRGBPalette16 palettes[] = {
+    OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p, LavaColors_p, CloudColors_p
+};
+
 typedef struct {
     int LED_NUM = 0;
     int LINE_NUM = 0;
@@ -13,23 +20,19 @@ typedef struct {
     CRGB LEDs[MAX_LED_NUM]{};
     CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE]{};
     CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
-    CRGB gradientLEDs[MAX_LINE_NUM]{};
+    CRGB lineGradientLEDs[MAX_LINE_NUM]{};
+    CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
     CRGB groupColor[MAX_GROUP_COUNT]{};
+    CRGB *globalColor = &COLOR_1;
+    byte globBrightness = LED_BRIGHTNESS_MAX;
+    byte tempo = DEFAULT_TEMPO;
+    double tempoTrim = 1.0;
+    byte lastControllerValues[128]{};
+    unsigned long timestamp = 0;
+
 } LEDConfig;
 
 static LEDConfig ledConfig;
-
-// global vars
-static byte tempo = DEFAULT_TEMPO;
-static byte globBrightness = LED_BRIGHTNESS_MAX;
-static CRGB *globalColor = &COLOR_1;
-
-static unsigned long timestamp = 0;
-
-// palettes
-static CRGBPalette16 palettes[] = {
-    OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p, LavaColors_p, CloudColors_p
-};
 
 // FX vars
 static unsigned long strobeStartMillis = 0;
@@ -42,6 +45,13 @@ static unsigned long rainbowStartMillis = 0;
 static unsigned long pumpStartMillis = 0;
 static unsigned long rotateStartMillis = 0;
 static unsigned long gradientWalkStartMillis = 0;
+static unsigned int gradientWalkLastStep = 0;
+static unsigned long gradientWalkLastUpdateTime = 0;
+
+static unsigned long gradientFadeStartMillis = 0;
+static unsigned int gradientFadeLastStep = 0;
+static unsigned long gradientFadeLastUpdateTime = 0;
+
 static unsigned long paletteWalkStartMillis = 0;
 static byte currentPalette = 0;
 
@@ -68,11 +78,13 @@ static void maybeSetLevelOn(const byte *note, const byte *controller);
 
 void maybeSetTempo(byte tempoValue);
 
-static void LED_line_on(CRGB *line[], const CRGB *color = globalColor, byte brightness = 255);
+void maybeSetTempoTrim(const byte* controller);
 
-static void LED_group_on(CRGB **group[], const CRGB *color = globalColor, byte brightness = 255);
+static void LED_line_on(CRGB *line[], const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
 
-static void LED_all_on(const CRGB *color = globalColor, byte brightness = 255);
+static void LED_group_on(CRGB **group[], const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
+
+static void LED_all_on(const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
 
 //FX
 static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
@@ -94,7 +106,9 @@ static void fxSparkle(byte velo);
 
 static void fxPalette(byte velocity, const CRGBPalette16 *pal);
 
-static void fxGradient(byte velo, CRGB *color1, CRGB *color2);
+static void fxGradientWalk(byte velo, CRGB *color1, CRGB *color2);
+
+static void fxGradientFade(byte velo, CRGB *color1, CRGB *color2);
 
 // Definitions
 
@@ -139,7 +153,8 @@ void LEDC_init(const Config *config) {
 
 void LEDC_updateStripe(const byte *note, const byte *controller) {
     // fix time reference for all calculations
-    timestamp = millis();
+    ledConfig.timestamp = millis();
+    //memcpy8(lastControllerValues, controller, 128);
 
     if (note[TOTAL_RESET]) reset();
 
@@ -149,6 +164,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetGroupColor(note, controller);
     maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
     maybeSetTempo(note[TEMPO] / 2);
+    maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
 
     // set colors etc.
@@ -166,9 +182,10 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
 void reset() {
     FastLED.clear(true);
-    tempo = DEFAULT_TEMPO;
-    globBrightness = LED_BRIGHTNESS_MAX;
-    timestamp = 0;
+    ledConfig.tempo = DEFAULT_TEMPO;
+    ledConfig.tempoTrim = 1;
+    ledConfig.globBrightness = LED_BRIGHTNESS_MAX;
+    ledConfig.timestamp = 0;
     strobeStartMillis = 0;
     breathStartMillis = 0;
     breathBrightnessFactor = 0.5;
@@ -180,59 +197,60 @@ void reset() {
     rotateStartMillis = 0;
     gradientWalkStartMillis = 0;
     paletteWalkStartMillis = 0;
-    globalColor = &COLOR_1;
+    ledConfig.globalColor = &COLOR_1;
     for (auto &i: ledConfig.groupColor) {
-        i = *globalColor;
+        i = *ledConfig.globalColor;
     }
 }
 
 static void maybeSetGlobalColor(const byte *note, const byte *controller) {
     if (note[GLOBAL_COLOR_1]) {
-        globalColor = &COLOR_1;
+        ledConfig.globalColor = &COLOR_1;
     }
     if (note[GLOBAL_COLOR_2]) {
-        globalColor = &COLOR_2;
+        ledConfig.globalColor = &COLOR_2;
     }
     if (note[GLOBAL_COLOR_3]) {
-        globalColor = &COLOR_3;
+        ledConfig.globalColor = &COLOR_3;
     }
     if (note[GLOBAL_COLOR_4]) {
-        globalColor = &COLOR_4;
+        ledConfig.globalColor = &COLOR_4;
     }
     if (note[GLOBAL_COLOR_5]) {
-        globalColor = &COLOR_5;
+        ledConfig.globalColor = &COLOR_5;
     }
     if (note[GLOBAL_COLOR_6]) {
-        globalColor = &COLOR_6;
+        ledConfig.globalColor = &COLOR_6;
     }
     if (note[GLOBAL_COLOR_7]) {
-        globalColor = &COLOR_7;
+        ledConfig.globalColor = &COLOR_7;
     }
     if (note[GLOBAL_COLOR_8]) {
-        globalColor = &COLOR_8;
+        ledConfig.globalColor = &COLOR_8;
     }
     if (note[GLOBAL_COLOR_9]) {
-        globalColor = &COLOR_9;
+        ledConfig.globalColor = &COLOR_9;
     }
     if (note[GLOBAL_COLOR_10]) {
-        globalColor = &COLOR_10;
+        ledConfig.globalColor = &COLOR_10;
     }
     if (note[GLOBAL_COLOR_11]) {
-        globalColor = &COLOR_11;
+        ledConfig.globalColor = &COLOR_11;
     }
     if (note[GLOBAL_COLOR_12]) {
-        globalColor = &COLOR_12;
+        ledConfig.globalColor = &COLOR_12;
     }
 }
 
 static void maybeSetFX(const byte *note, const byte *controller) {
-    maybeSetEffectStartTime(note[BREATH], &breathStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[STROBE], &strobeStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[RAINBOW], &rainbowStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[GRADIENT], &gradientWalkStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[PALETTE], &paletteWalkStartMillis, &timestamp, &currentPalette);
+    maybeSetEffectStartTime(note[BREATH], &breathStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[STROBE], &strobeStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[RAINBOW], &rainbowStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[GRADIENT_WALK], &gradientWalkStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[GRADIENT_FADE], &gradientFadeStartMillis, &ledConfig.timestamp);
+    maybeSetEffectStartTime(note[PALETTE], &paletteWalkStartMillis, &ledConfig.timestamp, &currentPalette);
 
     if (note[STROBE]) {
         fxStrobe(note[STROBE]);
@@ -248,10 +266,12 @@ static void maybeSetFX(const byte *note, const byte *controller) {
         fxLevelPump(note[PUMP]);
     } else if (note[ROTATE]) {
         fxRotate(note[ROTATE]);
-    } else if (note[PALETTE]) {
+    } else if (note[GRADIENT_FADE]) {
+        fxGradientFade(note[GRADIENT_FADE], &COLOR_1, &COLOR_6);
+    }else if (note[PALETTE]) {
         fxPalette(note[PALETTE], &palettes[currentPalette % 6]);
-    } else if (note[GRADIENT]) {
-        fxGradient(note[GRADIENT], &COLOR_1, &COLOR_6);
+    } else if (note[GRADIENT_WALK]) {
+        fxGradientWalk(note[GRADIENT_WALK], &COLOR_1, &COLOR_6);
     }
 }
 
@@ -372,19 +392,19 @@ static void level5_On(const CRGB *color, const byte velocity) {
 static void maybeSetLevelOn(const byte *note, const byte *controller) {
     // Horizontal Segment Blocks (for Level Meter etc.)
     if (note[LEVEL_ON_1]) {
-        level1_On(globalColor, note[LEVEL_ON_1]);
+        level1_On(ledConfig.globalColor, note[LEVEL_ON_1]);
     }
     if (note[LEVEL_ON_2]) {
-        level2_On(globalColor, note[LEVEL_ON_2]);
+        level2_On(ledConfig.globalColor, note[LEVEL_ON_2]);
     }
     if (note[LEVEL_ON_3]) {
-        level3_On(globalColor, note[LEVEL_ON_3]);
+        level3_On(ledConfig.globalColor, note[LEVEL_ON_3]);
     }
     if (note[LEVEL_ON_4]) {
-        level4_On(globalColor, note[LEVEL_ON_4]);
+        level4_On(ledConfig.globalColor, note[LEVEL_ON_4]);
     }
     if (note[LEVEL_ON_5]) {
-        level5_On(globalColor, note[LEVEL_ON_5]);
+        level5_On(ledConfig.globalColor, note[LEVEL_ON_5]);
     }
 }
 
@@ -493,21 +513,38 @@ getBeatLenInMillis(unsigned int tempo, unsigned int div, boolean isTrip, boolean
 // Global param setters
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
-    if (*brightnessTrimValue == 0 && globBrightness == LED_BRIGHTNESS_MAX) {
+    if (*brightnessTrimValue == 0 && ledConfig.globBrightness == LED_BRIGHTNESS_MAX) {
         return;
     }
-    globBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
-    FastLED.setBrightness(globBrightness);
-    Serial.printf("set globBrightness to %d\n", globBrightness);
+    ledConfig.globBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+    FastLED.setBrightness(ledConfig.globBrightness);
+    Serial.printf("set globBrightness to %d\n", ledConfig.globBrightness);
+}
+
+void maybeSetTempoTrim(const byte* controller) {
+    const byte trimValue = controller[CONTROLLER_TEMPO_TRIM];
+    //Serial.printf("hello from maybeSetTempoTrim with %d\n", trimValue);
+    if(trimValue == ledConfig.lastControllerValues[CONTROLLER_TEMPO_TRIM]) return;
+
+    if (trimValue == 0 || trimValue == 128) {
+        ledConfig.tempoTrim = 1;
+    }else if (trimValue < 128) {
+        long mappedValue = map(trimValue, 1, 127, 125, 1000);
+        ledConfig.tempoTrim = static_cast<double>(mappedValue)/ 1000.0;
+    }else if (trimValue > 128) {
+        long mappedValue = map(trimValue, 129, 254, 1000, 8000);
+        ledConfig.tempoTrim = static_cast<double>(mappedValue)/ 1000.0;
+    }
+    Serial.printf("set tempo trim to %f \n", ledConfig.tempoTrim);
 }
 
 void maybeSetTempo(const byte tempoValue) {
     // ignore null value or equal tempo
-    if (tempoValue == 0 || tempoValue + TEMPO_OFFSET == tempo) {
+    if (tempoValue == 0 || tempoValue + TEMPO_OFFSET == ledConfig.tempo) {
         return;
     }
-    tempo = tempoValue + TEMPO_OFFSET;
-    Serial.printf("set tempo to %d bpm (value was %d)\n", tempo, tempoValue);
+    ledConfig.tempo = tempoValue + TEMPO_OFFSET;
+    Serial.printf("set tempo to %d bpm (value was %d)\n", ledConfig.tempo, tempoValue);
 }
 
 // Effects
@@ -525,9 +562,9 @@ static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTi
 }
 
 static void fxStrobe(byte velo) {
-    int state = getRectValue(timestamp - strobeStartMillis, getBeatLenInMillis(tempo, 16), STROBE_ON_FACTOR);
+    int state = getRectValue(ledConfig.timestamp - strobeStartMillis, getBeatLenInMillis(ledConfig.tempo, 16), STROBE_ON_FACTOR);
     if (state == 1) {
-        LED_all_on(globalColor, velo); // Turn all LEDs on to the strobe color
+        LED_all_on(ledConfig.globalColor, velo); // Turn all LEDs on to the strobe color
     } else {
         FastLED.clear(); // Turn all LEDs off
     }
@@ -535,46 +572,46 @@ static void fxStrobe(byte velo) {
 
 static void fxBreath(byte velo) {
     double timeFactor = (1 +
-                         sin(2 * M_PI * (double) (timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
+                         sin(2 * M_PI * (double) (ledConfig.timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
     double currBrightness = (velo / 127.0) * timeFactor * LED_BRIGHTNESS_MAX;
-    LED_all_on(globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
+    LED_all_on(ledConfig.globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
 }
 
 static void fxNoise(byte velo) {
-    if (timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
-        noiseLastUpdateMillis = timestamp;
+    if (ledConfig.timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
+        noiseLastUpdateMillis = ledConfig.timestamp;
         noiseCurrentVal += ((double) random(0, 10) - 5) * 0.01;
         noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
     }
-    LED_all_on(globalColor,
+    LED_all_on(ledConfig.globalColor,
                LED_BRIGHTNESS_MAX * noiseCurrentVal * (velo / 127.0)); // Turn all LEDs on to the strobe color
 }
 
 static void fxRainbow(byte velo) {
-    fill_rainbow(ledConfig.LEDs, ledConfig.LED_NUM,
-                 ((timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
+    fill_rainbow_circular(ledConfig.LEDs, ledConfig.LED_NUM,
+                 ((ledConfig.timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
                  (uint8_t) (10 * (velo / 127.0)));
 }
 
 static void fxLevelPump(byte velo) {
-    const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
+    const unsigned int currentStep = getSteppedSawValue(ledConfig.timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 0:
             break; // all off
         case 1:
-            level1_On(globalColor, velo);
+            level1_On(ledConfig.globalColor, velo);
             break;
         case 2:
-            level2_On(globalColor, velo);
+            level2_On(ledConfig.globalColor, velo);
             break;
         case 3:
-            level3_On(globalColor, velo);
+            level3_On(ledConfig.globalColor, velo);
             break;
         case 4:
-            level4_On(globalColor, velo);
+            level4_On(ledConfig.globalColor, velo);
             break;
         case 5:
-            level5_On(globalColor, velo);
+            level5_On(ledConfig.globalColor, velo);
             break;
         default:
             break;
@@ -582,29 +619,70 @@ static void fxLevelPump(byte velo) {
 }
 
 static void fxRotate(byte velo) {
-    const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis,
-                                                        getBeatLenInMillis(tempo, 16),
+    const unsigned int currentStep = getSteppedSawValue(ledConfig.timestamp - pumpStartMillis,
+                                                        getBeatLenInMillis(ledConfig.tempo, 16),
                                                         10);
-    LED_group_on(ledConfig.groups[currentStep], globalColor, velo);
+    LED_group_on(ledConfig.groups[currentStep], ledConfig.globalColor, velo);
 }
 
-static void fxGradient(byte velo, CRGB *color1, CRGB *color2) {
-    if (gradientWalkStartMillis == timestamp) {
-        // fill preset array
-        fill_gradient_RGB(ledConfig.gradientLEDs, ledConfig.LINE_NUM, *color1, *color2);
+static void fxGradientWalk(byte velo, CRGB *color1, CRGB *color2) {
+    // Initialisierung bei Start des Gradientenverlaufs
+    if (gradientWalkStartMillis == ledConfig.timestamp) {
+        fill_gradient_RGB(ledConfig.lineGradientLEDs, ledConfig.LINE_NUM, *color1, *color2);
+        gradientWalkLastStep = 0; // Setze den Startschritt
+        gradientWalkLastUpdateTime = ledConfig.timestamp; // Setze den Startzeitpunkt
     }
-    const unsigned int step = getSteppedSawValue(timestamp - gradientWalkStartMillis,
-                                                 getBeatLenInMillis(tempo, 64),
-                                                 ledConfig.LINE_NUM);
+
+    // Berechne die Periode basierend auf dem geglätteten TempoTrim
+    const double period = static_cast<double>(getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
+
+    // Berechne die verstrichene Zeit seit der letzten Aktualisierung
+    unsigned long elapsedTime = ledConfig.timestamp - gradientWalkLastUpdateTime;
+
+    // Berechne den Fortschritt basierend auf der verstrichenen Zeit und der geglätteten Periode
+    double progress = static_cast<double>(elapsedTime) / period;
+    gradientWalkLastStep = (gradientWalkLastStep + static_cast<unsigned int>(progress)) % ledConfig.LINE_NUM;
+
+    // Aktualisiere die Zeit, wenn ein Schritt gemacht wurde
+    if (progress >= 1.0) {
+        gradientWalkLastUpdateTime = ledConfig.timestamp;
+    }
+
     // circling offset
     for (int i = 0; i < ledConfig.LINE_NUM; i++) {
-        LED_line_on(ledConfig.lines[(i + step) % ledConfig.LINE_NUM], &ledConfig.gradientLEDs[i], velo);
+        LED_line_on(ledConfig.lines[(i + gradientWalkLastStep) % ledConfig.LINE_NUM], &ledConfig.lineGradientLEDs[i], velo);
     }
+}
+
+static void fxGradientFade(byte velo, CRGB *color1, CRGB *color2) {
+    // Initialisierung bei Start des Gradientenverlaufs
+    if (gradientFadeStartMillis == ledConfig.timestamp) {
+        fill_gradient_RGB(ledConfig.fullGradientLEDs, FULL_GRADIENT_STEPS, *color1, *color2, *color1);
+        gradientFadeLastStep = 0; // Setze den Startschritt
+        gradientFadeLastUpdateTime = ledConfig.timestamp; // Setze den Startzeitpunkt
+    }
+
+    // Berechne die Periode basierend auf dem geglätteten TempoTrim
+    const double period = static_cast<double>(getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
+
+    // Berechne die verstrichene Zeit seit der letzten Aktualisierung
+    unsigned long elapsedTime = ledConfig.timestamp - gradientFadeLastUpdateTime;
+
+    // Berechne den Fortschritt basierend auf der verstrichenen Zeit und der geglätteten Periode
+    double progress = static_cast<double>(elapsedTime) / period;
+    gradientFadeLastStep = (gradientFadeLastStep + static_cast<unsigned int>(progress)) % FULL_GRADIENT_STEPS;
+
+    // Aktualisiere die Zeit, wenn ein Schritt gemacht wurde
+    if (progress >= 1.0) {
+        gradientFadeLastUpdateTime = ledConfig.timestamp;
+    }
+
+    LED_all_on(&ledConfig.fullGradientLEDs[gradientFadeLastStep % FULL_GRADIENT_STEPS], velo);
 }
 
 static void fxPalette(byte velocity, const CRGBPalette16 *pal) {
-    const unsigned int step = getSteppedSawValue(timestamp - paletteWalkStartMillis,
-                                                 getBeatLenInMillis(tempo, 64),
+    const unsigned int step = getSteppedSawValue(ledConfig.timestamp - paletteWalkStartMillis,
+                                                 getBeatLenInMillis(ledConfig.tempo, 64),
                                                  ledConfig.LINE_NUM);
     // circling offset
     for (int i = 0; i < ledConfig.LINE_NUM; i++) {

@@ -109,12 +109,13 @@ static CRGB COLOR_12 = CRGB::Aqua;
 #define NOISE                       Note_E4
 #define RAINBOW                     Note_F4
 #define PUMP                        Note_G4
+#define GRADIENT_FADE               Note_Gis4
 #define ROTATE                      Note_A4
 #define PALETTE                     Note_Ais4
-#define GRADIENT                    Note_B4
+#define GRADIENT_WALK               Note_B4
 
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM  10
 #define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM  70
-#define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM  70
+#define CONTROLLER_TEMPO_TRIM  76
 
 #endif //RSGLED_LEDCONTROLLER_H
