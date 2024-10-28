@@ -26,6 +26,34 @@ Config readConfig() {
     return getConfig(letter);
 }
 
+void printMemoryStatus() {
+    // Ermittelten freien Heap-Speicher
+    uint32_t freeHeap = ESP.getFreeHeap();
+    uint32_t totalHeap = ESP.getHeapSize();
+    uint32_t minFreeHeap = ESP.getMinFreeHeap();
+    uint32_t maxAllocHeap = ESP.getMaxAllocHeap();
+
+    // Ausgabe des Speicherstatus über die serielle Schnittstelle
+    Serial.println("=== Speicherstatus des ESP32 ===");
+    Serial.print("Gesamter Heap-Speicher: ");
+    Serial.print(totalHeap);
+    Serial.println(" Bytes");
+
+    Serial.print("Freier Heap-Speicher: ");
+    Serial.print(freeHeap);
+    Serial.println(" Bytes");
+
+    Serial.print("Minimale freie Heap-Speichergröße: ");
+    Serial.print(minFreeHeap);
+    Serial.println(" Bytes");
+
+    Serial.print("Maximale Allokierbare Speichergröße: ");
+    Serial.print(maxAllocHeap);
+    Serial.println(" Bytes");
+
+    Serial.println("===============================\n");
+}
+
 void setup() {
     Serial.begin(115200);
     Serial.println("start init");
@@ -40,6 +68,8 @@ void setup() {
     LEDC_init(&config);
     MIDIC_init(config.MIDI_CHANNEL);
     MIDICBLE_init(config.MIDI_CHANNEL);
+
+    printMemoryStatus();
 }
 
 void loop() {
