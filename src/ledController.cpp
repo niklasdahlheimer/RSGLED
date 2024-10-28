@@ -2,7 +2,7 @@
 
 #define MAX_LED_NUM 400
 #define MAX_LINE_NUM 48
-#define MAX_PIXEL_PER_LINE 10
+#define MAX_PIXEL_PER_LINE 20
 #define MAX_LINES_PER_GROUP 10
 #define MAX_GROUP_COUNT 11
 
@@ -55,13 +55,23 @@ void maybeSetGroupColor(const byte *note, const byte *controller);
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
 
+static void maybeSetGlobalColor(const byte *note, const byte *controller);
+
+static void maybeSetFX(const byte *note, const byte *controller);
+
+static void maybeSetAllOn(const byte *note, const byte *controller);
+
+static void maybeSetGroupOn(const byte *note, const byte *controller);
+
+static void maybeSetLevelOn(const byte *note, const byte *controller);
+
 void maybeSetTempo(byte tempoValue);
 
 static void LED_line_on(CRGB *line[], const CRGB *color = globalColor, byte brightness = 255);
 
-static void LED_group_on(CRGB **group[], const CRGB *color= globalColor, byte brightness = 255);
+static void LED_group_on(CRGB **group[], const CRGB *color = globalColor, byte brightness = 255);
 
-static void LED_all_on(const CRGB *color = globalColor, byte brightness= 255);
+static void LED_all_on(const CRGB *color = globalColor, byte brightness = 255);
 
 //FX
 static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
@@ -117,12 +127,40 @@ void LEDC_init(const Config *config) {
             ledConfig.groups[i][j] = &ledConfig.lines[config->groups[i][j] - 1][0];
         }
     }
-    Serial.printf("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n", ledConfig.LED_NUM, ledConfig.LINE_NUM, ledConfig.GROUP_NUM);
+    Serial.printf("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n", ledConfig.LED_NUM, ledConfig.LINE_NUM,
+                  ledConfig.GROUP_NUM);
 
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
     FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.LEDs, ledConfig.LED_NUM);
     // GRB ordering is typical
     reset();
+}
+
+void LEDC_updateStripe(const byte *note, const byte *controller) {
+    // fix time reference for all calculations
+    timestamp = millis();
+
+    if (note[TOTAL_RESET]) reset();
+
+    FastLED.clear();
+
+    // meta values
+    maybeSetGroupColor(note, controller);
+    maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
+    maybeSetTempo(note[TEMPO] / 2);
+    maybeSetGlobalColor(note, controller);
+
+    // set colors etc.
+    maybeSetFX(note, controller);
+
+    maybeSetAllOn(note, controller);
+
+    maybeSetGroupOn(note, controller);
+
+    maybeSetLevelOn(note, controller);
+
+    // push to stripe
+    FastLED.show();
 }
 
 void reset() {
@@ -147,59 +185,7 @@ void reset() {
     }
 }
 
-void level1_On(const CRGB *color, const byte velocity) {
-    LED_group_on(ledConfig.groups[1], color, velocity);
-    LED_group_on(ledConfig.groups[10], color, velocity);
-}
-
-void level2_On(const CRGB *color, const byte velocity) {
-    level1_On(color, velocity);
-    LED_group_on(ledConfig.groups[2], color, velocity);
-    LED_group_on(ledConfig.groups[9], color, velocity);
-}
-
-void level3_On(const CRGB *color, const byte velocity) {
-    level2_On(color, velocity);
-    LED_group_on(ledConfig.groups[3], color, velocity);
-    LED_group_on(ledConfig.groups[8], color, velocity);
-}
-
-void level4_On(const CRGB *color, const byte velocity) {
-    level3_On(color, velocity);
-    LED_group_on(ledConfig.groups[4], color, velocity);
-    LED_group_on(ledConfig.groups[7], color, velocity);
-}
-
-void level5_On(const CRGB *color, const byte velocity) {
-    level4_On(color, velocity);
-    LED_group_on(ledConfig.groups[5], color, velocity);
-    LED_group_on(ledConfig.groups[6], color, velocity);
-}
-
-void LEDC_updateStripe(const byte *note, const byte *controller) {
-    // fix time reference for all calculations
-    timestamp = millis();
-
-    if (note[TOTAL_RESET]) {
-        reset();
-    }
-
-    maybeSetGroupColor(note, controller);
-    maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo(note[TEMPO] / 2);
-
-    FastLED.clear();
-    FastLED.setBrightness(globBrightness);
-
-    maybeSetEffectStartTime(note[BREATH], &breathStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[STROBE], &strobeStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[RAINBOW], &rainbowStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[GRADIENT], &gradientWalkStartMillis, &timestamp);
-    maybeSetEffectStartTime(note[PALETTE], &paletteWalkStartMillis, &timestamp, &currentPalette);
-
-    // Global Color Switch
+static void maybeSetGlobalColor(const byte *note, const byte *controller) {
     if (note[GLOBAL_COLOR_1]) {
         globalColor = &COLOR_1;
     }
@@ -236,8 +222,17 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     if (note[GLOBAL_COLOR_12]) {
         globalColor = &COLOR_12;
     }
+}
 
-    // Effects
+static void maybeSetFX(const byte *note, const byte *controller) {
+    maybeSetEffectStartTime(note[BREATH], &breathStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[STROBE], &strobeStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[RAINBOW], &rainbowStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[PUMP], &pumpStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[ROTATE], &rotateStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[GRADIENT], &gradientWalkStartMillis, &timestamp);
+    maybeSetEffectStartTime(note[PALETTE], &paletteWalkStartMillis, &timestamp, &currentPalette);
+
     if (note[STROBE]) {
         LED_FX_strobe(note[STROBE]);
     } else if (note[BREATH]) {
@@ -257,8 +252,9 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     } else if (note[GRADIENT]) {
         LED_FX_fill_gradient(note[GRADIENT], &COLOR_1, &COLOR_6);
     }
+}
 
-    // All On
+static void maybeSetAllOn(const byte *note, const byte *controller) {
     if (note[ALL_ON_COLOR_1]) {
         LED_all_on(&COLOR_1, note[ALL_ON_COLOR_1]);
     }
@@ -295,7 +291,9 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     if (note[ALL_ON_COLOR_12]) {
         LED_all_on(&COLOR_12, note[ALL_ON_COLOR_12]);
     }
+}
 
+static void maybeSetGroupOn(const byte *note, const byte *controller) {
     // Groups/Segments On
     if (note[GROUP_ON_1]) {
         LED_group_on(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_1]);
@@ -339,7 +337,38 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
         LED_group_on(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_ALL]);
         LED_group_on(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_ALL]);
     }
+}
 
+static void level1_On(const CRGB *color, const byte velocity) {
+    LED_group_on(ledConfig.groups[1], color, velocity);
+    LED_group_on(ledConfig.groups[10], color, velocity);
+}
+
+static void level2_On(const CRGB *color, const byte velocity) {
+    level1_On(color, velocity);
+    LED_group_on(ledConfig.groups[2], color, velocity);
+    LED_group_on(ledConfig.groups[9], color, velocity);
+}
+
+static void level3_On(const CRGB *color, const byte velocity) {
+    level2_On(color, velocity);
+    LED_group_on(ledConfig.groups[3], color, velocity);
+    LED_group_on(ledConfig.groups[8], color, velocity);
+}
+
+static void level4_On(const CRGB *color, const byte velocity) {
+    level3_On(color, velocity);
+    LED_group_on(ledConfig.groups[4], color, velocity);
+    LED_group_on(ledConfig.groups[7], color, velocity);
+}
+
+static void level5_On(const CRGB *color, const byte velocity) {
+    level4_On(color, velocity);
+    LED_group_on(ledConfig.groups[5], color, velocity);
+    LED_group_on(ledConfig.groups[6], color, velocity);
+}
+
+static void maybeSetLevelOn(const byte *note, const byte *controller) {
     // Horizontal Segment Blocks (for Level Meter etc.)
     if (note[LEVEL_ON_1]) {
         level1_On(globalColor, note[LEVEL_ON_1]);
@@ -356,11 +385,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     if (note[LEVEL_ON_5]) {
         level5_On(globalColor, note[LEVEL_ON_5]);
     }
-
-    // Finally push all changes to Stripe
-    FastLED.show();
 }
-
 
 void maybeSetGroupColor(const byte *note, const byte *controller) {
     if (note[GROUP_HUE_1]) {
@@ -471,6 +496,7 @@ void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
         return;
     }
     globBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+    FastLED.setBrightness(globBrightness);
     Serial.printf("set globBrightness to %d\n", globBrightness);
 }
 
@@ -520,7 +546,7 @@ void LED_FX_noise(byte velo) {
         noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
     }
     LED_all_on(globalColor,
-           LED_BRIGHTNESS_MAX * noiseCurrentVal * (velo / 127.0)); // Turn all LEDs on to the strobe color
+               LED_BRIGHTNESS_MAX * noiseCurrentVal * (velo / 127.0)); // Turn all LEDs on to the strobe color
 }
 
 void LED_FX_rainbow(byte velo) {
