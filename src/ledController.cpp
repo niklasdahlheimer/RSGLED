@@ -23,6 +23,7 @@ static LEDConfig ledConfig;
 static byte tempo = DEFAULT_TEMPO;
 static byte globBrightness = LED_BRIGHTNESS_MAX;
 static CRGB *globalColor = &COLOR_1;
+
 static unsigned long timestamp = 0;
 
 // palettes
@@ -77,23 +78,23 @@ static void LED_all_on(const CRGB *color = globalColor, byte brightness = 255);
 static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
                                     byte *increaseVal = nullptr);
 
-void LED_FX_strobe(byte velo);
+static void fxStrobe(byte velo);
 
-void LED_FX_breath(byte velo);
+static void fxBreath(byte velo);
 
-void LED_FX_noise(byte velo);
+static void fxNoise(byte velo);
 
-void LED_FX_rainbow(byte velo);
+static void fxRainbow(byte velo);
 
-void LED_FX_levelPump(byte velo);
+static void fxLevelPump(byte velo);
 
-void LED_FX_rotate(byte velo);
+static void fxRotate(byte velo);
 
-void LED_FX_sparkle(byte velo);
+static void fxSparkle(byte velo);
 
-void LED_FX_palette(byte velocity, const CRGBPalette16 *pal);
+static void fxPalette(byte velocity, const CRGBPalette16 *pal);
 
-void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2);
+static void fxGradient(byte velo, CRGB *color1, CRGB *color2);
 
 // Definitions
 
@@ -234,23 +235,23 @@ static void maybeSetFX(const byte *note, const byte *controller) {
     maybeSetEffectStartTime(note[PALETTE], &paletteWalkStartMillis, &timestamp, &currentPalette);
 
     if (note[STROBE]) {
-        LED_FX_strobe(note[STROBE]);
+        fxStrobe(note[STROBE]);
     } else if (note[BREATH]) {
-        LED_FX_breath(note[BREATH]);
-    } else if (note[NOISE]) {
-        LED_FX_noise(note[NOISE]);
-    } else if (note[RAINBOW]) {
-        LED_FX_rainbow(note[RAINBOW]);
-    } else if (note[PUMP]) {
-        LED_FX_levelPump(note[PUMP]);
-    } else if (note[ROTATE]) {
-        LED_FX_rotate(note[ROTATE]);
+        fxBreath(note[BREATH]);
     } else if (note[SPARKLE]) {
-        LED_FX_sparkle(note[SPARKLE]);
+        fxSparkle(note[SPARKLE]);
+    } else if (note[NOISE]) {
+        fxNoise(note[NOISE]);
+    } else if (note[RAINBOW]) {
+        fxRainbow(note[RAINBOW]);
+    } else if (note[PUMP]) {
+        fxLevelPump(note[PUMP]);
+    } else if (note[ROTATE]) {
+        fxRotate(note[ROTATE]);
     } else if (note[PALETTE]) {
-        LED_FX_palette(note[PALETTE], &palettes[currentPalette % 6]);
+        fxPalette(note[PALETTE], &palettes[currentPalette % 6]);
     } else if (note[GRADIENT]) {
-        LED_FX_fill_gradient(note[GRADIENT], &COLOR_1, &COLOR_6);
+        fxGradient(note[GRADIENT], &COLOR_1, &COLOR_6);
     }
 }
 
@@ -389,44 +390,44 @@ static void maybeSetLevelOn(const byte *note, const byte *controller) {
 
 void maybeSetGroupColor(const byte *note, const byte *controller) {
     if (note[GROUP_HUE_1]) {
-        ledConfig.groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_2]) {
-        ledConfig.groupColor[2] = CHSV(note[GROUP_HUE_2], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[2] = CHSV(note[GROUP_HUE_2], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_3]) {
-        ledConfig.groupColor[3] = CHSV(note[GROUP_HUE_3], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[3] = CHSV(note[GROUP_HUE_3], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_4]) {
-        ledConfig.groupColor[4] = CHSV(note[GROUP_HUE_4], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[4] = CHSV(note[GROUP_HUE_4], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_5]) {
-        ledConfig.groupColor[5] = CHSV(note[GROUP_HUE_5], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[5] = CHSV(note[GROUP_HUE_5], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_6]) {
-        ledConfig.groupColor[6] = CHSV(note[GROUP_HUE_6], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[6] = CHSV(note[GROUP_HUE_6], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_7]) {
-        ledConfig.groupColor[7] = CHSV(note[GROUP_HUE_7], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[7] = CHSV(note[GROUP_HUE_7], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_8]) {
-        ledConfig.groupColor[8] = CHSV(note[GROUP_HUE_8], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[8] = CHSV(note[GROUP_HUE_8], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_9]) {
-        ledConfig.groupColor[9] = CHSV(note[GROUP_HUE_9], 255 - controller[CONTROLLER_HUE_GROUP],
-                                       255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[9] = CHSV(note[GROUP_HUE_9], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                       255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
     if (note[GROUP_HUE_10]) {
-        ledConfig.groupColor[10] = CHSV(note[GROUP_HUE_10], 255 - controller[CONTROLLER_HUE_GROUP],
-                                        255 - controller[CONTROLLER_BRIGHTNESS_GROUP]);
+        ledConfig.groupColor[10] = CHSV(note[GROUP_HUE_10], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
+                                        255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
 }
 
@@ -523,7 +524,7 @@ static void maybeSetEffectStartTime(const byte noteValue, unsigned long *startTi
     }
 }
 
-void LED_FX_strobe(byte velo) {
+static void fxStrobe(byte velo) {
     int state = getRectValue(timestamp - strobeStartMillis, getBeatLenInMillis(tempo, 16), STROBE_ON_FACTOR);
     if (state == 1) {
         LED_all_on(globalColor, velo); // Turn all LEDs on to the strobe color
@@ -532,14 +533,14 @@ void LED_FX_strobe(byte velo) {
     }
 }
 
-void LED_FX_breath(byte velo) {
+static void fxBreath(byte velo) {
     double timeFactor = (1 +
                          sin(2 * M_PI * (double) (timestamp - breathStartMillis) / BREATH_PERIOD_IN_MILLIS - M_PI / 2));
     double currBrightness = (velo / 127.0) * timeFactor * LED_BRIGHTNESS_MAX;
     LED_all_on(globalColor, (byte) currBrightness); // Turn all LEDs on to the strobe color
 }
 
-void LED_FX_noise(byte velo) {
+static void fxNoise(byte velo) {
     if (timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
         noiseLastUpdateMillis = timestamp;
         noiseCurrentVal += ((double) random(0, 10) - 5) * 0.01;
@@ -549,13 +550,13 @@ void LED_FX_noise(byte velo) {
                LED_BRIGHTNESS_MAX * noiseCurrentVal * (velo / 127.0)); // Turn all LEDs on to the strobe color
 }
 
-void LED_FX_rainbow(byte velo) {
+static void fxRainbow(byte velo) {
     fill_rainbow(ledConfig.LEDs, ledConfig.LED_NUM,
                  ((timestamp - rainbowStartMillis) / RAINBOW_PERIOD_IN_MILLIS) + rainbowStartHue,
                  (uint8_t) (10 * (velo / 127.0)));
 }
 
-void LED_FX_levelPump(byte velo) {
+static void fxLevelPump(byte velo) {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis, PUMP_PERIOD_IN_MILLIS, 6);
     switch (currentStep) {
         case 0:
@@ -580,14 +581,14 @@ void LED_FX_levelPump(byte velo) {
     }
 }
 
-void LED_FX_rotate(byte velo) {
+static void fxRotate(byte velo) {
     const unsigned int currentStep = getSteppedSawValue(timestamp - pumpStartMillis,
                                                         getBeatLenInMillis(tempo, 16),
                                                         10);
     LED_group_on(ledConfig.groups[currentStep], globalColor, velo);
 }
 
-void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
+static void fxGradient(byte velo, CRGB *color1, CRGB *color2) {
     if (gradientWalkStartMillis == timestamp) {
         // fill preset array
         fill_gradient_RGB(ledConfig.gradientLEDs, ledConfig.LINE_NUM, *color1, *color2);
@@ -601,7 +602,7 @@ void LED_FX_fill_gradient(byte velo, CRGB *color1, CRGB *color2) {
     }
 }
 
-void LED_FX_palette(byte velocity, const CRGBPalette16 *pal) {
+static void fxPalette(byte velocity, const CRGBPalette16 *pal) {
     const unsigned int step = getSteppedSawValue(timestamp - paletteWalkStartMillis,
                                                  getBeatLenInMillis(tempo, 64),
                                                  ledConfig.LINE_NUM);
@@ -613,7 +614,7 @@ void LED_FX_palette(byte velocity, const CRGBPalette16 *pal) {
     }
 }
 
-void LED_FX_sparkle(byte velocity) {
+static void fxSparkle(byte velocity) {
     // Define the density and brightness of the sparkles based on the velocity
     byte density = map(velocity, 0, 255, 1, 20); // Adjust sparkle density with velocity
     byte sparkleBrightness = velocity; // Adjust brightness with velocity
