@@ -26,6 +26,17 @@
 void LEDC_init(const Config* config);
 void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
+
+
+#define MAX_LED_NUM 400
+#define MAX_LINE_NUM 48
+#define MAX_PIXEL_PER_LINE 20
+#define MAX_LINES_PER_GROUP 10
+#define MAX_GROUP_COUNT 11
+
+#define FULL_GRADIENT_STEPS 200
+#define DEFAULT_COLOR &COLOR_1
+
 static CRGB COLOR_1 = CRGB::LightSkyBlue;
 static CRGB COLOR_2 = CRGB::Fuchsia;
 static CRGB COLOR_3 = CRGB::Lime;
@@ -38,6 +49,50 @@ static CRGB COLOR_9 = CRGB::Blue;
 static CRGB COLOR_10 = CRGB::OrangeRed;
 static CRGB COLOR_11 = CRGB::Teal;
 static CRGB COLOR_12 = CRGB::Aqua;
+
+
+typedef struct {
+    int LED_NUM = 0;
+    int LINE_NUM = 0;
+    int GROUP_NUM = 0;
+    CRGB LEDs[MAX_LED_NUM]{};
+    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE]{};
+    CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
+    CRGB lineGradientLEDs[MAX_LINE_NUM]{};
+    CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
+    CRGB groupColor[MAX_GROUP_COUNT]{};
+    CRGB *globalColor = &COLOR_1;
+    byte globBrightness = LED_BRIGHTNESS_MAX;
+    byte tempo = DEFAULT_TEMPO;
+    double tempoTrim = 1.0;
+    byte lastControllerValues[128]{};
+    const byte* note;
+    const byte* controller;
+    unsigned long timestamp = 0;
+
+    void LED_line_on(CRGB *line[], const CRGB *color, byte brightness) {
+        for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
+            if (!line[i]) break;
+            *(line[i]) = *color;
+            line[i]->nscale8_video(brightness);
+        }
+    }
+
+     void LED_group_on(CRGB **group[], const CRGB *color, byte brightness) {
+        for (int line = 0; line < LINE_NUM; ++line) {
+            if (!group[line]) break;
+            LED_line_on(group[line], color, brightness); // LED_line_on
+        }
+    }
+
+    void LED_all_on(const CRGB *color, byte brightness)  {
+        LED_group_on(groups[0], color, brightness);
+    }
+
+} LEDConfig;
+
+
+
 
 #define TOTAL_RESET                 Note_C_2
 
