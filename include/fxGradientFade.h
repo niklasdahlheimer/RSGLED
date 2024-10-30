@@ -27,7 +27,7 @@ public:
             gradientFadeLastUpdateTime = ledConfig.timestamp;
         }
 
-        ledConfig.LED_all_on(&ledConfig.fullGradientLEDs[gradientFadeLastStep % FULL_GRADIENT_STEPS], velocity);
+        ledConfig.allOn(&ledConfig.fullGradientLEDs[gradientFadeLastStep % FULL_GRADIENT_STEPS], velocity);
     };
 
     void onReset() override {

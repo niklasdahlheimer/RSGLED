@@ -3,6 +3,8 @@
 
 #include <fxBase.h>
 
+#define BREATH_PERIOD_IN_MILLIS     5000
+
 class FXBreath final : public FXBase {
 public:
     explicit FXBreath(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
@@ -12,7 +14,7 @@ public:
                                    sin(2 * M_PI * static_cast<double>(ledConfig.timestamp - startMillis) / BREATH_PERIOD_IN_MILLIS -
                                        M_PI / 2));
         const double currBrightness = (velocity / 127.0) * timeFactor * LED_BRIGHTNESS_MAX;
-        ledConfig.LED_all_on(ledConfig.globalColor, static_cast<byte>(currBrightness));
+        ledConfig.allOn(ledConfig.globalColor, static_cast<byte>(currBrightness));
     };
 
     void onReset() override {

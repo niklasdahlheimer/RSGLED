@@ -4,6 +4,8 @@
 #include <fxBase.h>
 #include "helper.h"
 
+#define STROBE_ON_FACTOR            0.2 // Factor between 0 and 1 how long the LEDs stay ON
+
 class FXStrobe final : public FXBase {
 public:
     explicit FXStrobe(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
@@ -12,7 +14,7 @@ public:
         int state = helper_getRectValue(ledConfig.timestamp - startMillis, helper_getBeatLenInMillis(ledConfig.tempo, 16),
                                     STROBE_ON_FACTOR);
         if (state == 1) {
-            ledConfig.LED_all_on(ledConfig.globalColor, velocity); // Turn all LEDs on to the strobe color
+            ledConfig.allOn(ledConfig.globalColor, velocity); // Turn all LEDs on to the strobe color
         } else {
             FastLED.clear(); // Turn all LEDs off
         }

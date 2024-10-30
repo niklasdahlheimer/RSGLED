@@ -23,7 +23,7 @@ public:
 
         // circling offset
         for (int i = 0; i < ledConfig.LINE_NUM; i++) {
-            ledConfig.LED_line_on(ledConfig.lines[(i + lastStep) % ledConfig.LINE_NUM], &ledConfig.lineGradientLEDs[i],
+            ledConfig.lineOn(ledConfig.lines[(i + lastStep) % ledConfig.LINE_NUM], &ledConfig.lineGradientLEDs[i],
                         velocity);
         }
 

@@ -10,23 +10,11 @@
 #define LED_CHIP                    WS2811
 #define LED_COLOR_ORDER             BRG
 #define LED_BRIGHTNESS_MAX          255
-//#define MAX_POWER_MILLIAMPS       500
 
 #define DEFAULT_TEMPO               120
 
-
-
-#define STROBE_ON_FACTOR            0.2 // Factor between 0 and 1 how long the LEDs stay ON
-
-#define BREATH_PERIOD_IN_MILLIS     5000
-#define NOISE_PERIOD_IN_MILLIS      10
-#define RAINBOW_PERIOD_IN_MILLIS    10
-#define PUMP_PERIOD_IN_MILLIS       100
-
 void LEDC_init(const Config* config);
 void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
-
-
 
 #define MAX_LED_NUM 400
 #define MAX_LINE_NUM 48
@@ -50,7 +38,6 @@ static CRGB COLOR_10 = CRGB::OrangeRed;
 static CRGB COLOR_11 = CRGB::Teal;
 static CRGB COLOR_12 = CRGB::Aqua;
 
-
 typedef struct {
     int LED_NUM = 0;
     int LINE_NUM = 0;
@@ -70,7 +57,7 @@ typedef struct {
     const byte* controller;
     unsigned long timestamp = 0;
 
-    void LED_line_on(CRGB *line[], const CRGB *color, byte brightness) {
+    void lineOn(CRGB *line[], const CRGB *color, byte brightness) {
         for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
             if (!line[i]) break;
             *(line[i]) = *color;
@@ -78,20 +65,41 @@ typedef struct {
         }
     }
 
-     void LED_group_on(CRGB **group[], const CRGB *color, byte brightness) {
+     void groupOn(CRGB **group[], const CRGB *color, byte brightness) {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
-            LED_line_on(group[line], color, brightness); // LED_line_on
+            lineOn(group[line], color, brightness); // LED_line_on
         }
     }
 
-    void LED_all_on(const CRGB *color, byte brightness)  {
-        LED_group_on(groups[0], color, brightness);
+    void allOn(const CRGB *color, byte brightness)  {
+        groupOn(groups[0], color, brightness);
+    }
+
+    void levelOn(byte levelNumber, const CRGB *color, const byte velocity) {
+        if(levelNumber >= 5) {
+            groupOn(groups[5], color, velocity);
+            groupOn(groups[6], color, velocity);
+        }
+        if(levelNumber >= 4) {
+            groupOn(groups[4], color, velocity);
+            groupOn(groups[7], color, velocity);
+        }
+        if(levelNumber >= 3) {
+            groupOn(groups[3], color, velocity);
+            groupOn(groups[8], color, velocity);
+        }
+        if(levelNumber >= 2) {
+            groupOn(groups[2], color, velocity);
+            groupOn(groups[9], color, velocity);
+        }
+        if(levelNumber >= 1) {
+            groupOn(groups[1], color, velocity);
+            groupOn(groups[10], color, velocity);
+        }
     }
 
 } LEDConfig;
-
-
 
 
 #define TOTAL_RESET                 Note_C_2

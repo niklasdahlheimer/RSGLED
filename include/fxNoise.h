@@ -3,6 +3,8 @@
 
 #include <fxBase.h>
 
+#define NOISE_PERIOD_IN_MILLIS      10
+
 class FXNoise final : public FXBase {
 public:
     explicit FXNoise(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
@@ -13,7 +15,7 @@ public:
             noiseCurrentVal += ((double) random(0, 10) - 5) * 0.01;
             noiseCurrentVal = noiseCurrentVal > 0.9 ? 0.9 : (noiseCurrentVal < 0.1 ? 0.1 : noiseCurrentVal);
         }
-        ledConfig.LED_all_on(ledConfig.globalColor,
+        ledConfig.allOn(ledConfig.globalColor,
                    LED_BRIGHTNESS_MAX * noiseCurrentVal * (velocity / 127.0));
     };
 
