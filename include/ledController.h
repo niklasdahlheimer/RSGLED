@@ -13,7 +13,8 @@
 
 #define DEFAULT_TEMPO               120
 
-void LEDC_init(const Config* config);
+void LEDC_init(const Config *config);
+
 void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
 #define MAX_LED_NUM 400
@@ -53,11 +54,11 @@ typedef struct {
     byte tempo = DEFAULT_TEMPO;
     double tempoTrim = 1.0;
     byte lastControllerValues[128]{};
-    const byte* note;
-    const byte* controller;
+    const byte *note;
+    const byte *controller;
     unsigned long timestamp = 0;
 
-    void lineOn(CRGB *line[], const CRGB *color, byte brightness) {
+    void lineOn(CRGB *line[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
             if (!line[i]) break;
             *(line[i]) = *color;
@@ -65,40 +66,39 @@ typedef struct {
         }
     }
 
-     void groupOn(CRGB **group[], const CRGB *color, byte brightness) {
+    void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
             lineOn(group[line], color, brightness); // LED_line_on
         }
     }
 
-    void allOn(const CRGB *color, byte brightness)  {
+    void levelOn(byte levelNumber, const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+        if (levelNumber >= 5) {
+            groupOn(groups[5], color, brightness);
+            groupOn(groups[6], color, brightness);
+        }
+        if (levelNumber >= 4) {
+            groupOn(groups[4], color, brightness);
+            groupOn(groups[7], color, brightness);
+        }
+        if (levelNumber >= 3) {
+            groupOn(groups[3], color, brightness);
+            groupOn(groups[8], color, brightness);
+        }
+        if (levelNumber >= 2) {
+            groupOn(groups[2], color, brightness);
+            groupOn(groups[9], color, brightness);
+        }
+        if (levelNumber >= 1) {
+            groupOn(groups[1], color, brightness);
+            groupOn(groups[10], color, brightness);
+        }
+    }
+
+    void allOn(const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         groupOn(groups[0], color, brightness);
     }
-
-    void levelOn(byte levelNumber, const CRGB *color, const byte velocity) {
-        if(levelNumber >= 5) {
-            groupOn(groups[5], color, velocity);
-            groupOn(groups[6], color, velocity);
-        }
-        if(levelNumber >= 4) {
-            groupOn(groups[4], color, velocity);
-            groupOn(groups[7], color, velocity);
-        }
-        if(levelNumber >= 3) {
-            groupOn(groups[3], color, velocity);
-            groupOn(groups[8], color, velocity);
-        }
-        if(levelNumber >= 2) {
-            groupOn(groups[2], color, velocity);
-            groupOn(groups[9], color, velocity);
-        }
-        if(levelNumber >= 1) {
-            groupOn(groups[1], color, velocity);
-            groupOn(groups[10], color, velocity);
-        }
-    }
-
 } LEDConfig;
 
 
