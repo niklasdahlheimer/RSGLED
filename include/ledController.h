@@ -13,94 +13,14 @@
 
 #define DEFAULT_TEMPO               120
 
-void LEDC_init(const Config *config);
+#define MAX_LED_NUM                 400
+#define MAX_LINE_NUM                48
+#define MAX_PIXEL_PER_LINE          20
+#define MAX_LINES_PER_GROUP         10
+#define MAX_GROUP_COUNT             11
 
-void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
-
-#define MAX_LED_NUM 400
-#define MAX_LINE_NUM 48
-#define MAX_PIXEL_PER_LINE 20
-#define MAX_LINES_PER_GROUP 10
-#define MAX_GROUP_COUNT 11
-
-#define FULL_GRADIENT_STEPS 200
-#define DEFAULT_COLOR &COLOR_1
-
-static CRGB COLOR_1 = CRGB::LightSkyBlue;
-static CRGB COLOR_2 = CRGB::Fuchsia;
-static CRGB COLOR_3 = CRGB::Lime;
-static CRGB COLOR_4 = CRGB::Pink;
-static CRGB COLOR_5 = CRGB::Gold;
-static CRGB COLOR_6 = CRGB::Purple;
-static CRGB COLOR_7 = CRGB::Red;
-static CRGB COLOR_8 = CRGB::HotPink;
-static CRGB COLOR_9 = CRGB::Blue;
-static CRGB COLOR_10 = CRGB::OrangeRed;
-static CRGB COLOR_11 = CRGB::Teal;
-static CRGB COLOR_12 = CRGB::Aqua;
-
-typedef struct {
-    int LED_NUM = 0;
-    int LINE_NUM = 0;
-    int GROUP_NUM = 0;
-    CRGB LEDs[MAX_LED_NUM]{};
-    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE]{};
-    CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
-    CRGB lineGradientLEDs[MAX_LINE_NUM]{};
-    CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
-    CRGB groupColor[MAX_GROUP_COUNT]{};
-    CRGB *globalColor = &COLOR_1;
-    byte globBrightness = LED_BRIGHTNESS_MAX;
-    byte tempo = DEFAULT_TEMPO;
-    double tempoTrim = 1.0;
-    byte lastControllerValues[128]{};
-    const byte *note;
-    const byte *controller;
-    unsigned long timestamp = 0;
-
-    void lineOn(CRGB *line[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
-        for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
-            if (!line[i]) break;
-            *(line[i]) = *color;
-            line[i]->nscale8_video(brightness);
-        }
-    }
-
-    void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
-        for (int line = 0; line < LINE_NUM; ++line) {
-            if (!group[line]) break;
-            lineOn(group[line], color, brightness); // LED_line_on
-        }
-    }
-
-    void levelOn(byte levelNumber, const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
-        if (levelNumber >= 5) {
-            groupOn(groups[5], color, brightness);
-            groupOn(groups[6], color, brightness);
-        }
-        if (levelNumber >= 4) {
-            groupOn(groups[4], color, brightness);
-            groupOn(groups[7], color, brightness);
-        }
-        if (levelNumber >= 3) {
-            groupOn(groups[3], color, brightness);
-            groupOn(groups[8], color, brightness);
-        }
-        if (levelNumber >= 2) {
-            groupOn(groups[2], color, brightness);
-            groupOn(groups[9], color, brightness);
-        }
-        if (levelNumber >= 1) {
-            groupOn(groups[1], color, brightness);
-            groupOn(groups[10], color, brightness);
-        }
-    }
-
-    void allOn(const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
-        groupOn(groups[0], color, brightness);
-    }
-} LEDConfig;
-
+#define FULL_GRADIENT_STEPS         200
+#define DEFAULT_COLOR               &COLORS[0]
 
 #define TOTAL_RESET                 Note_C_2
 
@@ -177,8 +97,89 @@ typedef struct {
 #define PALETTE                     Note_Ais4
 #define GRADIENT_WALK               Note_B4
 
-#define CONTROLLER_GROUP_COLOR_SATURATION_TRIM  10
-#define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM  70
-#define CONTROLLER_TEMPO_TRIM  76
+#define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      10
+#define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM      70
+#define CONTROLLER_TEMPO_TRIM                       76
+
+static CRGB COLORS[12] {
+    CRGB::LightSkyBlue,
+    CRGB::Fuchsia,
+    CRGB::Lime,
+    CRGB::Pink,
+    CRGB::Gold,
+    CRGB::Purple,
+    CRGB::Red,
+    CRGB::HotPink,
+    CRGB::Blue,
+    CRGB::OrangeRed,
+    CRGB::Teal,
+    CRGB::Aqua
+};
+
+typedef struct {
+    int LED_NUM = 0;
+    int LINE_NUM = 0;
+    int GROUP_NUM = 0;
+    CRGB LEDs[MAX_LED_NUM]{};
+    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE]{};
+    CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
+    CRGB lineGradientLEDs[MAX_LINE_NUM]{};
+    CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
+    CRGB groupColor[MAX_GROUP_COUNT]{};
+    CRGB *globalColor = &COLORS[0];
+    byte globBrightness = LED_BRIGHTNESS_MAX;
+    byte tempo = DEFAULT_TEMPO;
+    double tempoTrim = 1.0;
+    byte lastControllerValues[128]{};
+    const byte *note;
+    const byte *controller;
+    unsigned long timestamp = 0;
+
+    void lineOn(CRGB *line[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+        for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
+            if (!line[i]) break;
+            *(line[i]) = *color;
+            line[i]->nscale8_video(brightness);
+        }
+    }
+
+    void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+        for (int line = 0; line < LINE_NUM; ++line) {
+            if (!group[line]) break;
+            lineOn(group[line], color, brightness); // LED_line_on
+        }
+    }
+
+    void levelOn(byte levelNumber, const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+        if (levelNumber >= 5) {
+            groupOn(groups[5], color, brightness);
+            groupOn(groups[6], color, brightness);
+        }
+        if (levelNumber >= 4) {
+            groupOn(groups[4], color, brightness);
+            groupOn(groups[7], color, brightness);
+        }
+        if (levelNumber >= 3) {
+            groupOn(groups[3], color, brightness);
+            groupOn(groups[8], color, brightness);
+        }
+        if (levelNumber >= 2) {
+            groupOn(groups[2], color, brightness);
+            groupOn(groups[9], color, brightness);
+        }
+        if (levelNumber >= 1) {
+            groupOn(groups[1], color, brightness);
+            groupOn(groups[10], color, brightness);
+        }
+    }
+
+    void allOn(const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+        groupOn(groups[0], color, brightness);
+    }
+} LEDConfig;
+
+void LEDC_init(const Config *config);
+
+void LEDC_updateStripe(const byte *noteData, const byte *controllerData);
 
 #endif //RSGLED_LEDCONTROLLER_H

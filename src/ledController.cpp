@@ -13,81 +13,44 @@
 static LEDConfig ledConfig;
 std::vector<FXBase *> effects;
 
-static void maybeSetGlobalColor(const byte *note, const byte *controller) {
-    if (note[GLOBAL_COLOR_1]) {
-        ledConfig.globalColor = &COLOR_1;
-    }
-    if (note[GLOBAL_COLOR_2]) {
-        ledConfig.globalColor = &COLOR_2;
-    }
-    if (note[GLOBAL_COLOR_3]) {
-        ledConfig.globalColor = &COLOR_3;
-    }
-    if (note[GLOBAL_COLOR_4]) {
-        ledConfig.globalColor = &COLOR_4;
-    }
-    if (note[GLOBAL_COLOR_5]) {
-        ledConfig.globalColor = &COLOR_5;
-    }
-    if (note[GLOBAL_COLOR_6]) {
-        ledConfig.globalColor = &COLOR_6;
-    }
-    if (note[GLOBAL_COLOR_7]) {
-        ledConfig.globalColor = &COLOR_7;
-    }
-    if (note[GLOBAL_COLOR_8]) {
-        ledConfig.globalColor = &COLOR_8;
-    }
-    if (note[GLOBAL_COLOR_9]) {
-        ledConfig.globalColor = &COLOR_9;
-    }
-    if (note[GLOBAL_COLOR_10]) {
-        ledConfig.globalColor = &COLOR_10;
-    }
-    if (note[GLOBAL_COLOR_11]) {
-        ledConfig.globalColor = &COLOR_11;
-    }
-    if (note[GLOBAL_COLOR_12]) {
-        ledConfig.globalColor = &COLOR_12;
-    }
-}
+// static ons
 
 static void maybeSetAllOn(const byte *note, const byte *controller) {
     if (note[ALL_ON_COLOR_1]) {
-        ledConfig.allOn(&COLOR_1, note[ALL_ON_COLOR_1]);
+        ledConfig.allOn(&COLORS[0], note[ALL_ON_COLOR_1]);
     }
     if (note[ALL_ON_COLOR_2]) {
-        ledConfig.allOn(&COLOR_2, note[ALL_ON_COLOR_2]);
+        ledConfig.allOn(&COLORS[1], note[ALL_ON_COLOR_2]);
     }
     if (note[ALL_ON_COLOR_3]) {
-        ledConfig.allOn(&COLOR_3, note[ALL_ON_COLOR_3]);
+        ledConfig.allOn(&COLORS[2], note[ALL_ON_COLOR_3]);
     }
     if (note[ALL_ON_COLOR_4]) {
-        ledConfig.allOn(&COLOR_4, note[ALL_ON_COLOR_4]);
+        ledConfig.allOn(&COLORS[3], note[ALL_ON_COLOR_4]);
     }
     if (note[ALL_ON_COLOR_5]) {
-        ledConfig.allOn(&COLOR_5, note[ALL_ON_COLOR_5]);
+        ledConfig.allOn(&COLORS[4], note[ALL_ON_COLOR_5]);
     }
     if (note[ALL_ON_COLOR_6]) {
-        ledConfig.allOn(&COLOR_6, note[ALL_ON_COLOR_6]);
+        ledConfig.allOn(&COLORS[5], note[ALL_ON_COLOR_6]);
     }
     if (note[ALL_ON_COLOR_7]) {
-        ledConfig.allOn(&COLOR_7, note[ALL_ON_COLOR_7]);
+        ledConfig.allOn(&COLORS[6], note[ALL_ON_COLOR_7]);
     }
     if (note[ALL_ON_COLOR_8]) {
-        ledConfig.allOn(&COLOR_8, note[ALL_ON_COLOR_8]);
+        ledConfig.allOn(&COLORS[7], note[ALL_ON_COLOR_8]);
     }
     if (note[ALL_ON_COLOR_9]) {
-        ledConfig.allOn(&COLOR_9, note[ALL_ON_COLOR_9]);
+        ledConfig.allOn(&COLORS[8], note[ALL_ON_COLOR_9]);
     }
     if (note[ALL_ON_COLOR_10]) {
-        ledConfig.allOn(&COLOR_10, note[ALL_ON_COLOR_10]);
+        ledConfig.allOn(&COLORS[9], note[ALL_ON_COLOR_10]);
     }
     if (note[ALL_ON_COLOR_11]) {
-        ledConfig.allOn(&COLOR_11, note[ALL_ON_COLOR_11]);
+        ledConfig.allOn(&COLORS[10], note[ALL_ON_COLOR_11]);
     }
     if (note[ALL_ON_COLOR_12]) {
-        ledConfig.allOn(&COLOR_12, note[ALL_ON_COLOR_12]);
+        ledConfig.allOn(&COLORS[11], note[ALL_ON_COLOR_12]);
     }
 }
 
@@ -156,6 +119,47 @@ static void maybeSetLevelOn(const byte *note, const byte *controller) {
     }
 }
 
+// Global param setters
+
+static void maybeSetGlobalColor(const byte *note, const byte *controller) {
+    if (note[GLOBAL_COLOR_1]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_2]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_3]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_4]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_5]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_6]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_7]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_8]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_9]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_10]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_11]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+    if (note[GLOBAL_COLOR_12]) {
+        ledConfig.globalColor = &COLORS[0];
+    }
+}
+
 void maybeSetGroupColor(const byte *note, const byte *controller) {
     if (note[GROUP_HUE_1]) {
         ledConfig.groupColor[1] = CHSV(note[GROUP_HUE_1], 255 - controller[CONTROLLER_GROUP_COLOR_SATURATION_TRIM],
@@ -198,8 +202,6 @@ void maybeSetGroupColor(const byte *note, const byte *controller) {
                                         255 - controller[CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM]);
     }
 }
-
-// Global param setters
 
 void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
     if (*brightnessTrimValue == 0 && ledConfig.globBrightness == LED_BRIGHTNESS_MAX) {
@@ -244,7 +246,7 @@ void reset() {
     ledConfig.tempoTrim = 1;
     ledConfig.globBrightness = LED_BRIGHTNESS_MAX;
     ledConfig.timestamp = 0;
-    ledConfig.globalColor = &COLOR_1;
+    ledConfig.globalColor = &COLORS[0];
     for (auto &i: ledConfig.groupColor) {
         i = *ledConfig.globalColor;
     }
