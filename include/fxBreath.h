@@ -1,11 +1,11 @@
 #ifndef FX_BREATH_H
 #define FX_BREATH_H
 
-#include <effect.h>
+#include <fxBase.h>
 
-class EffectBreath final : public Effect {
+class FXBreath final : public FXBase {
 public:
-    explicit EffectBreath(const byte TRIGGER_NOTE) : Effect(TRIGGER_NOTE) {}
+    explicit FXBreath(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const double timeFactor = (1 +

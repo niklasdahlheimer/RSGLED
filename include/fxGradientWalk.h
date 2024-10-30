@@ -1,12 +1,12 @@
 #ifndef FXGRADIENTWALK_H
 #define FXGRADIENTWALK_H
 
-#include <effect.h>
+#include <fxBase.h>
 #include "helper.h"
 
-class EffectGradientWalk final : public Effect {
+class FXGradientWalk final : public FXBase {
 public:
-    explicit EffectGradientWalk(const byte TRIGGER_NOTE) : Effect(TRIGGER_NOTE) {}
+    explicit FXGradientWalk(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
 

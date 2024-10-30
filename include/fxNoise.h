@@ -1,11 +1,11 @@
 #ifndef FXNOISE_H
 #define FXNOISE_H
 
-#include <effect.h>
+#include <fxBase.h>
 
-class EffectNoise final : public Effect {
+class FXNoise final : public FXBase {
 public:
-    explicit EffectNoise(const byte TRIGGER_NOTE) : Effect(TRIGGER_NOTE) {}
+    explicit FXNoise(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (ledConfig.timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {

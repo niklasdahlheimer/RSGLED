@@ -4,11 +4,11 @@
 #include <Arduino.h>
 #include "ledController.h"
 
-class Effect {
+class FXBase {
 public:
-    virtual ~Effect() = default;
+    virtual ~FXBase() = default;
 
-    explicit Effect(const byte TRIGGER_NOTE) : triggerNote(TRIGGER_NOTE), startMillis(0), effectRunCount(0) {}
+    explicit FXBase(const byte TRIGGER_NOTE) : triggerNote(TRIGGER_NOTE), startMillis(0), effectRunCount(0) {}
 
     virtual void handle(LEDConfig &ledConfig) final {
         if (ledConfig.note[triggerNote] && startMillis == 0) {

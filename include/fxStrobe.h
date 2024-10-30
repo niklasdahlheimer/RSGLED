@@ -1,12 +1,12 @@
 #ifndef FXSTROBE_H
 #define FXSTROBE_H
 
-#include <effect.h>
+#include <fxBase.h>
 #include "helper.h"
 
-class EffectStrobe final : public Effect {
+class FXStrobe final : public FXBase {
 public:
-    explicit EffectStrobe(const byte TRIGGER_NOTE) : Effect(TRIGGER_NOTE) {}
+    explicit FXStrobe(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         int state = helper_getRectValue(ledConfig.timestamp - startMillis, helper_getBeatLenInMillis(ledConfig.tempo, 16),

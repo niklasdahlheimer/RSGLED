@@ -13,7 +13,7 @@ CRGBPalette16 palettes[] = {
 
 static LEDConfig ledConfig;
 
-std::vector<Effect*> effects;
+std::vector<FXBase*> effects;
 
 // FX vars
 static unsigned int rainbowStartHue = 0;
@@ -111,11 +111,11 @@ void LEDC_init(const Config *config) {
     // GRB ordering is typical
     reset();
 
-    effects.push_back(new EffectGradientWalk(GRADIENT_WALK));
-    effects.push_back(new EffectStrobe(STROBE));
-    effects.push_back(new EffectBreath(BREATH));
-    effects.push_back(new EffectNoise(NOISE));
-    effects.push_back(new EffectGradientFade(GRADIENT_FADE));
+    effects.push_back(new FXGradientWalk(GRADIENT_WALK));
+    effects.push_back(new FXStrobe(STROBE));
+    effects.push_back(new FXBreath(BREATH));
+    effects.push_back(new FXNoise(NOISE));
+    effects.push_back(new FXGradientFade(GRADIENT_FADE));
 }
 
 void LEDC_updateStripe(const byte *note, const byte *controller) {
