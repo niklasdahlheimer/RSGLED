@@ -1,7 +1,5 @@
 #include "ledController.h"
 #include <vector>
-#include <nimble/nimble/host/include/host/ble_sm.h>
-
 #include "fxGradientWalk.h"
 #include "fxGradientFade.h"
 #include "fxStrobe.h"
@@ -12,144 +10,8 @@
 #include "fxRainbow.h"
 #include "fxSparkle.h"
 
-
-
 static LEDConfig ledConfig;
-
 std::vector<FXBase *> effects;
-
-// Forward declarations
-
-void reset();
-
-void maybeSetGroupColor(const byte *note, const byte *controller);
-
-void maybeSetGlobalBrightness(const byte *brightnessTrimValue);
-
-static void maybeSetGlobalColor(const byte *note, const byte *controller);
-
-static void maybeSetAllOn(const byte *note, const byte *controller);
-
-static void maybeSetGroupOn(const byte *note, const byte *controller);
-
-static void maybeSetLevelOn(const byte *note, const byte *controller);
-
-void maybeSetTempo(byte tempoValue);
-
-void maybeSetTempoTrim(const byte *controller);
-
-static void LED_line_on(CRGB *line[], const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
-
-static void LED_group_on(CRGB **group[], const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
-
-static void LED_all_on(const CRGB *color = DEFAULT_COLOR, byte brightness = 255);
-
-//FX
-static void maybeSetEffectStartTime(byte noteValue, unsigned long *startTimeRef, const unsigned long *curr,
-                                    byte *increaseVal = nullptr);
-
-
-static void fxPalette(byte velocity, const CRGBPalette16 *pal);
-
-// Definitions
-
-void LEDC_init(const Config *config) {
-    ledConfig.LED_NUM = config->LED_NUM;
-
-    // assign ledConfig.lines
-    for (int i = 0; i < MAX_LINE_NUM; i++) {
-        if (!config->lines[i][0]) break;
-        ledConfig.LINE_NUM++;
-        for (int j = 0; j < MAX_PIXEL_PER_LINE; j++) {
-            if (!config->lines[i][j]) break;
-            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1];
-        }
-    }
-
-    // "all" group
-    int pos = 0;
-    for (int i = 0; i < ledConfig.LINE_NUM; i++) {
-        if (!ledConfig.lines[i][0]) break; // should not happen
-        ledConfig.groups[0][pos] = ledConfig.lines[i];
-        Serial.printf("%d: assigned line %d to group 0\n", pos, i);
-        pos++;
-    }
-    // assign ledConfig.groups
-    for (int i = 1; i < MAX_GROUP_COUNT; i++) {
-        if (!config->groups[i][0]) break;
-        ledConfig.GROUP_NUM++;
-        for (int j = 0; j < MAX_LINE_NUM; j++) {
-            if (!config->groups[i][j]) break;
-            ledConfig.groups[i][j] = &ledConfig.lines[config->groups[i][j] - 1][0];
-        }
-    }
-    Serial.printf("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n",
-                  ledConfig.LED_NUM, ledConfig.LINE_NUM, ledConfig.GROUP_NUM);
-
-    //FastLED.setMaxPowerInMilliWatts( 250*1000);
-    FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.LEDs, ledConfig.LED_NUM);
-    // GRB ordering is typical
-    reset();
-
-    effects.push_back(new FXGradientWalk(GRADIENT_WALK));
-    effects.push_back(new FXStrobe(STROBE));
-    effects.push_back(new FXBreath(BREATH));
-    effects.push_back(new FXNoise(NOISE));
-    effects.push_back(new FXGradientFade(GRADIENT_FADE));
-    effects.push_back(new FXLevelPump(PUMP));
-    effects.push_back(new FXRotate(ROTATE));
-    effects.push_back(new FXRainbow(RAINBOW));
-    effects.push_back(new FXSparkle(SPARKLE));
-}
-
-void LEDC_updateStripe(const byte *note, const byte *controller) {
-    // fixed time reference for all calculations
-    ledConfig.timestamp = millis();
-    ledConfig.note = note;
-    ledConfig.controller = controller;
-    //memcpy8(lastControllerValues, controller, 128);
-
-    if (note[TOTAL_RESET]) reset();
-
-    FastLED.clear();
-
-    // meta values
-    maybeSetGroupColor(note, controller);
-    maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo(note[TEMPO] / 2);
-    maybeSetTempoTrim(controller);
-    maybeSetGlobalColor(note, controller);
-
-    // handle effects
-    for (const auto &effect: effects) {
-        //Serial.printf("handling effect with note %d\n", effect->getTriggerNote());
-        effect->handle(ledConfig);
-    }
-
-    maybeSetAllOn(note, controller);
-
-    maybeSetGroupOn(note, controller);
-
-    maybeSetLevelOn(note, controller);
-
-    // push to stripe
-    FastLED.show();
-}
-
-void reset() {
-    FastLED.clear(true);
-    ledConfig.tempo = DEFAULT_TEMPO;
-    ledConfig.tempoTrim = 1;
-    ledConfig.globBrightness = LED_BRIGHTNESS_MAX;
-    ledConfig.timestamp = 0;
-    ledConfig.globalColor = &COLOR_1;
-    for (auto &i: ledConfig.groupColor) {
-        i = *ledConfig.globalColor;
-    }
-    for (const auto &effect: effects) {
-        effect->reset();
-    }
-}
 
 static void maybeSetGlobalColor(const byte *note, const byte *controller) {
     if (note[GLOBAL_COLOR_1]) {
@@ -189,7 +51,6 @@ static void maybeSetGlobalColor(const byte *note, const byte *controller) {
         ledConfig.globalColor = &COLOR_12;
     }
 }
-
 
 static void maybeSetAllOn(const byte *note, const byte *controller) {
     if (note[ALL_ON_COLOR_1]) {
@@ -275,7 +136,6 @@ static void maybeSetGroupOn(const byte *note, const byte *controller) {
         ledConfig.groupOn(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_ALL]);
     }
 }
-
 
 static void maybeSetLevelOn(const byte *note, const byte *controller) {
     // Horizontal Segment Blocks (for Level Meter etc.)
@@ -376,5 +236,102 @@ void maybeSetTempo(const byte tempoValue) {
     Serial.printf("set tempo to %d bpm (value was %d)\n", ledConfig.tempo, tempoValue);
 }
 
+// public
 
+void reset() {
+    FastLED.clear(true);
+    ledConfig.tempo = DEFAULT_TEMPO;
+    ledConfig.tempoTrim = 1;
+    ledConfig.globBrightness = LED_BRIGHTNESS_MAX;
+    ledConfig.timestamp = 0;
+    ledConfig.globalColor = &COLOR_1;
+    for (auto &i: ledConfig.groupColor) {
+        i = *ledConfig.globalColor;
+    }
+    for (const auto &effect: effects) {
+        effect->reset();
+    }
+}
 
+void LEDC_init(const Config *config) {
+    ledConfig.LED_NUM = config->LED_NUM;
+
+    // assign ledConfig.lines
+    for (int i = 0; i < MAX_LINE_NUM; i++) {
+        if (!config->lines[i][0]) break;
+        ledConfig.LINE_NUM++;
+        for (int j = 0; j < MAX_PIXEL_PER_LINE; j++) {
+            if (!config->lines[i][j]) break;
+            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1];
+        }
+    }
+
+    // "all" group
+    int pos = 0;
+    for (int i = 0; i < ledConfig.LINE_NUM; i++) {
+        if (!ledConfig.lines[i][0]) break; // should not happen
+        ledConfig.groups[0][pos] = ledConfig.lines[i];
+        Serial.printf("%d: assigned line %d to group 0\n", pos, i);
+        pos++;
+    }
+    // assign ledConfig.groups
+    for (int i = 1; i < MAX_GROUP_COUNT; i++) {
+        if (!config->groups[i][0]) break;
+        ledConfig.GROUP_NUM++;
+        for (int j = 0; j < MAX_LINE_NUM; j++) {
+            if (!config->groups[i][j]) break;
+            ledConfig.groups[i][j] = &ledConfig.lines[config->groups[i][j] - 1][0];
+        }
+    }
+    Serial.printf("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n",
+                  ledConfig.LED_NUM, ledConfig.LINE_NUM, ledConfig.GROUP_NUM);
+
+    //FastLED.setMaxPowerInMilliWatts( 250*1000);
+    FastLED.addLeds<LED_CHIP, LED_DATA_PIN, LED_COLOR_ORDER>(ledConfig.LEDs, ledConfig.LED_NUM);
+    // GRB ordering is typical
+    reset();
+
+    effects.push_back(new FXGradientWalk(GRADIENT_WALK));
+    effects.push_back(new FXStrobe(STROBE));
+    effects.push_back(new FXBreath(BREATH));
+    effects.push_back(new FXNoise(NOISE));
+    effects.push_back(new FXGradientFade(GRADIENT_FADE));
+    effects.push_back(new FXLevelPump(PUMP));
+    effects.push_back(new FXRotate(ROTATE));
+    effects.push_back(new FXRainbow(RAINBOW));
+    effects.push_back(new FXSparkle(SPARKLE));
+}
+
+void LEDC_updateStripe(const byte *note, const byte *controller) {
+    // fixed time reference for all calculations
+    ledConfig.timestamp = millis();
+    ledConfig.note = note;
+    ledConfig.controller = controller;
+    //memcpy8(lastControllerValues, controller, 128);
+
+    if (note[TOTAL_RESET]) reset();
+
+    FastLED.clear();
+
+    // meta values
+    maybeSetGroupColor(note, controller);
+    maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
+    maybeSetTempo(note[TEMPO] / 2);
+    maybeSetTempoTrim(controller);
+    maybeSetGlobalColor(note, controller);
+
+    // handle effects
+    for (const auto &effect: effects) {
+        //Serial.printf("handling effect with note %d\n", effect->getTriggerNote());
+        effect->handle(ledConfig);
+    }
+
+    maybeSetAllOn(note, controller);
+
+    maybeSetGroupOn(note, controller);
+
+    maybeSetLevelOn(note, controller);
+
+    // push to stripe
+    FastLED.show();
+}
