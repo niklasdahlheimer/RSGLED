@@ -137,10 +137,33 @@ typedef struct {
         }
     }
 
+    void lineOff(CRGB *line[]) {
+        for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
+            if (!line[i]) break;
+            *(line[i]) = CRGB::Black;
+        }
+    }
+
     void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
-            lineOn(group[line], color, brightness); // LED_line_on
+            lineOn(group[line], color, brightness);
+        }
+    }
+
+    void groupOff(CRGB **group[]) {
+        for (int line = 0; line < LINE_NUM; ++line) {
+            if (!group[line]) break;
+            lineOff(group[line]);
+        }
+    }
+
+    void groupSolo(CRGB **group[]) {
+        for (int i = 1; i < GROUP_NUM; ++i) {
+            if (!groups[i]) break;
+            if(groups[i] != group){
+                groupOff(groups[i]);
+            }
         }
     }
 
@@ -167,9 +190,36 @@ typedef struct {
         }
     }
 
+    void levelSolo(byte levelNumber) {
+        if (levelNumber <= 4) {
+            groupOff(groups[5]);
+            groupOff(groups[6]);
+        }
+        if (levelNumber <= 3) {
+            groupOff(groups[4]);
+            groupOff(groups[7]);
+        }
+        if (levelNumber <= 2) {
+            groupOff(groups[3]);
+            groupOff(groups[8]);
+        }
+        if (levelNumber <= 1) {
+            groupOff(groups[2]);
+            groupOff(groups[9]);
+        }
+        if (levelNumber == 0) {
+            allOff();
+        }
+    }
+
     void allOn(const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         groupOn(groups[0], color, brightness);
     }
+
+    void allOff() {
+        groupOff(groups[0]);
+    }
+
 } LEDConfig;
 
 void LEDC_init(const Config *config);
