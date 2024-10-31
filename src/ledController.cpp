@@ -9,6 +9,7 @@
 #include "fxRotate.h"
 #include "fxRainbow.h"
 #include "fxSparkle.h"
+#include "fxPalette.h"
 
 static LEDConfig ledConfig;
 std::vector<FXBase *> effects;
@@ -308,6 +309,7 @@ void LEDC_init(const Config *config) {
 
     effects.push_back(new FXGradientWalk(GRADIENT_WALK));
     effects.push_back(new FXStrobe(STROBE));
+    effects.push_back(new FXPalette(PALETTE));
     effects.push_back(new FXBreath(BREATH));
     effects.push_back(new FXNoise(NOISE));
     effects.push_back(new FXGradientFade(GRADIENT_FADE));

@@ -4,9 +4,7 @@
 #include <fxBase.h>
 #include "helper.h"
 
-#define RAINBOW_PERIOD_IN_MILLIS    10
-
-static CRGBPalette16 palettes[] = {
+CRGBPalette16 palettes[] = {
     OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p, LavaColors_p, CloudColors_p
 };
 
@@ -21,8 +19,8 @@ public:
                                                    ledConfig.LINE_NUM);
         // circling offset
         for (int i = 0; i < ledConfig.LINE_NUM; i++) {
-            byte paletteIndex = map(i, 0, ledConfig.LINE_NUM, 0, 255);
-            CRGB colorFromPalette = ColorFromPalette(palettes[currentPalette], paletteIndex);
+            byte palettePos = map(i, 0, ledConfig.LINE_NUM, 0, 255);
+            CRGB colorFromPalette = ColorFromPalette(palettes[currentPalette], palettePos);
             ledConfig.lineOn(ledConfig.lines[(i + step) % ledConfig.LINE_NUM], &colorFromPalette, velocity);
         }
     };
@@ -31,10 +29,10 @@ public:
     };
 
     void onStart(LEDConfig &ledConfig) override {
-        currentPalette++;
     }
 
     void onFinish(LEDConfig &ledConfig) override {
+        currentPalette++;
     }
 
 private:
