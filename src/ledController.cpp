@@ -308,15 +308,17 @@ void LEDC_init(const Config *config) {
     reset();
 
     effects.push_back(new FXGradientWalk(GRADIENT_WALK));
-    effects.push_back(new FXStrobe(STROBE));
-    effects.push_back(new FXPalette(PALETTE));
-    effects.push_back(new FXBreath(BREATH));
-    effects.push_back(new FXNoise(NOISE));
     effects.push_back(new FXGradientFade(GRADIENT_FADE));
+    effects.push_back(new FXRainbow(RAINBOW));
+    effects.push_back(new FXPalette(PALETTE));
+    
+    // Overlays
+    effects.push_back(new FXBreath(BREATH));
+    effects.push_back(new FXSparkle(SPARKLE));
+    effects.push_back(new FXNoise(NOISE));
     effects.push_back(new FXLevelPump(PUMP));
     effects.push_back(new FXRotate(ROTATE));
-    effects.push_back(new FXRainbow(RAINBOW));
-    effects.push_back(new FXSparkle(SPARKLE));
+    effects.push_back(new FXStrobe(STROBE));
 }
 
 void LEDC_updateStripe(const byte *note, const byte *controller) {
@@ -337,17 +339,17 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
 
-    // handle effects
-    for (const auto &effect: effects) {
-        //Serial.printf("handling effect with note %d\n", effect->getTriggerNote());
-        effect->handle(ledConfig);
-    }
-
     maybeSetAllOn(note, controller);
 
     maybeSetGroupOn(note, controller);
 
     maybeSetLevelOn(note, controller);
+
+    // handle effects
+    for (const auto &effect: effects) {
+        //Serial.printf("handling effect with note %d\n", effect->getTriggerNote());
+        effect->handle(ledConfig);
+    }
 
     // push to stripe
     FastLED.show();
