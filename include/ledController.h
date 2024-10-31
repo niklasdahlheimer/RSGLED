@@ -116,10 +116,10 @@ typedef struct {
     int GROUP_NUM = 0;
     CRGB LEDs[MAX_LED_NUM]{};
     CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM]{};
-    CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
+    CRGB **groups[MAX_GROUP_NUM][MAX_LINE_NUM]{};
     CRGB lineGradientLEDs[MAX_LINE_NUM]{};
     CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
-    CRGB groupColor[MAX_GROUP_COUNT]{};
+    CRGB groupColor[MAX_GROUP_NUM]{};
     CRGB *globalColor = &COLORS[0];
     byte globBrightness = LED_BRIGHTNESS_MAX;
     byte tempo = DEFAULT_TEMPO;
