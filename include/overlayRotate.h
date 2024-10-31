@@ -5,9 +5,9 @@
 #include "helper.h"
 
 // Overlay
-class FXRotate final : public FXBase {
+class OverlayRotate final : public FXBase {
 public:
-    explicit FXRotate(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit OverlayRotate(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned int currentStep = helper_getSteppedSawValue(ledConfig.timestamp - startMillis,

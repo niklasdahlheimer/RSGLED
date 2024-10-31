@@ -7,9 +7,9 @@
 #define STROBE_ON_FACTOR            0.2 // Factor between 0 and 1 how long the LEDs stay ON
 
 // Overlay
-class FXStrobe final : public FXBase {
+class OverlayStrobe final : public FXBase {
 public:
-    explicit FXStrobe(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit OverlayStrobe(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         int state = helper_getRectValue(ledConfig.timestamp - startMillis, helper_getBeatLenInMillis(ledConfig.tempo, 16),
