@@ -1,14 +1,15 @@
 #ifndef RSGLED_CONFIG_H
 #define RSGLED_CONFIG_H
 
-#define MAX_LINES 48
-#define MAX_PIXEL_PER_LINE 20
+#define MAX_LED_NUM                 500
+#define MAX_LINE_NUM                60
+#define MAX_PIXEL_PER_LINE_NUM      20
+#define MAX_GROUP_NUM               11
 
 typedef struct {
     byte MIDI_CHANNEL;
-    int LED_NUM;
-    short lines[MAX_LINES][MAX_PIXEL_PER_LINE];
-    short groups[11][MAX_LINES];
+    short lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM];
+    short groups[MAX_GROUP_NUM][MAX_LINE_NUM];
 } Config;
 
 inline Config getConfig(const int index) {
@@ -17,7 +18,6 @@ inline Config getConfig(const int index) {
         default:
             return (Config){
                 .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
-                .LED_NUM = 361,
                 .lines = {
                     {1, 40, 41, 80, 81, 120, 121, 160, 161, 200, 201, 240, 241}, //1
                     {2, 39, 42, 79, 82, 119, 122, 159, 162, 199, 202, 239, 242}, //2
@@ -52,7 +52,6 @@ inline Config getConfig(const int index) {
         case 1:
             return (Config){
                 .MIDI_CHANNEL = 13, // has to be MidiChannel - 1
-                .LED_NUM = 55,
                 .lines = {},
                 .groups = {
                     {}, // 0 default all group
@@ -63,7 +62,6 @@ inline Config getConfig(const int index) {
         case 2:
             return (Config){
                 .MIDI_CHANNEL = 14, // has to be MidiChannel - 1
-                .LED_NUM = 55,
                 .lines = {},
                 .groups = {
                     {}, // 0 default all group

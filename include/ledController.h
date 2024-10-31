@@ -13,12 +13,6 @@
 
 #define DEFAULT_TEMPO               120
 
-#define MAX_LED_NUM                 400
-#define MAX_LINE_NUM                48
-#define MAX_PIXEL_PER_LINE          20
-#define MAX_LINES_PER_GROUP         10
-#define MAX_GROUP_COUNT             11
-
 #define FULL_GRADIENT_STEPS         200
 #define DEFAULT_COLOR               &COLORS[0]
 
@@ -121,7 +115,7 @@ typedef struct {
     int LINE_NUM = 0;
     int GROUP_NUM = 0;
     CRGB LEDs[MAX_LED_NUM]{};
-    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE]{};
+    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM]{};
     CRGB **groups[MAX_GROUP_COUNT][MAX_LINE_NUM]{};
     CRGB lineGradientLEDs[MAX_LINE_NUM]{};
     CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
@@ -136,7 +130,7 @@ typedef struct {
     unsigned long timestamp = 0;
 
     void lineOn(CRGB *line[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
-        for (int i = 0; i < MAX_PIXEL_PER_LINE; ++i) {
+        for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             *(line[i]) = *color;
             line[i]->nscale8_video(brightness);

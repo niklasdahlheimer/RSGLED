@@ -238,6 +238,19 @@ void maybeSetTempo(const byte tempoValue) {
     Serial.printf("set tempo to %d bpm (value was %d)\n", ledConfig.tempo, tempoValue);
 }
 
+int findMaxLedNum(const Config *config) {
+    int max = 0;
+    for (int i = 0; i < MAX_LINE_NUM; i++) {
+        if (!config->lines[i][0]) break;
+        for (int j = 0; j < MAX_PIXEL_PER_LINE_NUM; j++) {
+            if (config->lines[i][j] > max) {
+                max = config->lines[i][j];
+            }
+        }
+    }
+    return max;
+}
+
 // public
 
 void reset() {
@@ -256,13 +269,13 @@ void reset() {
 }
 
 void LEDC_init(const Config *config) {
-    ledConfig.LED_NUM = config->LED_NUM;
+    ledConfig.LED_NUM = findMaxLedNum(config);
 
     // assign ledConfig.lines
     for (int i = 0; i < MAX_LINE_NUM; i++) {
         if (!config->lines[i][0]) break;
         ledConfig.LINE_NUM++;
-        for (int j = 0; j < MAX_PIXEL_PER_LINE; j++) {
+        for (int j = 0; j < MAX_PIXEL_PER_LINE_NUM; j++) {
             if (!config->lines[i][j]) break;
             ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1];
         }
@@ -277,7 +290,7 @@ void LEDC_init(const Config *config) {
         pos++;
     }
     // assign ledConfig.groups
-    for (int i = 1; i < MAX_GROUP_COUNT; i++) {
+    for (int i = 1; i < MAX_GROUP_NUM; i++) {
         if (!config->groups[i][0]) break;
         ledConfig.GROUP_NUM++;
         for (int j = 0; j < MAX_LINE_NUM; j++) {
