@@ -2,14 +2,14 @@
 #include <vector>
 #include "fxGradientWalk.h"
 #include "fxGradientFade.h"
-#include "fxBreath.h"
-#include "fxNoise.h"
 #include "fxRainbow.h"
 #include "fxSparkle.h"
 #include "fxPalette.h"
 #include "overlayLevelPump.h"
 #include "overlayRotate.h"
 #include "overlayStrobe.h"
+#include "overlayNoise.h"
+#include "overlayBreath.h"
 
 static LEDConfig ledConfig;
 std::vector<FXBase *> effects;
@@ -311,12 +311,11 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXGradientFade(GRADIENT_FADE));
     effects.push_back(new FXRainbow(RAINBOW));
     effects.push_back(new FXPalette(PALETTE));
+    effects.push_back(new FXSparkle(SPARKLE));
 
     // Overlays
-    effects.push_back(new FXBreath(BREATH));
-    effects.push_back(new FXSparkle(SPARKLE));
-    effects.push_back(new FXNoise(NOISE));
-
+    effects.push_back(new OverlayBreath(BREATH));
+    effects.push_back(new OverlayNoise(NOISE));
     effects.push_back(new OverlayLevelPump(PUMP));
     effects.push_back(new OverlayRotate(ROTATE));
     effects.push_back(new OverlayStrobe(STROBE));

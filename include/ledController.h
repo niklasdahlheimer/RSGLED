@@ -144,6 +144,13 @@ typedef struct {
         }
     }
 
+    void lineBrighten(CRGB *line[], byte scale) {
+        for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
+            if (!line[i]) break;
+            (*(line[i])).nscale8(scale);
+        }
+    }
+
     void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
@@ -158,8 +165,15 @@ typedef struct {
         }
     }
 
+    void groupBrighten(CRGB **group[], byte scale) {
+        for (int line = 0; line < LINE_NUM; ++line) {
+            if (!group[line]) break;
+            lineBrighten(group[line], scale);
+        }
+    }
+
     void groupSolo(CRGB **group[]) {
-        for (int i = 1; i < GROUP_NUM; ++i) {
+        for (int i = 1; i < GROUP_NUM + 1; ++i) {
             if (!groups[i]) break;
             if(groups[i] != group){
                 groupOff(groups[i]);
@@ -218,6 +232,10 @@ typedef struct {
 
     void allOff() {
         groupOff(groups[0]);
+    }
+
+    void allBrighten(const byte scale) {
+        groupBrighten(groups[0], scale);
     }
 
 } LEDConfig;
