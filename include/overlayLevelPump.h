@@ -1,5 +1,5 @@
-#ifndef FXLEVEL_PUMP_H
-#define FXLEVEL_PUMP_H
+#ifndef FX_LEVEL_PUMP_H
+#define FX_LEVEL_PUMP_H
 
 #include <fxBase.h>
 #include "helper.h"
@@ -9,6 +9,8 @@
 // Overlay
 class OverlayLevelPump final : public FXBase {
 public:
+    DEFINE_GETNAME(OverlayLevelPump)
+
     explicit OverlayLevelPump(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
@@ -33,4 +35,4 @@ private:
 
 };
 
-#endif //FXLEVEL_PUMP_H
+#endif //FX_LEVEL_PUMP_H

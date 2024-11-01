@@ -1,5 +1,5 @@
-#ifndef FXSPARKLE_H
-#define FXSPARKLE_H
+#ifndef FX_SPARKLE_H
+#define FX_SPARKLE_H
 
 #include <fxBase.h>
 
@@ -7,6 +7,8 @@
 
 class FXSparkle final : public FXBase {
 public:
+    DEFINE_GETNAME(FXSparkle)
+
     explicit FXSparkle(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
@@ -49,4 +51,4 @@ private:
 
 };
 
-#endif //FXSPARKLE_H
+#endif //FX_SPARKLE_H

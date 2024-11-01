@@ -1,124 +1,26 @@
 #include "ledController.h"
 #include <vector>
+
+#include "fxCOlorAll.h"
+#include "FXColorGroup.h"
+#include "FXColorLevel.h"
+
 #include "fxGradientWalk.h"
 #include "fxGradientFade.h"
 #include "fxRainbow.h"
 #include "fxSparkle.h"
 #include "fxPalette.h"
+#include "fxWhiteSegments.h"
+
 #include "overlayLevelPump.h"
 #include "overlayRotate.h"
 #include "overlayStrobe.h"
 #include "overlayNoise.h"
 #include "overlayBreath.h"
+#include "OverlayDab.h"
 
 static LEDConfig ledConfig;
 std::vector<FXBase *> effects;
-
-// static ons
-
-static void maybeSetAllOn(const byte *note, const byte *controller) {
-    if (note[ALL_ON_COLOR_1]) {
-        ledConfig.allOn(&COLORS[0], note[ALL_ON_COLOR_1]);
-    }
-    if (note[ALL_ON_COLOR_2]) {
-        ledConfig.allOn(&COLORS[1], note[ALL_ON_COLOR_2]);
-    }
-    if (note[ALL_ON_COLOR_3]) {
-        ledConfig.allOn(&COLORS[2], note[ALL_ON_COLOR_3]);
-    }
-    if (note[ALL_ON_COLOR_4]) {
-        ledConfig.allOn(&COLORS[3], note[ALL_ON_COLOR_4]);
-    }
-    if (note[ALL_ON_COLOR_5]) {
-        ledConfig.allOn(&COLORS[4], note[ALL_ON_COLOR_5]);
-    }
-    if (note[ALL_ON_COLOR_6]) {
-        ledConfig.allOn(&COLORS[5], note[ALL_ON_COLOR_6]);
-    }
-    if (note[ALL_ON_COLOR_7]) {
-        ledConfig.allOn(&COLORS[6], note[ALL_ON_COLOR_7]);
-    }
-    if (note[ALL_ON_COLOR_8]) {
-        ledConfig.allOn(&COLORS[7], note[ALL_ON_COLOR_8]);
-    }
-    if (note[ALL_ON_COLOR_9]) {
-        ledConfig.allOn(&COLORS[8], note[ALL_ON_COLOR_9]);
-    }
-    if (note[ALL_ON_COLOR_10]) {
-        ledConfig.allOn(&COLORS[9], note[ALL_ON_COLOR_10]);
-    }
-    if (note[ALL_ON_COLOR_11]) {
-        ledConfig.allOn(&COLORS[10], note[ALL_ON_COLOR_11]);
-    }
-    if (note[ALL_ON_COLOR_12]) {
-        ledConfig.allOn(&COLORS[11], note[ALL_ON_COLOR_12]);
-    }
-}
-
-static void maybeSetGroupOn(const byte *note, const byte *controller) {
-    // Groups/Segments On
-    if (note[GROUP_ON_1]) {
-        ledConfig.groupOn(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_1]);
-    }
-    if (note[GROUP_ON_2]) {
-        ledConfig.groupOn(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_2]);
-    }
-    if (note[GROUP_ON_3]) {
-        ledConfig.groupOn(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_3]);
-    }
-    if (note[GROUP_ON_4]) {
-        ledConfig.groupOn(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_4]);
-    }
-    if (note[GROUP_ON_5]) {
-        ledConfig.groupOn(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_5]);
-    }
-    if (note[GROUP_ON_6]) {
-        ledConfig.groupOn(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_6]);
-    }
-    if (note[GROUP_ON_7]) {
-        ledConfig.groupOn(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_7]);
-    }
-    if (note[GROUP_ON_8]) {
-        ledConfig.groupOn(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_8]);
-    }
-    if (note[GROUP_ON_9]) {
-        ledConfig.groupOn(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_9]);
-    }
-    if (note[GROUP_ON_10]) {
-        ledConfig.groupOn(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_10]);
-    }
-    if (note[GROUP_ON_ALL]) {
-        ledConfig.groupOn(ledConfig.groups[1], &ledConfig.groupColor[1], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[2], &ledConfig.groupColor[2], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[3], &ledConfig.groupColor[3], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[4], &ledConfig.groupColor[4], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[5], &ledConfig.groupColor[5], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[6], &ledConfig.groupColor[6], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[7], &ledConfig.groupColor[7], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[8], &ledConfig.groupColor[8], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[9], &ledConfig.groupColor[9], note[GROUP_ON_ALL]);
-        ledConfig.groupOn(ledConfig.groups[10], &ledConfig.groupColor[10], note[GROUP_ON_ALL]);
-    }
-}
-
-static void maybeSetLevelOn(const byte *note, const byte *controller) {
-    // Horizontal Segment Blocks (for Level Meter etc.)
-    if (note[LEVEL_ON_1]) {
-        ledConfig.levelOn(1, ledConfig.globalColor, note[LEVEL_ON_1]);
-    }
-    if (note[LEVEL_ON_2]) {
-        ledConfig.levelOn(2, ledConfig.globalColor, note[LEVEL_ON_2]);
-    }
-    if (note[LEVEL_ON_3]) {
-        ledConfig.levelOn(3, ledConfig.globalColor, note[LEVEL_ON_3]);
-    }
-    if (note[LEVEL_ON_4]) {
-        ledConfig.levelOn(4, ledConfig.globalColor, note[LEVEL_ON_4]);
-    }
-    if (note[LEVEL_ON_5]) {
-        ledConfig.levelOn(5, ledConfig.globalColor, note[LEVEL_ON_5]);
-    }
-}
 
 // Global param setters
 
@@ -307,18 +209,51 @@ void LEDC_init(const Config *config) {
     // GRB ordering is typical
     reset();
 
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_1, &COLORS[0]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_2, &COLORS[1]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_3, &COLORS[2]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_4, &COLORS[3]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_5, &COLORS[4]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_6, &COLORS[5]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_7, &COLORS[6]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_8, &COLORS[7]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_9, &COLORS[8]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_10, &COLORS[9]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_11, &COLORS[10]));
+    effects.push_back(new FXColorAll(ALL_ON_COLOR_12, &COLORS[11]));
+
+    effects.push_back(new FXColorGroup(GROUP_ON_1, &ledConfig.groupColor[1], 1));
+    effects.push_back(new FXColorGroup(GROUP_ON_2, &ledConfig.groupColor[2], 2));
+    effects.push_back(new FXColorGroup(GROUP_ON_3, &ledConfig.groupColor[3], 3));
+    effects.push_back(new FXColorGroup(GROUP_ON_4, &ledConfig.groupColor[4], 4));
+    effects.push_back(new FXColorGroup(GROUP_ON_5, &ledConfig.groupColor[5], 5));
+    effects.push_back(new FXColorGroup(GROUP_ON_6, &ledConfig.groupColor[6], 6));
+    effects.push_back(new FXColorGroup(GROUP_ON_7, &ledConfig.groupColor[7], 7));
+    effects.push_back(new FXColorGroup(GROUP_ON_8, &ledConfig.groupColor[8], 8));
+    effects.push_back(new FXColorGroup(GROUP_ON_9, &ledConfig.groupColor[9], 9));
+    effects.push_back(new FXColorGroup(GROUP_ON_10, &ledConfig.groupColor[10], 10));
+
+    effects.push_back(new FXColorLevel(LEVEL_ON_1, ledConfig.globalColor, 1));
+    effects.push_back(new FXColorLevel(LEVEL_ON_2, ledConfig.globalColor, 2));
+    effects.push_back(new FXColorLevel(LEVEL_ON_3, ledConfig.globalColor, 3));
+    effects.push_back(new FXColorLevel(LEVEL_ON_4, ledConfig.globalColor, 4));
+    effects.push_back(new FXColorLevel(LEVEL_ON_5, ledConfig.globalColor, 5));
+
+    //effects
     effects.push_back(new FXGradientWalk(GRADIENT_WALK));
     effects.push_back(new FXGradientFade(GRADIENT_FADE));
     effects.push_back(new FXRainbow(RAINBOW));
     effects.push_back(new FXPalette(PALETTE));
-    effects.push_back(new FXSparkle(SPARKLE));
+    effects.push_back(new FXWhiteSegments(WHITE_SEGMENTS));
 
     // Overlays
+    effects.push_back(new OverlayStrobe(STROBE));
+    effects.push_back(new OverlayRotate(ROTATE));
     effects.push_back(new OverlayBreath(BREATH));
+    effects.push_back(new FXSparkle(SPARKLE));
     effects.push_back(new OverlayNoise(NOISE));
     effects.push_back(new OverlayLevelPump(PUMP));
-    effects.push_back(new OverlayRotate(ROTATE));
-    effects.push_back(new OverlayStrobe(STROBE));
+    effects.push_back(new OverlayDab(FLASH_LINE));
 }
 
 void LEDC_updateStripe(const byte *note, const byte *controller) {
@@ -338,12 +273,6 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     maybeSetTempo(note[TEMPO] / 2);
     maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
-
-    maybeSetAllOn(note, controller);
-
-    maybeSetGroupOn(note, controller);
-
-    maybeSetLevelOn(note, controller);
 
     // handle effects
     for (const auto &effect: effects) {

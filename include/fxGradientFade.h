@@ -1,12 +1,13 @@
-#ifndef FXGRADIENTFADE_H
-#define FXGRADIENTFADE_H
+#ifndef FX_GRADIENTFADE_H
+#define FX_GRADIENTFADE_H
 
 #include <fxBase.h>
 #include "helper.h"
 
 class FXGradientFade final : public FXBase {
-
 public:
+    DEFINE_GETNAME(FXGradientFade)
+
     explicit FXGradientFade(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
@@ -49,4 +50,4 @@ private:
     unsigned long gradientFadeLastUpdateTime = 0;
 };
 
-#endif //FXGRADIENTFADE_H
+#endif //FX_GRADIENTFADE_H

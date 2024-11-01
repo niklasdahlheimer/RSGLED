@@ -4,16 +4,22 @@
 #include <Arduino.h>
 #include "ledController.h"
 
+#define DEFINE_GETNAME(className) const char* getName() const override { return #className; }
+
 class FXBase {
 public:
     virtual ~FXBase() = default;
 
     explicit FXBase(const byte TRIGGER_NOTE) : triggerNote(TRIGGER_NOTE), startMillis(0), effectRunCount(0) {}
 
+    virtual const char* getName() const = 0;
+
     virtual void handle(LEDConfig &ledConfig) final {
         if (ledConfig.note[triggerNote] && startMillis == 0) {
             startMillis = ledConfig.timestamp;
             effectRunCount++;
+            Serial.printf("Starting effect (%d) ", effectRunCount);
+            Serial.println(getName());
             onStart(ledConfig);
         } else if (!ledConfig.note[triggerNote] && startMillis != 0) {
             startMillis = 0;

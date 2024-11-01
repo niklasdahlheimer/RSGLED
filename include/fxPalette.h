@@ -1,5 +1,5 @@
-#ifndef FXPALETTE_H
-#define FXPALETTE_H
+#ifndef FX_PALETTE_H
+#define FX_PALETTE_H
 
 #include <fxBase.h>
 #include "helper.h"
@@ -10,6 +10,8 @@ CRGBPalette16 palettes[] = {
 
 class FXPalette final : public FXBase {
 public:
+    DEFINE_GETNAME(FXPalette)
+
     explicit FXPalette(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
@@ -40,4 +42,4 @@ private:
 
 };
 
-#endif //FXPALETTE_H
+#endif //FX_PALETTE_H

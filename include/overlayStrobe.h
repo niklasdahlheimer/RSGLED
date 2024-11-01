@@ -1,5 +1,5 @@
-#ifndef FXSTROBE_H
-#define FXSTROBE_H
+#ifndef FX_STROBE_H
+#define FX_STROBE_H
 
 #include <fxBase.h>
 #include "helper.h"
@@ -9,6 +9,8 @@
 // Overlay
 class OverlayStrobe final : public FXBase {
 public:
+    DEFINE_GETNAME(OverlayStrobe)
+
     explicit OverlayStrobe(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
@@ -37,4 +39,4 @@ private:
 
 };
 
-#endif //FXSTROBE_H
+#endif //FX_STROBE_H

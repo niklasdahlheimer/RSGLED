@@ -1,5 +1,5 @@
-#ifndef FXRAINBOW_H
-#define FXRAINBOW_H
+#ifndef FX_RAINBOW_H
+#define FX_RAINBOW_H
 
 #include <fxBase.h>
 
@@ -7,6 +7,8 @@
 
 class FXRainbow final : public FXBase {
 public:
+    DEFINE_GETNAME(FXRainbow)
+
     explicit FXRainbow(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
@@ -29,4 +31,4 @@ public:
 private:
 };
 
-#endif //FXRAINBOW_H
+#endif //FX_RAINBOW_H

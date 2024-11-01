@@ -1,5 +1,5 @@
-#ifndef FXNOISE_H
-#define FXNOISE_H
+#ifndef FX_NOISE_H
+#define FX_NOISE_H
 
 #include <fxBase.h>
 
@@ -7,6 +7,8 @@
 
 class OverlayNoise final : public FXBase {
 public:
+    DEFINE_GETNAME(OverlayNoise)
+
     explicit OverlayNoise(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
@@ -37,4 +39,4 @@ private:
     unsigned long noiseLastUpdateMillis = 0;
 };
 
-#endif //FXNOISE_H
+#endif //FX_NOISE_H

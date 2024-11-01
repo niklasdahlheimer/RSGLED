@@ -1,5 +1,5 @@
-#ifndef FXROTATE_H
-#define FXROTATE_H
+#ifndef FX_ROTATE_H
+#define FX_ROTATE_H
 
 #include <fxBase.h>
 #include "helper.h"
@@ -7,6 +7,8 @@
 // Overlay
 class OverlayRotate final : public FXBase {
 public:
+    DEFINE_GETNAME(OverlayRotate)
+
     explicit OverlayRotate(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
@@ -32,4 +34,4 @@ private:
 
 };
 
-#endif //FXROTATE_H
+#endif //FX_ROTATE_H
