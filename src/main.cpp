@@ -6,6 +6,7 @@
 
 #define EEPROM_SIZE 100
 #define EEPROM_ADD_LETTER 0
+
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
 static unsigned long aliveTime = 0;
