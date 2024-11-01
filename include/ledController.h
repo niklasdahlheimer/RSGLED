@@ -93,6 +93,8 @@
 #define PUMP                        Note_F5
 #define FLASH_LINE                  Note_Fis5
 
+#define TEST_MODE                   Note_C6
+
 #define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           9
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      10
 #define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM      70

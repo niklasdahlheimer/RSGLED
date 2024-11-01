@@ -11,6 +11,7 @@
 #include "fxSparkle.h"
 #include "fxPalette.h"
 #include "fxWhiteSegments.h"
+#include "fxTest.h"
 
 #include "overlayLevelPump.h"
 #include "overlayRotate.h"
@@ -250,6 +251,8 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXRainbow(RAINBOW));
     effects.push_back(new FXPalette(PALETTE));
     effects.push_back(new FXWhiteSegments(WHITE_SEGMENTS));
+
+    effects.push_back(new FXTest(TEST_MODE));
 
     // Overlays
     effects.push_back(new OverlayStrobe(STROBE));
