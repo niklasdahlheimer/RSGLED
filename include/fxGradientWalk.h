@@ -2,7 +2,6 @@
 #define FX_GRADIENTWALK_H
 
 #include <fxBase.h>
-#include "helper.h"
 
 class FXGradientWalk final : public FXBase {
 public:
@@ -12,7 +11,7 @@ public:
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
 
-        const double period = static_cast<double>(helper_getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
+        const double period = static_cast<double>(getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
 
         unsigned long elapsedTime = ledConfig.timestamp - lastUpdateTime;
 

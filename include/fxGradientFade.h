@@ -2,7 +2,6 @@
 #define FX_GRADIENTFADE_H
 
 #include <fxBase.h>
-#include "helper.h"
 
 class FXGradientFade final : public FXBase {
 public:
@@ -17,7 +16,7 @@ public:
             gradientFadeLastUpdateTime = ledConfig.timestamp;
         }
 
-        const double period = static_cast<double>(helper_getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
+        const double period = static_cast<double>(getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
 
         unsigned long elapsedTime = ledConfig.timestamp - gradientFadeLastUpdateTime;
 

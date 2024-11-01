@@ -13,7 +13,7 @@ public:
     }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        const unsigned long animationLength = helper_getBeatLenInMillis(ledConfig.tempo, 16);
+        const unsigned long animationLength = getBeatLenInMillis(ledConfig.tempo, 16);
         for (int i = 0; i < ANIMATED_LINES_NUM; ++i) {
             if (ledConfig.timestamp - lineStartTime[i] > animationLength) {
                 lineIndex[i] = random8(ledConfig.LINE_NUM);

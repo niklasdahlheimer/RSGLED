@@ -2,7 +2,6 @@
 #define FX_PALETTE_H
 
 #include <fxBase.h>
-#include "helper.h"
 
 CRGBPalette16 palettes[] = {
     OceanColors_p, RainbowColors_p, PartyColors_p, HeatColors_p, LavaColors_p, CloudColors_p
@@ -16,9 +15,9 @@ public:
     }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        const unsigned int step = helper_getSteppedSawValue(ledConfig.timestamp - startMillis,
-                                                   helper_getBeatLenInMillis(ledConfig.tempo, 64),
-                                                   ledConfig.LINE_NUM);
+        const unsigned int step = getSteppedSawValue(ledConfig.timestamp - startMillis,
+                                                     getBeatLenInMillis(ledConfig.tempo, 64),
+                                                     ledConfig.LINE_NUM);
         // circling offset
         for (int i = 0; i < ledConfig.LINE_NUM; i++) {
             byte palettePos = map(i, 0, ledConfig.LINE_NUM, 0, 255);
@@ -38,8 +37,7 @@ public:
     }
 
 private:
-  byte currentPalette = 0;
-
+    byte currentPalette = 0;
 };
 
 #endif //FX_PALETTE_H

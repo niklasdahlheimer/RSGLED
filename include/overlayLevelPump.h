@@ -2,7 +2,6 @@
 #define FX_LEVEL_PUMP_H
 
 #include <fxBase.h>
-#include "helper.h"
 
 #define PUMP_PERIOD_IN_MILLIS       100
 
@@ -15,7 +14,7 @@ public:
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned int currentStep =
-              helper_getSteppedSawValue(ledConfig.timestamp - startMillis, PUMP_PERIOD_IN_MILLIS, 6);
+              getSteppedSawValue(ledConfig.timestamp - startMillis, PUMP_PERIOD_IN_MILLIS, 6);
               ledConfig.levelSolo(currentStep);
     };
 
