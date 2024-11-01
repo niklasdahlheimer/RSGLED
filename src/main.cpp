@@ -9,11 +9,10 @@
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
 static unsigned long aliveTime = 0;
-
 static MidiData *midiData;
 static Config config;
 
-void primeConfig(const byte value) {
+void initConfig(const byte value) {
     delay(5000);
     EEPROM.write(EEPROM_ADD_LETTER, value);
     EEPROM.commit();
@@ -27,31 +26,18 @@ Config readConfig() {
 }
 
 void printMemoryStatus() {
-    // Ermittelten freien Heap-Speicher
-    uint32_t freeHeap = ESP.getFreeHeap();
-    uint32_t totalHeap = ESP.getHeapSize();
-    uint32_t minFreeHeap = ESP.getMinFreeHeap();
-    uint32_t maxAllocHeap = ESP.getMaxAllocHeap();
+    Serial.printf("=== Speicherstatus des ESP32 ===\n");
+    Serial.printf("Gesamter Heap-Speicher: %d Bytes\n", ESP.getHeapSize());
+    Serial.printf("Freier Heap-Speicher: %d Bytes\n", ESP.getFreeHeap());
+    Serial.printf("Minimale freie Heap-Speichergröße: %d Bytes\n", ESP.getMinFreeHeap());
+    Serial.printf("Maximale Allokierbare Speichergröße: %d Bytes\n", ESP.getMaxAllocHeap());
+}
 
-    // Ausgabe des Speicherstatus über die serielle Schnittstelle
-    Serial.println("=== Speicherstatus des ESP32 ===");
-    Serial.print("Gesamter Heap-Speicher: ");
-    Serial.print(totalHeap);
-    Serial.println(" Bytes");
-
-    Serial.print("Freier Heap-Speicher: ");
-    Serial.print(freeHeap);
-    Serial.println(" Bytes");
-
-    Serial.print("Minimale freie Heap-Speichergröße: ");
-    Serial.print(minFreeHeap);
-    Serial.println(" Bytes");
-
-    Serial.print("Maximale Allokierbare Speichergröße: ");
-    Serial.print(maxAllocHeap);
-    Serial.println(" Bytes");
-
-    Serial.println("===============================\n");
+void printAlive() {
+    if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
+        aliveTime = millis();
+        Serial.println(".");
+    }
 }
 
 void setup() {
@@ -73,11 +59,7 @@ void setup() {
 }
 
 void loop() {
-    if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
-        aliveTime = millis();
-        Serial.println(".");
-    }
-
+    printAlive();
     midiData = MIDICBLE_read();
     LEDC_updateStripe(midiData->noteOn, midiData->controls);
 }
