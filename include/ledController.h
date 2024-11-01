@@ -91,7 +91,7 @@
 #define SPARKLE                     Note_Dis5
 #define NOISE                       Note_E5
 #define PUMP                        Note_F5
-#define FLASH_LINE                  Note_Fis4
+#define FLASH_LINE                  Note_Fis5
 
 #define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           9
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      10
