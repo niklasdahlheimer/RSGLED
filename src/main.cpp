@@ -3,15 +3,19 @@
 #include "ledController.h"
 #include "midiControllerBle.h"
 #include "config.h"
+#include "AiEsp32RotaryEncoder.h"
 
 #define EEPROM_SIZE 100
 #define EEPROM_ADD_LETTER 0
 
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
+AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(23, 22, 25, -1, 4);
+
 static unsigned long aliveTime = 0;
 static MidiData *midiData;
 static Config config;
+static bool isTestMode = false;
 
 void initConfig(const byte value) {
     delay(5000);
@@ -41,6 +45,19 @@ void printAlive() {
     }
 }
 
+void IRAM_ATTR readEncoderISR() {
+    rotaryEncoder.readEncoder_ISR();
+}
+
+void setupEncoder() {
+    pinMode(22, INPUT_PULLUP);
+    pinMode(23, INPUT_PULLUP);
+    rotaryEncoder.areEncoderPinsPulldownforEsp32 = false;
+    rotaryEncoder.begin();
+    rotaryEncoder.setup(readEncoderISR);
+    rotaryEncoder.setBoundaries(0, 100, false);
+}
+
 void setup() {
     Serial.begin(115200);
     Serial.println("start init");
@@ -57,10 +74,23 @@ void setup() {
     MIDICBLE_init(config.MIDI_CHANNEL);
 
     printMemoryStatus();
+    setupEncoder();
+}
+
+void handleEncoder() {
+    if (rotaryEncoder.encoderChanged()) {
+        Serial.printf("encoder value: %d\n", rotaryEncoder.readEncoder());
+    }
+    if (rotaryEncoder.isEncoderButtonClicked()) {
+        Serial.printf("button pressed!\n");
+        isTestMode = !isTestMode;
+    }
 }
 
 void loop() {
     printAlive();
+    handleEncoder();
     midiData = MIDICBLE_read();
+    midiData->noteOn[TEST_MODE] = isTestMode ? 255 : 0;
     LEDC_updateStripe(midiData->noteOn, midiData->controls);
 }
