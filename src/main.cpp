@@ -21,7 +21,7 @@ void primeConfig(const byte value) {
 }
 
 Config readConfig() {
-    const byte letter =  EEPROM.read(EEPROM_ADD_LETTER);
+    const byte letter = EEPROM.read(EEPROM_ADD_LETTER);
     Serial.printf("read config for letter %d\n", letter);
     return getConfig(letter);
 }
@@ -73,7 +73,7 @@ void setup() {
 }
 
 void loop() {
-    if(millis() > aliveTime+ALIVE_INFO_INTERVAL_MILLIS) {
+    if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
         aliveTime = millis();
         Serial.println(".");
     }

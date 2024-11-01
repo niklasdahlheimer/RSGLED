@@ -12,6 +12,6 @@ typedef struct {
 
 void MIDIC_init(byte _midiChannel);
 
-MidiData * MIDIC_read();
+MidiData *MIDIC_read();
 
 #endif //RSGLED_MIDICONTROLLER_H

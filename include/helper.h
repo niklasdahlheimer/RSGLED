@@ -17,11 +17,12 @@ static unsigned long helper_getSteppedValue(const unsigned long currentTime, con
  * Returns periodic stepped value from 0 to numOfSteps-1
  */
 static unsigned long helper_getSteppedSawValue(const unsigned long currentTime, const unsigned int period,
-                                        const unsigned int numOfSteps) {
+                                               const unsigned int numOfSteps) {
     return helper_getSteppedValue(currentTime, period) % numOfSteps;
 }
 
-static unsigned int helper_getBeatLenInMillis(unsigned int tempo, unsigned int div, boolean isTrip = false, boolean isDot = false) {
+static unsigned int helper_getBeatLenInMillis(unsigned int tempo, unsigned int div, boolean isTrip = false,
+                                              boolean isDot = false) {
     double beatLengthInMillis = 60000.0 / tempo;
     beatLengthInMillis *= 4.0 / div; // a quarter is equivalent to 1 "beat" for simplicity
 

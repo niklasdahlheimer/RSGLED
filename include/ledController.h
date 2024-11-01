@@ -99,7 +99,7 @@
 #define CONTROLLER_TEMPO_TRIM                       76
 #define CONTROLLER_FADE_IN                          77
 
-static CRGB COLORS[12] {
+static CRGB COLORS[12]{
     CRGB::LightSkyBlue,
     CRGB::Fuchsia,
     CRGB::Lime,
@@ -180,7 +180,7 @@ typedef struct {
     void groupSolo(CRGB **group[]) {
         for (int i = 1; i < GROUP_NUM + 1; ++i) {
             if (!groups[i]) break;
-            if(groups[i] != group){
+            if (groups[i] != group) {
                 groupOff(groups[i]);
             }
         }
@@ -242,7 +242,6 @@ typedef struct {
     void allBrighten(const byte scale) {
         groupBrighten(groups[0], scale);
     }
-
 } LEDConfig;
 
 void LEDC_init(const Config *config);
