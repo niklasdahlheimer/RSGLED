@@ -116,9 +116,8 @@ void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
 }
 
 void maybeSetTempoTrim(const byte *controller) {
+    if (controller[CONTROLLER_TEMPO_TRIM] == ledConfig.lastControllerValues[CONTROLLER_TEMPO_TRIM]) return;
     const byte trimValue = controller[CONTROLLER_TEMPO_TRIM];
-    //Serial.printf("hello from maybeSetTempoTrim with %d\n", trimValue);
-    if (trimValue == ledConfig.lastControllerValues[CONTROLLER_TEMPO_TRIM]) return;
 
     if (trimValue == 0 || trimValue == 128) {
         ledConfig.tempoTrim = 1;
@@ -130,6 +129,12 @@ void maybeSetTempoTrim(const byte *controller) {
         ledConfig.tempoTrim = static_cast<double>(mappedValue) / 1000.0;
     }
     Serial.printf("set tempo trim to %f \n", ledConfig.tempoTrim);
+}
+
+void maybeSetFadeInTime(const byte *controller) {
+    if (controller[CONTROLLER_FADE_IN] == ledConfig.lastControllerValues[CONTROLLER_FADE_IN]) return;
+    ledConfig.fadeInTime = map(controller[CONTROLLER_FADE_IN], 0, 254, 0,LED_FADE_IN_TIME_MILLIS_MAX);
+    Serial.printf("fade in time to %d ms \n", ledConfig.fadeInTime);
 }
 
 void maybeSetTempo(const byte tempoValue) {
@@ -261,7 +266,6 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     ledConfig.timestamp = millis();
     ledConfig.note = note;
     ledConfig.controller = controller;
-    //memcpy8(lastControllerValues, controller, 128);
 
     if (note[TOTAL_RESET]) reset();
 
@@ -269,16 +273,19 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // meta values
     maybeSetGroupColor(note, controller);
-    maybeSetGlobalBrightness(&note[GLOBAL_BRIGHTNESS_TRIM]);
+    maybeSetGlobalBrightness(&controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM]);
     maybeSetTempo(note[TEMPO] / 2);
     maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
+    maybeSetFadeInTime(controller);
 
     // handle effects
     for (const auto &effect: effects) {
         //Serial.printf("handling effect with note %d\n", effect->getTriggerNote());
         effect->handle(ledConfig);
     }
+
+    memcpy8(ledConfig.lastControllerValues, controller, 128);
 
     // push to stripe
     FastLED.show();

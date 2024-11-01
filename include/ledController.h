@@ -11,6 +11,8 @@
 #define LED_COLOR_ORDER             BRG
 #define LED_BRIGHTNESS_MAX          255
 
+#define LED_FADE_IN_TIME_MILLIS_MAX 10000
+
 #define DEFAULT_TEMPO               120
 
 #define FULL_GRADIENT_STEPS         200
@@ -20,8 +22,6 @@
 
 #define TEMPO                       Note_D_2
 #define TEMPO_OFFSET                60
-
-#define GLOBAL_BRIGHTNESS_TRIM      Note_E_2
 
 #define GLOBAL_COLOR_1              Note_C_1
 #define GLOBAL_COLOR_2              Note_Cis_1
@@ -93,9 +93,11 @@
 #define PUMP                        Note_F5
 #define FLASH_LINE                  Note_Fis4
 
+#define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           9
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      10
 #define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM      70
 #define CONTROLLER_TEMPO_TRIM                       76
+#define CONTROLLER_FADE_IN                          77
 
 static CRGB COLORS[12] {
     CRGB::LightSkyBlue,
@@ -126,6 +128,7 @@ typedef struct {
     byte globBrightness = LED_BRIGHTNESS_MAX;
     byte tempo = DEFAULT_TEMPO;
     double tempoTrim = 1.0;
+    unsigned int fadeInTime = 0;
     byte lastControllerValues[128]{};
     const byte *note;
     const byte *controller;
@@ -135,7 +138,7 @@ typedef struct {
         for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             *(line[i]) = *color;
-            line[i]->nscale8_video(brightness);
+            line[i]->nscale8(brightness);
         }
     }
 
