@@ -41,29 +41,31 @@ public:
         return triggerNote;
     }
 
+    /// helper
 
+    /// Returns 0 or 1, starts at 1
     static int getRectValue(const unsigned long currentTime, const unsigned int period, const float onFactor) {
         const unsigned long phase = currentTime % period;
         const unsigned long onPeriod = period * onFactor;
         return phase < onPeriod ? 1 : 0;
     }
 
+    /// Returns stepped values from 0 to infinity
     static unsigned long getSteppedValue(const unsigned long currentTime, const unsigned int period) {
         return (currentTime / period);
     }
 
-    /**
-     * Returns periodic stepped value from 0 to numOfSteps-1
-     */
+    /// Returns periodic stepped value from 0 to numOfSteps-1
     static unsigned long getSteppedSawValue(const unsigned long currentTime, const unsigned int period,
                                             const unsigned int numOfSteps) {
         return getSteppedValue(currentTime, period) % numOfSteps;
     }
 
+    /// returns millis for beat (div 4 = Quarter, 1 = whole,...)
     static unsigned int getBeatLenInMillis(unsigned int tempo, unsigned int div, boolean isTrip = false,
                                            boolean isDot = false) {
         double beatLengthInMillis = 60000.0 / tempo;
-        beatLengthInMillis *= 4.0 / div; // a quarter is equivalent to 1 "beat" for simplicity
+        beatLengthInMillis *= 4.0 / div;
 
         if (isTrip) {
             beatLengthInMillis *= 2.0 / 3.0;
