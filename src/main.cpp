@@ -65,7 +65,7 @@ void setup() {
     EEPROM.begin(EEPROM_SIZE);
 
     // 0 for R, 1 for S, 2 for G
-    //primeConfig(0);
+    //initConfig(0);
 
     config = readConfig();
 
