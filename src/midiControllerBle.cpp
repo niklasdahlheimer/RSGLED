@@ -2,7 +2,7 @@
 #include <Arduino.h>
 #include <BLEMidi.h>
 
-#define MIDI_INPUT_LED 2
+#define MIDI_INPUT_LED 21
 #define MIDI_CHANNEL_ALL 11
 
 static MidiData bleMidiData;

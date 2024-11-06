@@ -10,7 +10,11 @@
 
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
-AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(23, 22, 25, -1, 4);
+#define ENCODER_PIN_A 22
+#define ENCODER_PIN_B 23
+#define ENCODER_BUTTON_PIN 25
+
+AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
 
 static unsigned long aliveTime = 0;
 static MidiData *midiData;
@@ -50,8 +54,8 @@ void IRAM_ATTR readEncoderISR() {
 }
 
 void setupEncoder() {
-    pinMode(22, INPUT_PULLUP);
-    pinMode(23, INPUT_PULLUP);
+    pinMode(ENCODER_PIN_A, INPUT_PULLUP);
+    pinMode(ENCODER_PIN_B, INPUT_PULLUP);
     rotaryEncoder.areEncoderPinsPulldownforEsp32 = false;
     rotaryEncoder.begin();
     rotaryEncoder.setup(readEncoderISR);
