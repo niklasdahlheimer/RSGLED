@@ -93,6 +93,7 @@ void handleEncoder() {
 
 void loop() {
     printAlive();
+    MIDICBLE_loop();
     handleEncoder();
     midiData = MIDICBLE_read();
     midiData->noteOn[TEST_MODE] = isTestMode ? 255 : 0;

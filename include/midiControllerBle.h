@@ -6,4 +6,6 @@ void MIDICBLE_init(byte _midiChannel);
 
 MidiData *MIDICBLE_read();
 
+void MIDICBLE_loop();
+
 #endif //RSGLED_MIDICONTROLLERBLE_H
