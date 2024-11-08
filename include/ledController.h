@@ -95,11 +95,11 @@
 
 #define TEST_MODE                   Note_C6
 
-#define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           9
-#define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      10
-#define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM      70
-#define CONTROLLER_TEMPO_TRIM                       76
-#define CONTROLLER_FADE_IN                          77
+#define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           4
+#define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      8
+#define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM      9
+#define CONTROLLER_TEMPO_TRIM                       12
+#define CONTROLLER_FADE_IN                          13
 
 static CRGB COLORS[12]{
     CRGB::LightSkyBlue,
