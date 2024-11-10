@@ -12,7 +12,7 @@
 
 #define ENCODER_PIN_A 22
 #define ENCODER_PIN_B 23
-#define ENCODER_BUTTON_PIN 25
+#define ENCODER_BUTTON_PIN 33
 
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
 
