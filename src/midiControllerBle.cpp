@@ -1,15 +1,7 @@
 #include "midiController.h"
 #include <Arduino.h>
 #include <BLEMidi.h>
-#include <ezLED.h>
-
-#define CONNECTION_LED 21
-#define MIDI_INPUT_LED 19
-#define MIDI_CHANNEL_ALL 11
-#define CONNECTION_BLINK_TIME_IN_MS 500
-
-static ezLED connectionLED(CONNECTION_LED);
-static ezLED midiLED(MIDI_INPUT_LED);
+#include "led.h"
 
 static MidiData bleMidiData;
 static byte midiChannel;
@@ -35,6 +27,7 @@ static void handleDisconnect() {
 static void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
         bleMidiData.controls[number] = value * 2;
+        LED_dataInBlink();
         Serial.printf("control change %d %d\n", number, value);
     }
 }
@@ -55,7 +48,7 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
 
         bleMidiData.noteOn[note] = 2 * velocity;
 
-        midiLED.blinkNumberOfTimes(40, 0, 1, 0);
+        LED_dataInBlink();
         Serial.printf("note on %d, velocity %d\n", note, velocity);
     }
 }
