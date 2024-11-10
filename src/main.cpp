@@ -4,6 +4,7 @@
 #include "midiControllerBle.h"
 #include "config.h"
 #include "AiEsp32RotaryEncoder.h"
+#include "ota.h"
 
 #define EEPROM_SIZE 100
 #define EEPROM_ADD_LETTER 0
@@ -79,6 +80,8 @@ void setup() {
 
     printMemoryStatus();
     setupEncoder();
+
+    OTA_init();
 }
 
 void handleEncoder() {
@@ -93,6 +96,7 @@ void handleEncoder() {
 
 void loop() {
     printAlive();
+    OTA_loop();
     MIDICBLE_loop();
     handleEncoder();
 
