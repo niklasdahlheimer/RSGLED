@@ -10,7 +10,7 @@ typedef struct {
     byte controls[128];
 } MidiData;
 
-void MIDIC_init(byte _midiChannel);
+void MIDIC_init(byte _midiChannel, MidiData* _midiData);
 
 MidiData *MIDIC_read();
 

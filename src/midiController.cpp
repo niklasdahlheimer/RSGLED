@@ -6,7 +6,7 @@
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
 
-static MidiData midiData;
+static MidiData* midiData;
 static byte midiChannel;
 
 void handleControlChange(byte channel, byte number, byte value);
@@ -21,10 +21,10 @@ void handleNoteOff(byte channel, byte note, byte velocity);
 
 void handleError(int8_t error);
 
-void MIDIC_init(const byte _midiChannel) {
+void MIDIC_init(const byte _midiChannel, MidiData* _midiData) {
     midiChannel = _midiChannel;
-    // Create and bind the MIDI interface to the default hardware Serial port
-    //midiSerial.begin(31250); // MIDI Baudrate für den SoftwareSerial Port
+    midiData = _midiData;
+
     MIDI.begin(midiChannel);
     MIDI.turnThruOff();
     MIDI.setHandleControlChange(handleNoteOn);
@@ -36,18 +36,18 @@ void MIDIC_init(const byte _midiChannel) {
 
 MidiData *MIDIC_read() {
     MIDI.read(midiChannel);
-    return &midiData;
+    return midiData;
 }
 
 // private
 
 void handleControlChange(byte channel, byte number, byte value) {
-    midiData.controls[number] = value;
+    midiData->controls[number] = value;
     Serial.printf("control change on %03d, value %03d", number, value);
 }
 
 void handleNoteOn(byte channel, byte note, byte velocity) {
-    midiData.noteOn[note] = 2 * velocity;
+    midiData->noteOn[note] = 2 * velocity;
     LED_dataInBlink();
     Serial.printf("note on %03d, velocity %03d", note, velocity);
 }
@@ -59,7 +59,7 @@ void handleAfterTouchPoly(byte channel, byte note, byte pressure) {
 
 void handleNoteOff(byte channel, byte note, byte velocity) {
     //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
-    midiData.noteOn[note] = 0;
+    midiData->noteOn[note] = 0;
     Serial.printf("note off %03d", note);
 }
 

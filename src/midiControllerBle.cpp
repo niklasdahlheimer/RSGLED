@@ -3,7 +3,7 @@
 #include <BLEMidi.h>
 #include "led.h"
 
-static MidiData bleMidiData;
+static MidiData* bleMidiData;
 static byte midiChannel;
 
 
@@ -26,7 +26,7 @@ static void handleDisconnect() {
 
 static void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        bleMidiData.controls[number] = value * 2;
+        bleMidiData->controls[number] = value * 2;
         LED_dataInBlink();
         Serial.printf("control change %d %d\n", number, value);
     }
@@ -34,7 +34,7 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
 
 static void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        bleMidiData.noteOn[note] = 0;
+        bleMidiData->noteOn[note] = 0;
         Serial.printf("note off %d\n", note);
     }
 }
@@ -46,7 +46,7 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
             return;
         }
 
-        bleMidiData.noteOn[note] = 2 * velocity;
+        bleMidiData->noteOn[note] = 2 * velocity;
 
         LED_dataInBlink();
         Serial.printf("note on %d, velocity %d\n", note, velocity);
@@ -56,8 +56,9 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
 
 // public
 
-void MIDICBLE_init(const byte _midiChannel) {
+void MIDICBLE_init(const byte _midiChannel, MidiData* _bleMidiData) {
     midiChannel = _midiChannel;
+    bleMidiData = _bleMidiData;
     char name[16];
     sprintf(name, "RSGLED%02d", midiChannel);
 
@@ -75,7 +76,7 @@ void MIDICBLE_init(const byte _midiChannel) {
 }
 
 MidiData *MIDICBLE_read() {
-    return &bleMidiData;
+    return bleMidiData;
 }
 
 void MIDICBLE_loop() {

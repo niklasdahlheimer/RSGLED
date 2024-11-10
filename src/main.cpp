@@ -17,7 +17,7 @@
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
 
 static unsigned long aliveTime = 0;
-static MidiData *midiData;
+static MidiData midiData;
 static Config config;
 static bool isTestMode = false;
 
@@ -74,8 +74,8 @@ void setup() {
     config = readConfig();
 
     LEDC_init(&config);
-    MIDIC_init(config.MIDI_CHANNEL);
-    MIDICBLE_init(config.MIDI_CHANNEL);
+    MIDIC_init(config.MIDI_CHANNEL, &midiData);
+    MIDICBLE_init(config.MIDI_CHANNEL, &midiData);
 
     printMemoryStatus();
     setupEncoder();
@@ -95,7 +95,10 @@ void loop() {
     printAlive();
     MIDICBLE_loop();
     handleEncoder();
-    midiData = MIDICBLE_read();
-    midiData->noteOn[TEST_MODE] = isTestMode ? 255 : 0;
-    LEDC_updateStripe(midiData->noteOn, midiData->controls);
+
+    MIDICBLE_read();
+    MIDIC_read();
+    midiData.noteOn[TEST_MODE] = isTestMode ? 255 : 0;
+
+    LEDC_updateStripe(midiData.noteOn, midiData.controls);
 }
