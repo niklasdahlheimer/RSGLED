@@ -7,6 +7,7 @@
 #define MAX_GROUP_NUM               11
 
 typedef struct {
+    char LETTER;
     byte MIDI_CHANNEL;
     short lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM];
     short groups[MAX_GROUP_NUM][MAX_LINE_NUM];
@@ -17,6 +18,7 @@ inline Config getConfig(const int index) {
         case 0:
         default:
             return (Config){
+                .LETTER = 'R',
                 .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
                 .lines = {
                     {1, 107, 108, 212, 213, 314, 315, 420}, //1
@@ -91,6 +93,7 @@ inline Config getConfig(const int index) {
             };
         case 1:
             return (Config){
+                    .LETTER = 'S',
                 .MIDI_CHANNEL = 13, // has to be MidiChannel - 1
                .lines = {
                     {1, 107, 108, 212, 213, 314, 315, 420}, //1
@@ -165,6 +168,7 @@ inline Config getConfig(const int index) {
             };
         case 2:
             return (Config){
+                    .LETTER = 'G',
                 .MIDI_CHANNEL = 14, // has to be MidiChannel - 1
                  .lines = {
                     {1, 107, 108, 212, 213, 314, 315, 420}, //1

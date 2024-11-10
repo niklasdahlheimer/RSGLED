@@ -56,11 +56,11 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
 
 // public
 
-void MIDICBLE_init(const byte _midiChannel, MidiData* _bleMidiData) {
+void MIDICBLE_init(const byte _midiChannel, char letter, MidiData* _bleMidiData) {
     midiChannel = _midiChannel;
     bleMidiData = _bleMidiData;
     char name[16];
-    sprintf(name, "RSGLED%02d", midiChannel);
+    sprintf(name, "RSGLED_%c", letter);
 
     Serial.println("init BleController");
     BLEMidiServer.begin(name);

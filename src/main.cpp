@@ -76,7 +76,7 @@ void setup() {
 
     LEDC_init(&config);
     MIDIC_init(config.MIDI_CHANNEL, &midiData);
-    MIDICBLE_init(config.MIDI_CHANNEL, &midiData);
+    MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
 
     printMemoryStatus();
     setupEncoder();
