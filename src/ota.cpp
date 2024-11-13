@@ -13,11 +13,13 @@ void OTA_init() {
 
     int i = 0;
 
-    while (WiFi.waitForConnectResult() != WL_CONNECTED && i < 3) {
-        Serial.println("Connection Failed! Rebooting...");
+    while (WiFi.waitForConnectResult(5000) != WL_CONNECTED && i < 3) {
         i++;
-        delay(3000);
-        //ESP.restart();
+        connectionLED.turnOFF();
+        midiLED.turnOFF();
+        delay(1000);
+        connectionLED.turnON();
+        midiLED.turnON();
     }
 
     connectionLED.turnOFF();
