@@ -17,7 +17,7 @@ void OTA_init() {
         Serial.println("Connection Failed! Rebooting...");
         i++;
         delay(3000);
-        ESP.restart();
+        //ESP.restart();
     }
 
     connectionLED.turnOFF();
