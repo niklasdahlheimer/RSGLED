@@ -81,7 +81,7 @@ void setup() {
     printMemoryStatus();
     setupEncoder();
 
-    OTA_init();
+    OTA_init(config.LETTER);
 }
 
 void handleEncoder() {

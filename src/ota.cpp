@@ -4,7 +4,7 @@
 #include "led.h"
 #include "../credentials.h"
 
-void OTA_init() {
+void OTA_init(char letter) {
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
 
@@ -29,7 +29,7 @@ void OTA_init() {
     // ArduinoOTA.setPort(3232);
 
     // Hostname defaults to esp3232-[MAC]
-    // ArduinoOTA.setHostname("myesp32");
+    ArduinoOTA.setHostname("RSG-LED-"+letter);
 
     // No authentication by default
     // ArduinoOTA.setPassword("admin");
