@@ -136,7 +136,7 @@ typedef struct {
     const byte *controller;
     unsigned long timestamp = 0;
 
-    void lineOn(CRGB *line[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+    static void lineOn(CRGB *line[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
         for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             *(line[i]) = *color;
@@ -144,35 +144,35 @@ typedef struct {
         }
     }
 
-    void lineOff(CRGB *line[]) {
+    static void lineOff(CRGB *line[]) {
         for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             *(line[i]) = CRGB::Black;
         }
     }
 
-    void lineBrighten(CRGB *line[], byte scale) {
+    static void lineBrighten(CRGB *line[], byte scale) {
         for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             (*(line[i])).nscale8(scale);
         }
     }
 
-    void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) {
+    void groupOn(CRGB **group[], const CRGB *color = DEFAULT_COLOR, const byte brightness = 255) const {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
             lineOn(group[line], color, brightness);
         }
     }
 
-    void groupOff(CRGB **group[]) {
+    void groupOff(CRGB **group[]) const {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
             lineOff(group[line]);
         }
     }
 
-    void groupBrighten(CRGB **group[], byte scale) {
+    void groupBrighten(CRGB **group[], byte scale) const {
         for (int line = 0; line < LINE_NUM; ++line) {
             if (!group[line]) break;
             lineBrighten(group[line], scale);
