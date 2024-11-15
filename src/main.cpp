@@ -11,6 +11,8 @@
 
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
+#define HELLO_PHASE_MILLIS 1000
+
 #define ENCODER_PIN_A 22
 #define ENCODER_PIN_B 23
 #define ENCODER_BUTTON_PIN 33
@@ -18,9 +20,12 @@
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
 
 static unsigned long aliveTime = 0;
+static unsigned long startupTime = 0;
 static MidiData midiData;
 static Config config;
 static bool isTestMode = false;
+
+static bool isHelloPhaseFinished = false;
 
 void initConfig(const byte value) {
     delay(5000);
@@ -82,6 +87,8 @@ void setup() {
     setupEncoder();
 
     OTA_init(config.LETTER);
+
+    startupTime = millis();
 }
 
 void handleEncoder() {
@@ -102,7 +109,19 @@ void loop() {
 
     MIDICBLE_read();
     MIDIC_read();
+
     midiData.noteOn[TEST_MODE] = isTestMode ? 255 : 0;
+
+    if (!isHelloPhaseFinished) {
+        if (millis() - startupTime < HELLO_PHASE_MILLIS) {
+            midiData.noteOn[ALL_ON_COLOR_1] = 120;
+            midiData.noteOn[PUMP] = 255;
+        } else {
+            isHelloPhaseFinished = true;
+            midiData.noteOn[ALL_ON_COLOR_1] = 0;
+            midiData.noteOn[PUMP] = 0;
+        }
+    }
 
     LEDC_updateStripe(midiData.noteOn, midiData.controls);
 }
