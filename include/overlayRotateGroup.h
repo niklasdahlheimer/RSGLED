@@ -1,14 +1,14 @@
-#ifndef FX_ROTATE_H
-#define FX_ROTATE_H
+#ifndef FX_ROTATE_GROUP_H
+#define FX_ROTATE_GROUP_H
 
 #include <fxBase.h>
 
 // Overlay
-class OverlayRotate final : public FXBase {
+class OverlayRotateGroup final : public FXBase {
 public:
-    DEFINE_GETNAME(OverlayRotate)
+    DEFINE_GETNAME(OverlayRotateGroup)
 
-    explicit OverlayRotate(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit OverlayRotateGroup(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned int currentStep = getSteppedSawValue(ledConfig.timestamp - startMillis,
@@ -33,4 +33,4 @@ private:
 
 };
 
-#endif //FX_ROTATE_H
+#endif //FX_ROTATE_GROUP_H

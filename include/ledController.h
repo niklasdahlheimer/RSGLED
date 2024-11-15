@@ -86,7 +86,7 @@
 #define WHITE_SEGMENTS              Note_E4
 
 #define STROBE                      Note_C5
-#define ROTATE                      Note_Cis5
+#define ROTATE_GROUP                Note_Cis5
 #define BREATH                      Note_D5
 #define SPARKLE                     Note_Dis5
 #define NOISE                       Note_E5

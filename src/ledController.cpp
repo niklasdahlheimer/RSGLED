@@ -14,7 +14,7 @@
 #include "fxTest.h"
 
 #include "overlayLevelPump.h"
-#include "overlayRotate.h"
+#include "overlayRotateGroup.h"
 #include "overlayStrobe.h"
 #include "overlayNoise.h"
 #include "overlayBreath.h"
@@ -256,7 +256,7 @@ void LEDC_init(const Config *config) {
 
     // Overlays
     effects.push_back(new OverlayStrobe(STROBE));
-    effects.push_back(new OverlayRotate(ROTATE));
+    effects.push_back(new OverlayRotateGroup(ROTATE_GROUP));
     effects.push_back(new OverlayBreath(BREATH));
     effects.push_back(new FXSparkle(SPARKLE));
     effects.push_back(new OverlayNoise(NOISE));
