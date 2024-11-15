@@ -92,6 +92,7 @@
 #define NOISE                       Note_E5
 #define PUMP                        Note_F5
 #define FLASH_LINE                  Note_Fis5
+#define ROTATE_LINE                 Note_G5
 
 #define TEST_MODE                   Note_C6
 
@@ -155,6 +156,14 @@ typedef struct {
         for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             (*(line[i])).nscale8(scale);
+        }
+    }
+
+    void lineSolo(CRGB *line[]) {
+        for (int i = 0; i < LINE_NUM; ++i) {
+            if (lines[i] != line) {
+                lineOff(lines[i]);
+            }
         }
     }
 
