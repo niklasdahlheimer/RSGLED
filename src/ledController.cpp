@@ -186,7 +186,7 @@ void LEDC_init(const Config *config) {
         ledConfig.LINE_NUM++;
         for (int j = 0; j < MAX_PIXEL_PER_LINE_NUM; j++) {
             if (!config->lines[i][j]) break;
-            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1];
+            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1]; // indices are 1-based to avoid null-pointers
         }
     }
 
