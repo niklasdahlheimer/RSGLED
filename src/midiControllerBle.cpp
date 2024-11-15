@@ -60,7 +60,7 @@ void MIDICBLE_init(const byte _midiChannel, char letter, MidiData* _bleMidiData)
     midiChannel = _midiChannel;
     bleMidiData = _bleMidiData;
     char name[16];
-    sprintf(name, "RSGLED_%c", letter);
+    sprintf(name, "RSG_LED_%c", letter);
 
     Serial.println("init BleController");
     BLEMidiServer.begin(name);
