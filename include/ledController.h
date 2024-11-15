@@ -78,6 +78,7 @@
 #define LEVEL_ON_3                  Note_D3
 #define LEVEL_ON_4                  Note_Dis3
 #define LEVEL_ON_5                  Note_E3
+#define LINE_ON                     Note_F3
 
 #define RAINBOW                     Note_C4
 #define PALETTE                     Note_Cis4
@@ -101,6 +102,7 @@
 #define CONTROLLER_GROUP_COLOR_BRIGHTNESS_TRIM      9
 #define CONTROLLER_TEMPO_TRIM                       12
 #define CONTROLLER_FADE_IN                          13
+#define CONTROLLER_LINE_INDEX                       14
 
 static CRGB COLORS[12]{
     CRGB::LightSkyBlue,

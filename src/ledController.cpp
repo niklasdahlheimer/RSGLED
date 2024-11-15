@@ -4,6 +4,7 @@
 #include "fxCOlorAll.h"
 #include "FXColorGroup.h"
 #include "FXColorLevel.h"
+#include "FXColorLine.h"
 
 #include "fxGradientWalk.h"
 #include "fxGradientFade.h"
@@ -252,6 +253,7 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXRainbow(RAINBOW));
     effects.push_back(new FXPalette(PALETTE));
     effects.push_back(new FXWhiteSegments(WHITE_SEGMENTS));
+    effects.push_back(new FXColorLine(LINE_ON, ledConfig.globalColor));
 
     effects.push_back(new FXTest(TEST_MODE));
 
