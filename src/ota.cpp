@@ -10,18 +10,15 @@ void OTA_init(char letter) {
 
     connectionLED.turnON();
     midiLED.turnON();
-
-    int i = 0;
-
-    while (WiFi.waitForConnectResult(5000) != WL_CONNECTED && i < 3) {
-        i++;
-        connectionLED.turnOFF();
-        midiLED.turnOFF();
-        delay(1000);
-        connectionLED.turnON();
-        midiLED.turnON();
-    }
-
+    int connectionResult = WiFi.waitForConnectResult(10000);
+    /*WL_CONNECTED after successful connection is established
+    WL_NO_SSID_AVAIL in case configured SSID cannot be reached
+    WL_CONNECT_FAILED if connection failed
+    WL_CONNECT_WRONG_PASSWORD if password is incorrect
+    WL_IDLE_STATUS when Wi-Fi is in process of changing between statuses
+    WL_DISCONNECTED if module is not configured in station mode
+    -1 on timeout*/
+    Serial.printf("connection result: %d", connectionResult);
     connectionLED.turnOFF();
     midiLED.turnOFF();
 
