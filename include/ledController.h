@@ -23,6 +23,8 @@
 #define TEMPO                       Note_D_2
 #define TEMPO_OFFSET                60
 
+#define FREE_RUN_START              Note_E_2
+
 #define GLOBAL_COLOR_1              Note_C_1
 #define GLOBAL_COLOR_2              Note_Cis_1
 #define GLOBAL_COLOR_3              Note_D_1

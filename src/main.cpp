@@ -12,7 +12,7 @@
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
 
-#define FREE_RUN_START_MILLIS 10000
+#define FREE_RUN_START_MILLIS 60000
 
 
 #define HELLO_PHASE_MILLIS 1000
@@ -31,6 +31,8 @@ static bool isHelloPhaseFinished = false;
 static MidiData midiData;
 static Config config;
 static bool isTestMode = false;
+
+static unsigned long freeRunSetTime = 0;
 
 
 void initConfig(const byte value) {
@@ -117,7 +119,19 @@ void loop() {
     MIDIC_read();
 
     midiData.noteOn[TEST_MODE] = isTestMode ? 255 : 0;
-    midiData.noteOn[FREE_RUN] = millis() - MIDICBLE_lastReceived() > FREE_RUN_START_MILLIS ? 255 : 0;
+
+    //activate free run after 60secs or after E-2 NoteOn
+    if (midiData.noteOn[FREE_RUN] == 0 &&
+        (midiData.noteOn[FREE_RUN_START] != 0 || millis() - MIDICBLE_lastNoteOn() > FREE_RUN_START_MILLIS)
+    ) {
+        freeRunSetTime = millis();
+        midiData.noteOn[FREE_RUN] = 255;
+    }
+    if (midiData.noteOn[FREE_RUN] != 0 && MIDICBLE_lastNoteOn() > freeRunSetTime) {
+        midiData.noteOn[FREE_RUN] = 0;
+    }
+
+    Serial.printf("freeRun: %d\n", midiData.noteOn[FREE_RUN]);
 
     if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {
