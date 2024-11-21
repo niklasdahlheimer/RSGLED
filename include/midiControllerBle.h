@@ -8,6 +8,6 @@ MidiData *MIDICBLE_read();
 
 void MIDICBLE_loop();
 
-unsigned long MIDICBLE_lastReceived();
+unsigned long MIDICBLE_lastNoteOn();
 
 #endif //RSGLED_MIDICONTROLLERBLE_H
