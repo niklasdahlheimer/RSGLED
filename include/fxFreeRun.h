@@ -3,7 +3,8 @@
 
 #include <fxBase.h>
 
-#define FREE_RUN_PERIOD_IN_MILLIS 10000
+#define FREE_RUN_DIM_IN_MILLIS 2000
+#define FREE_RUN_BRIGHTNESS 30
 
 CRGB white = CRGB::DarkOrange;
 
@@ -15,7 +16,9 @@ public:
     }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        ledConfig.allOn(&white, 30);
+        const byte brightness = FREE_RUN_BRIGHTNESS * getRampValue(millis() - startMillis, FREE_RUN_DIM_IN_MILLIS);
+        ledConfig.allOn(&white, brightness);
+        Serial.printf("set velocity to %d at %d \n", brightness, millis() - startMillis);
     };
 
     void onReset() override {
