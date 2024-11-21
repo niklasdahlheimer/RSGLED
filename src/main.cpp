@@ -11,6 +11,10 @@
 
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
+
+#define FREE_RUN_START_MILLIS 10000
+
+
 #define HELLO_PHASE_MILLIS 1000
 
 #define ENCODER_PIN_A 22
@@ -111,6 +115,7 @@ void loop() {
     MIDIC_read();
 
     midiData.noteOn[TEST_MODE] = isTestMode ? 255 : 0;
+    midiData.noteOn[FREE_RUN] = millis() - MIDICBLE_lastReceived() > FREE_RUN_START_MILLIS ? 255 : 0;
 
     if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {

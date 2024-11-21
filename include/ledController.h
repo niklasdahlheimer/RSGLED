@@ -96,6 +96,7 @@
 #define ROTATE_LINE                 Note_G5
 
 #define TEST_MODE                   Note_C6
+#define FREE_RUN                    Note_D6
 
 #define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           4
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      8

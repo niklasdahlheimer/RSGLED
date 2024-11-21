@@ -13,6 +13,7 @@
 #include "fxPalette.h"
 #include "fxWhiteSegments.h"
 #include "fxTest.h"
+#include "fxFreeRun.h"
 
 #include "overlayLevelPump.h"
 #include "overlayRotateGroup.h"
@@ -256,6 +257,7 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXColorLine(LINE_ON, ledConfig.globalColor));
 
     effects.push_back(new FXTest(TEST_MODE));
+    effects.push_back(new FXFreeRun(FREE_RUN));
 
     // Overlays
     effects.push_back(new OverlayStrobe(STROBE));
