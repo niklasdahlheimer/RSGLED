@@ -24,12 +24,14 @@
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
 
 static unsigned long aliveTime = 0;
+
 static unsigned long startupTime = 0;
+static bool isHelloPhaseFinished = false;
+
 static MidiData midiData;
 static Config config;
 static bool isTestMode = false;
 
-static bool isHelloPhaseFinished = false;
 
 void initConfig(const byte value) {
     delay(5000);
