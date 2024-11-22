@@ -5,7 +5,7 @@
 
 static MidiData* bleMidiData;
 static byte midiChannel;
-static unsigned long lastReceived = 0;
+static unsigned long lastNoteOn = 0;
 
 
 // private
@@ -27,7 +27,7 @@ static void handleDisconnect() {
 
 static void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        lastReceived = millis();
+        //lastReceived = millis();
         bleMidiData->controls[number] = value * 2;
         LED_dataInBlink();
         Serial.printf("control change %d %d\n", number, value);
@@ -36,7 +36,7 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
 
 static void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        lastReceived = millis();
+        //lastReceived = millis();
         bleMidiData->noteOn[note] = 0;
         Serial.printf("note off %d\n", note);
     }
@@ -49,7 +49,7 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
             return;
         }
 
-        lastReceived = millis();
+        lastNoteOn = millis();
         bleMidiData->noteOn[note] = 2 * velocity;
 
         LED_dataInBlink();
@@ -79,8 +79,8 @@ void MIDICBLE_init(const byte _midiChannel, char letter, MidiData* _bleMidiData)
     onAdvertisingStart();
 }
 
-unsigned long MIDICBLE_lastReceived() {
-    return lastReceived;
+unsigned long MIDICBLE_lastNoteOn() {
+    return lastNoteOn;
 }
 
 MidiData *MIDICBLE_read() {

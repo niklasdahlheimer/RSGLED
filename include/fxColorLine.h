@@ -20,7 +20,7 @@ public:
         ledConfig.lineOn(ledConfig.lines[((ledConfig.controller[CONTROLLER_LINE_INDEX] / 2) - 1) % ledConfig.LINE_NUM],
                          color,
                          velocity);
-        Serial.printf("set velocity to %d from %d time %d\n", velocity, velocity, ledConfig.timestamp - startMillis);
+        //Serial.printf("set velocity to %d from %d time %d\n", velocity, velocity, ledConfig.timestamp - startMillis);
     };
 
     void onReset() override {

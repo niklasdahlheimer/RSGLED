@@ -13,6 +13,7 @@
 #include "fxPalette.h"
 #include "fxWhiteSegments.h"
 #include "fxTest.h"
+#include "fxFreeRun.h"
 
 #include "overlayLevelPump.h"
 #include "overlayRotateGroup.h"
@@ -142,11 +143,11 @@ void maybeSetFadeInTime(const byte *controller) {
 
 void maybeSetTempo(const byte tempoValue) {
     // ignore null value or equal tempo
-    if (tempoValue == 0 || tempoValue + TEMPO_OFFSET == ledConfig.tempo) {
+    if (tempoValue == 0 || tempoValue == ledConfig.tempo) {
         return;
     }
-    ledConfig.tempo = tempoValue + TEMPO_OFFSET;
-    Serial.printf("set tempo to %d bpm (value was %d)\n", ledConfig.tempo, tempoValue);
+    Serial.printf("set tempo to %d bpm (value was %d)\n", tempoValue, ledConfig.tempo);
+    ledConfig.tempo = tempoValue;
 }
 
 int findMaxLedNum(const Config *config) {
@@ -165,6 +166,7 @@ int findMaxLedNum(const Config *config) {
 // public
 
 void reset() {
+    Serial.println("total reset");
     FastLED.clear(true);
     ledConfig.tempo = DEFAULT_TEMPO;
     ledConfig.tempoTrim = 1;
@@ -256,6 +258,7 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXColorLine(LINE_ON, ledConfig.globalColor));
 
     effects.push_back(new FXTest(TEST_MODE));
+    effects.push_back(new FXFreeRun(FREE_RUN));
 
     // Overlays
     effects.push_back(new OverlayStrobe(STROBE));
@@ -281,7 +284,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     // meta values
     maybeSetGroupColor(note, controller);
     maybeSetGlobalBrightness(&controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo(note[TEMPO] / 2);
+    maybeSetTempo((note[TEMPO_1]+ note[TEMPO_2]) / 2);
     maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
     maybeSetFadeInTime(controller);

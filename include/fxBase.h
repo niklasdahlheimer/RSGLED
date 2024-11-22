@@ -77,6 +77,13 @@ public:
         return static_cast<unsigned int>(beatLengthInMillis);
     }
 
+    // return 1.0 of above endRampMillis and a linear curve underneath
+    static float getRampValue(const unsigned long currentMillis, const unsigned long endRampMillis = 4000) {
+        return currentMillis > endRampMillis
+                   ? 1.0f
+                   : static_cast<float>(currentMillis) / static_cast<float>(endRampMillis);
+    }
+
 protected:
     byte triggerNote;
     unsigned long startMillis;

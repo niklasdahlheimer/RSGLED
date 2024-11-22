@@ -20,8 +20,10 @@
 
 #define TOTAL_RESET                 Note_C_2
 
-#define TEMPO                       Note_D_2
-#define TEMPO_OFFSET                60
+#define TEMPO_1                     Note_D_2
+#define TEMPO_2                     Note_Dis_2
+
+#define FREE_RUN_START              Note_E_2
 
 #define GLOBAL_COLOR_1              Note_C_1
 #define GLOBAL_COLOR_2              Note_Cis_1
@@ -96,6 +98,7 @@
 #define ROTATE_LINE                 Note_G5
 
 #define TEST_MODE                   Note_C6
+#define FREE_RUN                    Note_D6
 
 #define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           4
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      8

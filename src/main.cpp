@@ -11,6 +11,10 @@
 
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
+
+#define FREE_RUN_START_MILLIS 60000
+
+
 #define HELLO_PHASE_MILLIS 1000
 
 #define ENCODER_PIN_A 22
@@ -20,12 +24,16 @@
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
 
 static unsigned long aliveTime = 0;
+
 static unsigned long startupTime = 0;
+static bool isHelloPhaseFinished = false;
+
 static MidiData midiData;
 static Config config;
 static bool isTestMode = false;
 
-static bool isHelloPhaseFinished = false;
+static unsigned long freeRunSetTime = 0;
+
 
 void initConfig(const byte value) {
     delay(5000);
@@ -112,11 +120,25 @@ void loop() {
 
     midiData.noteOn[TEST_MODE] = isTestMode ? 255 : 0;
 
+    //activate free run after 60secs or after E-2 NoteOn
+    if (midiData.noteOn[FREE_RUN] == 0 &&
+        (midiData.noteOn[FREE_RUN_START] != 0 || millis() - MIDICBLE_lastNoteOn() > FREE_RUN_START_MILLIS)
+    ) {
+        Serial.println("start free run");
+        freeRunSetTime = millis();
+        midiData.noteOn[FREE_RUN] = 255;
+    }
+    if (midiData.noteOn[FREE_RUN] != 0 && MIDICBLE_lastNoteOn() > freeRunSetTime) {
+        Serial.println("stop free run");
+        midiData.noteOn[FREE_RUN] = 0;
+    }
+
     if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {
             midiData.noteOn[ALL_ON_COLOR_1] = 120;
             midiData.noteOn[PUMP] = 255;
         } else {
+            Serial.println("hello phase finished");
             isHelloPhaseFinished = true;
             midiData.noteOn[ALL_ON_COLOR_1] = 0;
             midiData.noteOn[PUMP] = 0;
