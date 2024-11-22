@@ -143,11 +143,11 @@ void maybeSetFadeInTime(const byte *controller) {
 
 void maybeSetTempo(const byte tempoValue) {
     // ignore null value or equal tempo
-    if (tempoValue == 0 || tempoValue + TEMPO_OFFSET == ledConfig.tempo) {
+    if (tempoValue == 0 || tempoValue == ledConfig.tempo) {
         return;
     }
-    ledConfig.tempo = tempoValue + TEMPO_OFFSET;
     Serial.printf("set tempo to %d bpm (value was %d)\n", tempoValue, ledConfig.tempo);
+    ledConfig.tempo = tempoValue;
 }
 
 int findMaxLedNum(const Config *config) {
@@ -284,7 +284,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     // meta values
     maybeSetGroupColor(note, controller);
     maybeSetGlobalBrightness(&controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo(note[TEMPO] / 2);
+    maybeSetTempo((note[TEMPO_1]+ note[TEMPO_2]) / 2);
     maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
     maybeSetFadeInTime(controller);

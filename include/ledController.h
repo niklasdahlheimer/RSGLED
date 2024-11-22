@@ -20,8 +20,8 @@
 
 #define TOTAL_RESET                 Note_C_2
 
-#define TEMPO                       Note_D_2
-#define TEMPO_OFFSET                60
+#define TEMPO_1                     Note_D_2
+#define TEMPO_2                     Note_Dis_2
 
 #define FREE_RUN_START              Note_E_2
 
