@@ -147,7 +147,7 @@ void maybeSetTempo(const byte tempoValue) {
         return;
     }
     ledConfig.tempo = tempoValue + TEMPO_OFFSET;
-    Serial.printf("set tempo to %d bpm (value was %d)\n", ledConfig.tempo, tempoValue);
+    Serial.printf("set tempo to %d bpm (value was %d)\n", tempoValue, ledConfig.tempo);
 }
 
 int findMaxLedNum(const Config *config) {
@@ -166,6 +166,7 @@ int findMaxLedNum(const Config *config) {
 // public
 
 void reset() {
+    Serial.println("total reset");
     FastLED.clear(true);
     ledConfig.tempo = DEFAULT_TEMPO;
     ledConfig.tempoTrim = 1;
