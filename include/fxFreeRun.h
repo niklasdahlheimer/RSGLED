@@ -6,7 +6,7 @@
 #define FREE_RUN_DIM_IN_MILLIS 2000
 #define FREE_RUN_BRIGHTNESS 30
 
-CRGB white = CRGB::DarkOrange;
+CRGB white = CRGB::LightSkyBlue;
 
 class FXFreeRun final : public FXBase {
 public:
