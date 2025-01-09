@@ -11,9 +11,7 @@
 
 #define ALIVE_INFO_INTERVAL_MILLIS 5000
 
-
 #define FREE_RUN_START_MILLIS 60000
-
 
 #define HELLO_PHASE_MILLIS 1000
 
@@ -128,11 +126,13 @@ void loop() {
         freeRunSetTime = millis();
         midiData.noteOn[FREE_RUN] = 255;
     }
+    // reset free run if any note has changed
     if (midiData.noteOn[FREE_RUN] != 0 && MIDICBLE_lastNoteOn() > freeRunSetTime) {
         Serial.println("stop free run");
         midiData.noteOn[FREE_RUN] = 0;
     }
 
+    // activate notes for hello phase
     if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {
             midiData.noteOn[ALL_ON_COLOR_1] = 120;
