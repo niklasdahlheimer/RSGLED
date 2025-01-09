@@ -32,6 +32,12 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
         LED_dataInBlink();
         Serial.printf("control change %d %d\n", number, value);
     }
+    if(number == 123 && value == 0){
+        Serial.printf("All Note Off command received!\n");
+        for (int i = 0; i < 255; ++i) {
+            bleMidiData->noteOn[i] = 0;
+        }
+    }
 }
 
 static void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
