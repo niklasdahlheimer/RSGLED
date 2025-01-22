@@ -2,8 +2,8 @@
 #include "midiController.h"
 #include "ledController.h"
 #include "midiControllerBle.h"
+#include "encoderController.h"
 #include "config.h"
-#include "AiEsp32RotaryEncoder.h"
 #include "ota.h"
 
 #define EEPROM_SIZE 100
@@ -15,12 +15,6 @@
 
 #define HELLO_PHASE_MILLIS 1000
 
-#define ENCODER_PIN_A 22
-#define ENCODER_PIN_B 23
-#define ENCODER_BUTTON_PIN 33
-
-AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
-
 static unsigned long aliveTime = 0;
 
 static unsigned long startupTime = 0;
@@ -28,10 +22,11 @@ static bool isHelloPhaseFinished = false;
 
 static MidiData midiData;
 static Config config;
+static State encoderState;
+
 static bool isTestMode = false;
 
 static unsigned long freeRunSetTime = 0;
-
 
 void initConfig(const byte value) {
     delay(5000);
@@ -61,19 +56,6 @@ void printAlive() {
     }
 }
 
-void IRAM_ATTR readEncoderISR() {
-    rotaryEncoder.readEncoder_ISR();
-}
-
-void setupEncoder() {
-    pinMode(ENCODER_PIN_A, INPUT_PULLUP);
-    pinMode(ENCODER_PIN_B, INPUT_PULLUP);
-    rotaryEncoder.areEncoderPinsPulldownforEsp32 = false;
-    rotaryEncoder.begin();
-    rotaryEncoder.setup(readEncoderISR);
-    rotaryEncoder.setBoundaries(0, 100, false);
-}
-
 void setup() {
     Serial.begin(115200);
     Serial.println("start init");
@@ -88,36 +70,15 @@ void setup() {
     LEDC_init(&config);
     MIDIC_init(config.MIDI_CHANNEL, &midiData);
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
+    ENCODER_init(&encoderState);
+    OTA_init(config.LETTER);
 
     printMemoryStatus();
-    setupEncoder();
-
-    OTA_init(config.LETTER);
 
     startupTime = millis();
 }
 
-void handleEncoder() {
-    if (rotaryEncoder.encoderChanged()) {
-        Serial.printf("encoder value: %d\n", rotaryEncoder.readEncoder());
-    }
-    if (rotaryEncoder.isEncoderButtonClicked()) {
-        Serial.printf("button pressed!\n");
-        isTestMode = !isTestMode;
-    }
-}
-
-void loop() {
-    printAlive();
-    OTA_loop();
-    MIDICBLE_loop();
-    handleEncoder();
-
-    MIDICBLE_read();
-    MIDIC_read();
-
-    midiData.noteOn[TEST_MODE] = isTestMode ? 255 : 0;
-
+void handleFreeRun() {
     //activate free run after 60secs or after E-2 NoteOn
     if (midiData.noteOn[FREE_RUN] == 0 &&
         (midiData.noteOn[FREE_RUN_START] != 0 || millis() - MIDICBLE_lastNoteOn() > FREE_RUN_START_MILLIS)
@@ -131,7 +92,9 @@ void loop() {
         Serial.println("stop free run");
         midiData.noteOn[FREE_RUN] = 0;
     }
+}
 
+void handleHelloPhase() {
     // activate notes for hello phase
     if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {
@@ -144,6 +107,33 @@ void loop() {
             midiData.noteOn[PUMP] = 0;
         }
     }
+}
+
+void handleEncoderState() {
+    midiData.noteOn[CONFIG_MODE_TEST] = encoderState.mode == TEST ? 255 : 0;
+    midiData.noteOn[CONFIG_MODE_BRIGHTNESS] = encoderState.mode == BRIGHTNESS ? 255 : 0;
+    midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
+
+    if (encoderState.mode == BRIGHTNESS) {
+        midiData.controls[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] = 255 - encoderState.value;
+    }else if (encoderState.mode == LINE) {
+        midiData.controls[CONTROLLER_LINE_INDEX] = encoderState.value;
+    }
+}
+
+void loop() {
+    printAlive();
+
+    OTA_loop();
+    MIDICBLE_loop();
+    ENCODER_loop();
+
+    MIDICBLE_read();
+    //MIDIC_read();
+
+    handleFreeRun();
+    handleHelloPhase();
+    handleEncoderState();
 
     LEDC_updateStripe(midiData.noteOn, midiData.controls);
 }

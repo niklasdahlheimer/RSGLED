@@ -97,8 +97,13 @@
 #define FLASH_LINE                  Note_Fis5
 #define ROTATE_LINE                 Note_G5
 
-#define TEST_MODE                   Note_C6
-#define FREE_RUN                    Note_D6
+#define FREE_RUN                    Note_C6
+
+#define CONFIG_MODE_TEST            Note_D6
+#define CONFIG_MODE_BRIGHTNESS      Note_E6
+#define CONFIG_MODE_LINE            Note_F6
+
+
 
 #define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           4
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      8
