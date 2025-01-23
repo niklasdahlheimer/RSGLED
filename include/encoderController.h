@@ -5,7 +5,7 @@
 
 #define ENCODER_PIN_A         22
 #define ENCODER_PIN_B         23
-#define ENCODER_BUTTON_PIN     33
+#define ENCODER_BUTTON_PIN    33
 
 
 enum MODE {
