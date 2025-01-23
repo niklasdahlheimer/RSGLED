@@ -1,7 +1,7 @@
 #include "encoderController.h"
 #include "AiEsp32RotaryEncoder.h"
 
-AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 4);
+AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 2);
 
 byte currentModeIndex = 0;
 
