@@ -16,11 +16,10 @@ public:
     }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        if (ledConfig.controller[CONTROLLER_LINE_INDEX] / 2 == 0) return;
-        ledConfig.lineOn(ledConfig.lines[((ledConfig.controller[CONTROLLER_LINE_INDEX] / 2) - 1) % ledConfig.LINE_NUM],
-                         color,
-                         velocity);
-        //Serial.printf("set velocity to %d from %d time %d\n", velocity, velocity, ledConfig.timestamp - startMillis);
+        //if (ledConfig.controller[CONTROLLER_LINE_INDEX] == 0) return;
+        const int activeLine = ledConfig.controller[CONTROLLER_LINE_INDEX] % ledConfig.LINE_NUM;
+        ledConfig.lineOn(ledConfig.lines[activeLine], color, velocity);
+        Serial.printf("set line %d to velocity %d\n", activeLine, velocity);
     };
 
     void onReset() override {
