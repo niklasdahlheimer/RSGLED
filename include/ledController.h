@@ -132,7 +132,7 @@ typedef struct {
     int LINE_NUM = 0;
     int GROUP_NUM = 0;
     CRGB LEDs[MAX_LED_NUM]{};
-    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM]{}; //lines start at index up to MAX_LINE_NUM-1
+    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM]{}; // lines start at index 0 up to MAX_LINE_NUM-1
     CRGB **groups[MAX_GROUP_NUM][MAX_LINE_NUM]{}; // group[0] is AllGroup, group[1] is Group1,..
     CRGB lineGradientLEDs[MAX_LINE_NUM]{};
     CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
