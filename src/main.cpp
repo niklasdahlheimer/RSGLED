@@ -13,7 +13,7 @@
 
 #define FREE_RUN_START_MILLIS 60000
 
-#define HELLO_PHASE_MILLIS 1000
+#define HELLO_PHASE_MILLIS 1500
 
 static unsigned long aliveTime = 0;
 
