@@ -60,6 +60,9 @@ void setup() {
     Serial.begin(115200);
     Serial.println("start init");
 
+    // delay for debugging to start serial monitor
+    //delay(4000);
+
     EEPROM.begin(EEPROM_SIZE);
 
     // 0 for R, 1 for S, 2 for G
