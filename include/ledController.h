@@ -85,10 +85,15 @@
 #define LINE_ON                     Note_F3
 
 #define RAINBOW                     Note_C4
-#define PALETTE                     Note_Cis4
 #define GRADIENT_WALK               Note_D4
 #define GRADIENT_FADE               Note_Dis4
 #define WHITE_SEGMENTS              Note_E4
+
+#define PALETTE_OCEAN               Note_F4
+#define PALETTE_RAINBOW             Note_Fis4
+#define PALETTE_PARTY               Note_G4
+#define PALETTE_HEAT                Note_Gis4
+#define PALETTE_LAVA                Note_A4
 
 #define STROBE                      Note_C5
 #define ROTATE_GROUP                Note_Cis5

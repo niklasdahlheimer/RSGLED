@@ -253,9 +253,14 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXGradientWalk(GRADIENT_WALK));
     effects.push_back(new FXGradientFade(GRADIENT_FADE));
     effects.push_back(new FXRainbow(RAINBOW));
-    effects.push_back(new FXPalette(PALETTE));
     effects.push_back(new FXWhiteSegments(WHITE_SEGMENTS));
     effects.push_back(new FXColorLine(LINE_ON, ledConfig.globalColor));
+
+    effects.push_back(new FXPalette(PALETTE_OCEAN, OceanColors_p));
+    effects.push_back(new FXPalette(PALETTE_RAINBOW, RainbowColors_p));
+    effects.push_back(new FXPalette(PALETTE_PARTY, PartyColors_p));
+    effects.push_back(new FXPalette(PALETTE_HEAT, HeatColors_p));
+    effects.push_back(new FXPalette(PALETTE_LAVA, LavaColors_p));
 
     effects.push_back(new FXTest(CONFIG_MODE_TEST));
     effects.push_back(new FXFreeRun(FREE_RUN));
