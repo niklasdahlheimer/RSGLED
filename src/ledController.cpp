@@ -110,11 +110,17 @@ void maybeSetGroupColor(const byte *note, const byte *controller) {
     }
 }
 
-void maybeSetGlobalBrightness(const byte *brightnessTrimValue) {
-    if (*brightnessTrimValue == 0 && ledConfig.globBrightness == LED_BRIGHTNESS_MAX) {
+void maybeSetGlobalBrightness(LEDConfig *config) {
+    // do nothing if nothing has changed
+    if (config->lastControllerValues[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] ==
+        config->controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM]) {
         return;
     }
-    ledConfig.globBrightness = LED_BRIGHTNESS_MAX - *brightnessTrimValue * 2;
+    if (config->controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] == 0 && ledConfig.globBrightness == LED_BRIGHTNESS_MAX) {
+        return;
+    }
+
+    ledConfig.globBrightness = LED_BRIGHTNESS_MAX - config->controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM];
     FastLED.setBrightness(ledConfig.globBrightness);
     Serial.printf("set globBrightness to %d\n", ledConfig.globBrightness);
 }
@@ -137,7 +143,7 @@ void maybeSetTempoTrim(const byte *controller) {
 
 void maybeSetFadeInTime(const byte *controller) {
     if (controller[CONTROLLER_FADE_IN] == ledConfig.lastControllerValues[CONTROLLER_FADE_IN]) return;
-    ledConfig.fadeInTime = map(controller[CONTROLLER_FADE_IN], 0, 254, 0,LED_FADE_IN_TIME_MILLIS_MAX);
+    ledConfig.fadeInTime = map(controller[CONTROLLER_FADE_IN], 0, 254, 0, LED_FADE_IN_TIME_MILLIS_MAX);
     Serial.printf("fade in time to %d ms \n", ledConfig.fadeInTime);
 }
 
@@ -190,7 +196,8 @@ void LEDC_init(const Config *config) {
         ledConfig.LINE_NUM++;
         for (int j = 0; j < MAX_PIXEL_PER_LINE_NUM; j++) {
             if (!config->lines[i][j]) break;
-            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] - 1]; // indices are 1-based to avoid null-pointers
+            ledConfig.lines[i][j] = &ledConfig.LEDs[config->lines[i][j] -
+                                                    1]; // indices are 1-based to avoid null-pointers
         }
     }
 
@@ -290,8 +297,8 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // meta values
     maybeSetGroupColor(note, controller);
-    maybeSetGlobalBrightness(&controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM]);
-    maybeSetTempo((note[TEMPO_1]+ note[TEMPO_2]) / 2);
+    maybeSetGlobalBrightness(&ledConfig);
+    maybeSetTempo((note[TEMPO_1] + note[TEMPO_2]) / 2);
     maybeSetTempoTrim(controller);
     maybeSetGlobalColor(note, controller);
     maybeSetFadeInTime(controller);
