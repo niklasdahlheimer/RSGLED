@@ -257,8 +257,10 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXWhiteSegments(WHITE_SEGMENTS));
     effects.push_back(new FXColorLine(LINE_ON, ledConfig.globalColor));
 
-    effects.push_back(new FXTest(TEST_MODE));
+    effects.push_back(new FXTest(CONFIG_MODE_TEST));
     effects.push_back(new FXFreeRun(FREE_RUN));
+    effects.push_back(new FXColorAll(CONFIG_MODE_BRIGHTNESS, &COLORS[0]));
+    effects.push_back(new FXColorLine(CONFIG_MODE_LINE, &COLORS[0]));
 
     // Overlays
     effects.push_back(new OverlayStrobe(STROBE));

@@ -1,6 +1,8 @@
 #ifndef RSGLED_LEDCONTROLLER_H
 #define RSGLED_LEDCONTROLLER_H
 
+#define FASTLED_OVERCLOCK 1.2 // 20% overclock ~ 960 khz.
+
 #include <Arduino.h>
 #include <FastLED.h>
 #include "midiConsts.h"
@@ -97,8 +99,13 @@
 #define FLASH_LINE                  Note_Fis5
 #define ROTATE_LINE                 Note_G5
 
-#define TEST_MODE                   Note_C6
-#define FREE_RUN                    Note_D6
+#define FREE_RUN                    Note_C6
+
+#define CONFIG_MODE_TEST            Note_D6
+#define CONFIG_MODE_BRIGHTNESS      Note_E6
+#define CONFIG_MODE_LINE            Note_F6
+
+
 
 #define CONTROLLER_GLOBAL_BRIGHTNESS_TRIM           4
 #define CONTROLLER_GROUP_COLOR_SATURATION_TRIM      8
@@ -127,7 +134,7 @@ typedef struct {
     int LINE_NUM = 0;
     int GROUP_NUM = 0;
     CRGB LEDs[MAX_LED_NUM]{};
-    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM]{}; //lines start at index up to MAX_LINE_NUM-1
+    CRGB *lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM]{}; // lines start at index 0 up to MAX_LINE_NUM-1
     CRGB **groups[MAX_GROUP_NUM][MAX_LINE_NUM]{}; // group[0] is AllGroup, group[1] is Group1,..
     CRGB lineGradientLEDs[MAX_LINE_NUM]{};
     CRGB fullGradientLEDs[FULL_GRADIENT_STEPS]{};
