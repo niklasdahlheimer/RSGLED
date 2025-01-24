@@ -4,8 +4,27 @@
 #include "led.h"
 #include "../credentials.h"
 
-void OTA_init(char letter) {
+void OTA_init(char letter, int ip) {
     WiFi.mode(WIFI_STA);
+
+    // Set your Static IP address
+// https://randomnerdtutorials.com/esp32-static-fixed-ip-address-arduino-ide/
+    IPAddress local_IP(192, 168, 100, ip);
+    IPAddress gateway(192, 168, 100, 1);
+    IPAddress subnet(255, 255, 255, 0);
+    // Configures static IP address
+    if (!WiFi.config(local_IP, gateway, subnet)) {
+        Serial.println("STA Failed to configure");
+    }
+
+    // Hostname defaults to esp3232-[MAC]
+    char hostname[50];  // Buffer for the final hostname
+    snprintf(hostname, sizeof(hostname), "RSG-LED-%c-%02d", letter, ip);
+    ArduinoOTA.setHostname(hostname);
+
+    // Connect to Wi-Fi network with SSID and password
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
     WiFi.begin(ssid, password);
 
     connectionLED.turnON();
@@ -24,9 +43,6 @@ void OTA_init(char letter) {
 
     // Port defaults to 3232
     // ArduinoOTA.setPort(3232);
-
-    // Hostname defaults to esp3232-[MAC]
-    ArduinoOTA.setHostname("RSG-LED-"+letter);
 
     // No authentication by default
     // ArduinoOTA.setPassword("admin");

@@ -72,7 +72,7 @@ void setup() {
     MIDIC_init(config.MIDI_CHANNEL, &midiData);
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
     ENCODER_init(&encoderState);
-    OTA_init(config.LETTER);
+    OTA_init(config.LETTER, config.IP);
 
     printMemoryStatus();
 

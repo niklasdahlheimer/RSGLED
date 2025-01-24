@@ -8,6 +8,7 @@
 
 typedef struct {
     char LETTER;
+    int IP;
     byte MIDI_CHANNEL;
     short lines[MAX_LINE_NUM][MAX_PIXEL_PER_LINE_NUM];
     short groups[MAX_GROUP_NUM][MAX_LINE_NUM];
@@ -19,6 +20,7 @@ inline Config getConfig(const int index) {
         default:
             return (Config){
                 .LETTER = 'R',
+                .IP = 40,
                 .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
                 .lines = {
                     {1, 107, 108, 212, 213, 314, 315, 451, 452, 453, 462, 463, 464}, //1
@@ -95,6 +97,7 @@ inline Config getConfig(const int index) {
         case 1:
             return (Config){
                 .LETTER = 'S',
+                .IP = 41,
                 .MIDI_CHANNEL = 13, // has to be MidiChannel - 1
                 .lines = {
                     {7, 8, 9, 10, 11, 104, 105, 106, 198, 288, 287, 199, 200, 107, 12}, //1
@@ -162,6 +165,7 @@ inline Config getConfig(const int index) {
         case 2:
             return (Config){
                 .LETTER = 'G',
+                .IP = 42,
                 .MIDI_CHANNEL = 14, // has to be MidiChannel - 1
                 .lines = {
                     {1, 93, 184, 273, 358, 359, 271, 272, 181, 182, 183, 91, 92, 361, 360, 371, 370, 369, 379, 380}, //1
