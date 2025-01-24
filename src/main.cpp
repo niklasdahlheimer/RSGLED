@@ -24,8 +24,6 @@ static MidiData midiData;
 static Config config;
 static State encoderState;
 
-static bool isTestMode = false;
-
 static unsigned long freeRunSetTime = 0;
 
 void initConfig(const byte value) {
