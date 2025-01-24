@@ -1,1 +1,1 @@
-pio run -t upload --upload-port 192.168.42.66
+pio run -t upload --upload-port 192.168.100.40
