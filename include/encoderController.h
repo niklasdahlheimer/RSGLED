@@ -26,7 +26,7 @@ typedef struct {
 typedef struct {
     MODE mode;
     int value;
-    long lastChanged;
+    unsigned long lastChanged;
     bool active;
 } State;
 

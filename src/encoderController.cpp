@@ -5,7 +5,7 @@ AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER
 
 byte currentModeIndex = 0;
 
-State* statePointer;
+State *statePointer;
 
 #define ACTIVE_MILLIS 2000
 
@@ -13,17 +13,17 @@ State* statePointer;
 
 #define NUM_OF_MODES 4
 ModeConfig ModeConfigs[NUM_OF_MODES] = {
-    {INITIAL, 255, 0, 255,false},
-    {BRIGHTNESS, 255, 0, 255,false},
-    {TEST, 255, 0, 255,false},
-    {LINE, 0, 0, 255,true},
+        {INITIAL,    255, 0, 255, false},
+        {BRIGHTNESS, 255, 0, 255, false},
+        {TEST,       255, 0, 255, false},
+        {LINE,       0,   0, 255, true},
 };
 
 void IRAM_ATTR readEncoderISR() {
     rotaryEncoder.readEncoder_ISR();
 }
 
-void ENCODER_init(State* state){
+void ENCODER_init(State *state) {
     statePointer = state;
 
     pinMode(ENCODER_PIN_A, INPUT_PULLUP);
@@ -35,15 +35,16 @@ void ENCODER_init(State* state){
     rotaryEncoder.begin();
 }
 
-void ENCODER_loop(){
+void ENCODER_loop() {
     if (rotaryEncoder.isEncoderButtonClicked() &&
-    millis() - statePointer->lastChanged > DEBOUNCE_INTERVAL) { // debounce
+        millis() - statePointer->lastChanged > DEBOUNCE_INTERVAL) { // debounce
         currentModeIndex = (currentModeIndex + 1) % NUM_OF_MODES;
         statePointer->mode = ModeConfigs[currentModeIndex].mode;
         statePointer->value = ModeConfigs[currentModeIndex].value;
         statePointer->lastChanged = millis();
         statePointer->active = true;
-        rotaryEncoder.setBoundaries(ModeConfigs[currentModeIndex].minValue, ModeConfigs[currentModeIndex].maxValue, ModeConfigs[currentModeIndex].circleValues);
+        rotaryEncoder.setBoundaries(ModeConfigs[currentModeIndex].minValue, ModeConfigs[currentModeIndex].maxValue,
+                                    ModeConfigs[currentModeIndex].circleValues);
         rotaryEncoder.reset(ModeConfigs[currentModeIndex].value);
         Serial.printf("enc mode: %d, value: %d\n", statePointer->mode, statePointer->value);
     }
@@ -55,7 +56,7 @@ void ENCODER_loop(){
         Serial.printf("enc value: %d\n", encValue);
     }
 
-    if(millis() - statePointer->lastChanged > ACTIVE_MILLIS){
+    if (millis() - statePointer->lastChanged > ACTIVE_MILLIS) {
         statePointer->active = false;
     }
 
