@@ -81,15 +81,14 @@ void setup() {
 
 void handleFreeRun() {
     //activate free run after 60secs or after E-2 NoteOn
-    if (midiData.noteOn[FREE_RUN] == 0 &&
-        (midiData.noteOn[FREE_RUN_START] != 0 || millis() - MIDICBLE_lastNoteOn() > FREE_RUN_START_MILLIS)
-    ) {
+    if (encoderState.mode == INITIAL && midiData.noteOn[FREE_RUN] == 0 &&
+        (midiData.noteOn[FREE_RUN_START] != 0 || millis() - MIDICBLE_lastNoteOn() > FREE_RUN_START_MILLIS)) {
         Serial.println("start free run");
         freeRunSetTime = millis();
         midiData.noteOn[FREE_RUN] = 255;
     }
     // reset free run if any note has changed
-    if (midiData.noteOn[FREE_RUN] != 0 && MIDICBLE_lastNoteOn() > freeRunSetTime) {
+    if (midiData.noteOn[FREE_RUN] != 0 && (MIDICBLE_lastNoteOn() > freeRunSetTime || encoderState.mode != INITIAL)) {
         Serial.println("stop free run");
         midiData.noteOn[FREE_RUN] = 0;
     }
