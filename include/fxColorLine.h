@@ -19,7 +19,7 @@ public:
         //if (ledConfig.controller[CONTROLLER_LINE_INDEX] == 0) return;
         const int activeLine = ledConfig.controller[CONTROLLER_LINE_INDEX] % ledConfig.LINE_NUM;
         ledConfig.lineOn(ledConfig.lines[activeLine], color, velocity);
-        Serial.printf("set line %d to velocity %d\n", activeLine, velocity);
+        //Serial.printf("set line %d to velocity %d\n", activeLine, velocity);
     };
 
     void onReset() override {
