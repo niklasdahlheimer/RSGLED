@@ -9,12 +9,14 @@ State* statePointer;
 
 #define ACTIVE_MILLIS 2000
 
+#define DEBOUNCE_INTERVAL 500
+
 #define NUM_OF_MODES 4
 ModeConfig ModeConfigs[NUM_OF_MODES] = {
-    {INITIAL, 255},
-    {BRIGHTNESS, 255},
-    {TEST, 255},
-    {LINE, 0},
+    {INITIAL, 255, 0, 255,false},
+    {BRIGHTNESS, 255, 0, 255,false},
+    {TEST, 255, 0, 255,false},
+    {LINE, 0, 0, 255,true},
 };
 
 void IRAM_ATTR readEncoderISR() {
@@ -29,18 +31,20 @@ void ENCODER_init(State* state){
 
     rotaryEncoder.areEncoderPinsPulldownforEsp32 = false;
     rotaryEncoder.setup(readEncoderISR);
-    rotaryEncoder.setBoundaries(0, 255, false);
+    rotaryEncoder.setBoundaries(ModeConfigs[0].minValue, ModeConfigs[0].maxValue, ModeConfigs[0].circleValues);
     rotaryEncoder.begin();
 }
 
 void ENCODER_loop(){
-    if (rotaryEncoder.isEncoderButtonClicked()) {
+    if (rotaryEncoder.isEncoderButtonClicked() &&
+    millis() - statePointer->lastChanged > DEBOUNCE_INTERVAL) { // debounce
         currentModeIndex = (currentModeIndex + 1) % NUM_OF_MODES;
         statePointer->mode = ModeConfigs[currentModeIndex].mode;
         statePointer->value = ModeConfigs[currentModeIndex].value;
         statePointer->lastChanged = millis();
         statePointer->active = true;
-        rotaryEncoder.reset(statePointer->value);
+        rotaryEncoder.setBoundaries(ModeConfigs[currentModeIndex].minValue, ModeConfigs[currentModeIndex].maxValue, ModeConfigs[currentModeIndex].circleValues);
+        rotaryEncoder.reset(ModeConfigs[currentModeIndex].value);
         Serial.printf("enc mode: %d, value: %d\n", statePointer->mode, statePointer->value);
     }
     if (rotaryEncoder.encoderChanged()) {

@@ -18,6 +18,9 @@ enum MODE {
 typedef struct {
     MODE mode;
     int value;
+    byte minValue;
+    byte maxValue;
+    bool circleValues;
 } ModeConfig;
 
 typedef struct {

@@ -116,8 +116,8 @@ void handleEncoderState() {
     midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
 
     if (encoderState.mode == BRIGHTNESS) {
-        midiData.controls[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] = (255 - encoderState.value)/2;
-    }else if (encoderState.mode == LINE) {
+        midiData.controls[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] = 255 - encoderState.value;
+    } else if (encoderState.mode == LINE) {
         midiData.controls[CONTROLLER_LINE_INDEX] = encoderState.value;
     }
 }
