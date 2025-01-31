@@ -57,14 +57,12 @@ void printAlive() {
 }
 
 void setup() {
-    if(DEBUG_ENABLE){
+    if (DEBUG_ENABLE) {
+        delay(5000); // time to start serial console
         Serial.begin(115200);
     }
 
     Serial.println("start init");
-
-    // delay for debugging to start serial monitor
-    //delay(4000);
 
     EEPROM.begin(EEPROM_SIZE);
 
