@@ -1,8 +1,8 @@
 #ifndef RSGLED_LEDCONTROLLER_H
 #define RSGLED_LEDCONTROLLER_H
 
-#define FASTLED_OVERCLOCK 1.3 // 20% overclock ~ 960 khz.
 #define FASTLED_OVERCLOCK_SUPRESS_WARNING true
+#define FASTLED_OVERCLOCK 1.3 // 20% overclock ~ 960 khz.
 
 #include <Arduino.h>
 #include <FastLED.h>
