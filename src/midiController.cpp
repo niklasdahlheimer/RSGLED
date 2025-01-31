@@ -6,32 +6,27 @@
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
 
-static MidiData* midiData;
+static MidiData *midiData;
 static byte midiChannel;
+static unsigned long lastNoteOn = 0;
 
 void handleControlChange(byte channel, byte number, byte value);
 
-void handlePitchBend(byte channel, int bend);
-
 void handleNoteOn(byte channel, byte note, byte velocity);
-
-void handleAfterTouchPoly(byte channel, byte note, byte pressure);
 
 void handleNoteOff(byte channel, byte note, byte velocity);
 
 void handleError(int8_t error);
 
-void MIDIC_init(const byte _midiChannel, MidiData* _midiData) {
+void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
     midiChannel = _midiChannel;
     midiData = _midiData;
 
     MIDI.begin(midiChannel);
-    MIDI.turnThruOff();
     MIDI.setHandleControlChange(handleNoteOn);
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.setHandleError(handleError);
-    MIDI.setHandleAfterTouchPoly(handleAfterTouchPoly);
 }
 
 MidiData *MIDIC_read() {
@@ -41,28 +36,38 @@ MidiData *MIDIC_read() {
 
 // private
 
-void handleControlChange(byte channel, byte number, byte value) {
-    midiData->controls[number] = value;
-    Serial.printf("control change on %03d, value %03d", number, value);
+void handleAllNoteOff() {
+    Serial.printf("All Note Off command received!\n");
+    for (unsigned char & i : midiData->noteOn) {
+        i = 0;
+    }
 }
 
-void handleNoteOn(byte channel, byte note, byte velocity) {
+void handleControlChange(const byte channel, const byte number, const byte value) {
+    midiData->controls[number] = value * 2;
+    Serial.printf("control change on %03d, value %03d\n", number, value);
+
+    if(number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL){
+        handleAllNoteOff();
+    }
+}
+
+void handleNoteOn(const byte channel, const byte note, const byte velocity) {
     midiData->noteOn[note] = 2 * velocity;
     LED_dataInBlink();
-    Serial.printf("note on %03d, velocity %03d", note, velocity);
+    lastNoteOn = millis();
+    Serial.printf("note on %03d, velocity %03d\n", note, velocity);
 }
 
-void handleAfterTouchPoly(byte channel, byte note, byte pressure) {
-    //data.noteOn[note] = 2 * pressure;
-    Serial.printf("after touch on %03d, pressure %03d", note, pressure);
-}
-
-void handleNoteOff(byte channel, byte note, byte velocity) {
-    //serialPrintf(midiLogSerial, "NoteOff: %d %d %d", channel, note, velocity);
+void handleNoteOff(const byte channel, const byte note, byte velocity) {
     midiData->noteOn[note] = 0;
-    Serial.printf("note off %03d", note);
+    Serial.printf("note off %03d\n", note);
 }
 
-void handleError(int8_t error) {
-    Serial.printf("MIDI error %03d", error);
+void handleError(const int8_t error) {
+    Serial.printf("MIDI error %03d\n", error);
 };
+
+unsigned long MIDIC_lastNoteOn() {
+    return lastNoteOn;
+}

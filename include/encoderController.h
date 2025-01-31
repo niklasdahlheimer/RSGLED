@@ -9,10 +9,11 @@
 
 
 enum MODE {
-    INITIAL,
+    RUN_BLE,
     BRIGHTNESS,
     TEST,
-    LINE
+    LINE,
+    RUN_CABLE
 };
 
 typedef struct {

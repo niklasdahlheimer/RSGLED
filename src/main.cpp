@@ -83,17 +83,27 @@ void setup() {
 }
 
 void handleFreeRun() {
-    //activate free run after 60secs or after E-2 NoteOn
-    if (encoderState.mode == INITIAL && midiData.noteOn[FREE_RUN] == 0 &&
-        (midiData.noteOn[FREE_RUN_START] != 0 || millis() - MIDICBLE_lastNoteOn() > FREE_RUN_START_MILLIS)) {
-        Serial.println("start free run");
-        freeRunSetTime = millis();
-        midiData.noteOn[FREE_RUN] = 255;
-    }
-    // reset free run if any note has changed
-    if (midiData.noteOn[FREE_RUN] != 0 && (MIDICBLE_lastNoteOn() > freeRunSetTime || encoderState.mode != INITIAL)) {
-        Serial.println("stop free run");
-        midiData.noteOn[FREE_RUN] = 0;
+    const unsigned long lastSignal = max(MIDICBLE_lastNoteOn(), MIDIC_lastNoteOn());
+
+    if (encoderState.mode == RUN_BLE || encoderState.mode == RUN_CABLE) {
+        // start free run
+        if (midiData.noteOn[FREE_RUN] == 0 && (midiData.noteOn[FREE_RUN_START] != 0 || millis() - lastSignal > FREE_RUN_START_MILLIS)) {
+            Serial.println("start free run in ble mode");
+            freeRunSetTime = millis();
+            midiData.noteOn[FREE_RUN] = 255;
+        }
+
+        // stop free run on signal
+        if (midiData.noteOn[FREE_RUN] != 0 && lastSignal > freeRunSetTime) {
+            Serial.println("stop free run");
+            midiData.noteOn[FREE_RUN] = 0;
+        }
+    } else {
+        // stop free run in all other modes
+        if (midiData.noteOn[FREE_RUN] != 0) {
+            Serial.println("stop free run");
+            midiData.noteOn[FREE_RUN] = 0;
+        }
     }
 }
 
@@ -131,8 +141,10 @@ void loop() {
     MIDICBLE_loop();
     ENCODER_loop();
 
-    MIDICBLE_read();
-    //MIDIC_read();
+    // ble midi is read asynchronous into midiData array
+    if (encoderState.mode == RUN_CABLE) {
+        MIDIC_read();
+    }
 
     handleFreeRun();
     handleHelloPhase();

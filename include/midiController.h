@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+#define ALL_NOTE_OFF_CC 123
+#define ALL_NOTE_OFF_VAL 0
+
 typedef struct {
     /// Boolean array for 255 note on/off velocity values (0-255)
     byte noteOn[255];
@@ -13,5 +16,7 @@ typedef struct {
 void MIDIC_init(byte _midiChannel, MidiData* _midiData);
 
 MidiData *MIDIC_read();
+
+unsigned long MIDIC_lastNoteOn();
 
 #endif //RSGLED_MIDICONTROLLER_H
