@@ -18,15 +18,15 @@
 #define DEBUG_ENABLE false
 
 static unsigned long aliveTime = 0;
-
+static unsigned long freeRunSetTime = 0;
 static unsigned long startupTime = 0;
+
 static bool isHelloPhaseFinished = false;
 
 static MidiData midiData;
 static Config config;
 static State encoderState;
 
-static unsigned long freeRunSetTime = 0;
 
 void initConfig(const byte value) {
     delay(5000);
