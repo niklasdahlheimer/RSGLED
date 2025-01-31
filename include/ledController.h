@@ -159,7 +159,7 @@ typedef struct {
         for (int i = 0; i < MAX_PIXEL_PER_LINE_NUM; ++i) {
             if (!line[i]) break;
             *(line[i]) = *color;
-            line[i]->nscale8(brightness);
+            line[i]->nscale8_video(brightness);
         }
     }
 
