@@ -14,6 +14,7 @@
 #include "fxWhiteSegments.h"
 #include "fxTest.h"
 #include "fxFreeRun.h"
+#include "fxFreeRun2.h"
 
 #include "overlayLevelPump.h"
 #include "overlayRotateGroup.h"
@@ -270,7 +271,7 @@ void LEDC_init(const Config *config) {
     effects.push_back(new FXPalette(PALETTE_LAVA, LavaColors_p));
 
     effects.push_back(new FXTest(CONFIG_MODE_TEST));
-    effects.push_back(new FXFreeRun(FREE_RUN));
+    effects.push_back(new FXFreeRun2(FREE_RUN));
     effects.push_back(new FXColorAll(CONFIG_MODE_BRIGHTNESS, &COLORS[0]));
     effects.push_back(new FXColorLine(CONFIG_MODE_LINE, &COLORS[0]));
 
