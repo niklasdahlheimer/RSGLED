@@ -11,7 +11,7 @@ public:
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (startMillis == ledConfig.timestamp) {
-            fill_gradient_RGB(ledConfig.fullGradientLEDs, FULL_GRADIENT_STEPS, COLORS[0], COLORS[5], COLORS[0]);
+            fl::fill_gradient_RGB(ledConfig.fullGradientLEDs, FULL_GRADIENT_STEPS, COLORS[0], COLORS[5], COLORS[0]);
             gradientFadeLastStep = 0;
             gradientFadeLastUpdateTime = ledConfig.timestamp;
         }
