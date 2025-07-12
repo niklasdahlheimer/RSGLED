@@ -1,6 +1,5 @@
 #include <EEPROM.h>
 #include "midiController.h"
-#include "ledController.h"
 #include "midiControllerBle.h"
 #include "encoderController.h"
 #include "config.h"
@@ -85,7 +84,7 @@ void setup() {
 void handleFreeRun() {
     const unsigned long lastSignal = max(MIDICBLE_lastNoteOn(), MIDIC_lastNoteOn());
 
-    if (encoderState.mode == RUN_BLE || encoderState.mode == RUN_CABLE) {
+    /*if (encoderState.mode == RUN_BLE || encoderState.mode == RUN_CABLE) {
         // start free run
         if (midiData.noteOn[FREE_RUN] == 0 && (midiData.noteOn[FREE_RUN_START] != 0 || millis() - lastSignal > FREE_RUN_START_MILLIS)) {
             Serial.println("start free run in ble mode");
@@ -104,12 +103,12 @@ void handleFreeRun() {
             Serial.println("stop free run");
             midiData.noteOn[FREE_RUN] = 0;
         }
-    }
+    }*/
 }
 
 void handleHelloPhase() {
     // activate notes for hello phase
-    if (!isHelloPhaseFinished) {
+    /*if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {
             midiData.noteOn[ALL_ON_COLOR_1] = 120;
             midiData.noteOn[PUMP] = 255;
@@ -119,11 +118,11 @@ void handleHelloPhase() {
             midiData.noteOn[ALL_ON_COLOR_1] = 0;
             midiData.noteOn[PUMP] = 0;
         }
-    }
+    }*/
 }
 
 void handleEncoderState() {
-    midiData.noteOn[CONFIG_MODE_TEST] = encoderState.mode == TEST ? 255 : 0;
+    /*midiData.noteOn[CONFIG_MODE_TEST] = encoderState.mode == TEST ? 255 : 0;
     midiData.noteOn[CONFIG_MODE_BRIGHTNESS] = encoderState.mode == BRIGHTNESS ? 255 : 0;
     midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
 
@@ -131,7 +130,7 @@ void handleEncoderState() {
         midiData.controls[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] = 255 - encoderState.value;
     } else if (encoderState.mode == LINE) {
         midiData.controls[CONTROLLER_LINE_INDEX] = encoderState.value;
-    }
+    }*/
 }
 
 void loop() {
