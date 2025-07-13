@@ -9,9 +9,9 @@ void OTA_init(char letter, int ip) {
 
     // Set your Static IP address
 // https://randomnerdtutorials.com/esp32-static-fixed-ip-address-arduino-ide/
-    IPAddress local_IP(192, 168, 100, ip);
-    IPAddress gateway(192, 168, 100, 1);
-    IPAddress subnet(255, 255, 255, 0);
+    IPAddress local_IP(network[0], network[1], network[2], ip);
+    IPAddress gateway(gateway[0], gateway[1], gateway[2], gateway[3]);
+    IPAddress subnet(subnet[0], subnet[1], subnet[2], subnet[3]);
     // Configures static IP address
     if (!WiFi.config(local_IP, gateway, subnet)) {
         Serial.println("STA Failed to configure");
