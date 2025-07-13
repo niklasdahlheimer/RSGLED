@@ -5,7 +5,6 @@
 
 #define CONNECTION_LED 21
 #define MIDI_INPUT_LED 19
-#define MIDI_CHANNEL_ALL 11
 #define CONNECTION_BLINK_TIME_IN_MS 500
 
 static ezLED connectionLED(CONNECTION_LED);

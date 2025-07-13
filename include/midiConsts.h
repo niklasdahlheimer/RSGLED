@@ -2,6 +2,8 @@
 #define MIDICONSTS_H
 #include <Arduino.h>
 
+#define MIDI_CHANNEL_ALL 11
+
 #define Note_C_2 0
 #define Note_Cis_2 1
 #define Note_D_2 2

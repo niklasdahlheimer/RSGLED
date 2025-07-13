@@ -1,6 +1,8 @@
 #include "midiController.h"
 #include <Arduino.h>
 #include <BLEMidi.h>
+#include <midiConsts.h>
+
 #include "led.h"
 
 static MidiData* bleMidiData;
