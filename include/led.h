@@ -3,8 +3,14 @@
 
 #include <ezLED.h>
 
-#define CONNECTION_LED 21
-#define MIDI_INPUT_LED 19
+#if defined(LEDCONTROLLER)
+#define CONNECTION_LED GPIO_NUM_21
+#define MIDI_INPUT_LED GPIO_NUM_19
+#elif defined(SCHUKOCONTROLLER)
+#define CONNECTION_LED GPIO_NUM_23
+#define MIDI_INPUT_LED GPIO_NUM_22
+#endif
+
 #define CONNECTION_BLINK_TIME_IN_MS 500
 
 static ezLED connectionLED(CONNECTION_LED);
