@@ -5,6 +5,8 @@
 
 #include "led.h"
 
+#define CONNECTION_BLINK_TIME_IN_MS 500
+
 static MidiData* bleMidiData;
 static byte midiChannel;
 static unsigned long lastNoteOn = 0;

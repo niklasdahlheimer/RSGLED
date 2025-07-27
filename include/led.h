@@ -11,8 +11,6 @@
 #define MIDI_INPUT_LED GPIO_NUM_22
 #endif
 
-#define CONNECTION_BLINK_TIME_IN_MS 500
-
 static ezLED connectionLED(CONNECTION_LED);
 static ezLED midiLED(MIDI_INPUT_LED);
 
