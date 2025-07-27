@@ -39,7 +39,7 @@ void printMemoryStatus() {
     Serial.printf("Maximale Allokierbare Speichergröße: %d Bytes\n", ESP.getMaxAllocHeap());
 }
 
-void printAlive() {
+void maybePrintAlive() {
     if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
         aliveTime = millis();
         Serial.println(".");
@@ -70,7 +70,7 @@ void setup() {
 
 
 void loop() {
-    printAlive();
+    maybePrintAlive();
 
     OTA_loop();
     MIDICBLE_loop();
