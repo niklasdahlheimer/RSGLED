@@ -19,7 +19,7 @@ static MidiData midiData;
 static Config config;
 
 void initConfig(const byte value) {
-    delay(5000);
+    //delay(5000);
     EEPROM.write(EEPROM_ADD_LETTER, value);
     EEPROM.commit();
     Serial.printf("written config value %d\n", value);
@@ -62,9 +62,8 @@ void setup() {
     //initConfig(3);
     config = readConfig();
 
-    MIDIC_init(config.MIDI_CHANNEL, &midiData);
+    RELAYC_init();
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
-    RELAYC_init(&config);
     OTA_init(config.LETTER, config.IP);
 }
 

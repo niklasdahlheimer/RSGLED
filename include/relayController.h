@@ -5,16 +5,19 @@
 #include "midiConsts.h"
 #include "config.h"
 
-#define RELAY1                 16
-#define RELAY2                 17
+// 23 is reserved for LED!
+#define RELAY1_PIN             GPIO_NUM_16
+#define RELAY2_PIN             GPIO_NUM_17
+#define RELAY3_PIN             GPIO_NUM_15
 
 #define TOTAL_RESET            Note_C_2
 
 #define RELAY_1_ON             Note_F_2
 #define RELAY_2_ON             Note_G_2
+#define RELAY_3_ON             Note_B_2
 
-void RELAYC_init(const Config *config);
+void RELAYC_init();
 
-void RELAYC_update(const byte *noteData, const byte *controllerData);
+void RELAYC_update(const byte *note, const byte *controller);
 
 #endif //RSGLED_RELAYCONTROLLER_H
