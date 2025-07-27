@@ -14,10 +14,8 @@
 static ezLED connectionLED(CONNECTION_LED);
 static ezLED midiLED(MIDI_INPUT_LED);
 
-
 inline void LED_dataInBlink() {
     midiLED.blinkNumberOfTimes(40, 0, 1, 0);
 }
-
 
 #endif //LED_H

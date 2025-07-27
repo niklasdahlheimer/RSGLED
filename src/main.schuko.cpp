@@ -48,25 +48,22 @@ void printAlive() {
 
 void setup() {
     if (DEBUG_ENABLE) {
-        delay(5000); // time to start serial console
+        //delay(5000); // time to start serial console
         Serial.begin(115200);
+        Serial.println("start init");
+        printMemoryStatus();
     }
 
-    Serial.println("start init");
-
+    // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
-
-    // 0 for R, 1 for S, 2 for G
+    // 3 for X
     //initConfig(3);
-
     config = readConfig();
 
     MIDIC_init(config.MIDI_CHANNEL, &midiData);
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
     RELAYC_init(&config);
     OTA_init(config.LETTER, config.IP);
-
-    printMemoryStatus();
 
     startupTime = millis();
 }
