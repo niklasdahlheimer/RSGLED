@@ -1,5 +1,5 @@
 #include <EEPROM.h>
-#include "midiController.h"
+#include <midiData.h>
 #include "midiControllerBle.h"
 #include "relayController.h"
 #include "config.h"
