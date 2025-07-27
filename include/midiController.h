@@ -7,7 +7,7 @@
 #define ALL_NOTE_OFF_CC 123
 #define ALL_NOTE_OFF_VAL 0
 
-void MIDIC_init(byte _midiChannel, MidiData* _midiData);
+void MIDIC_init(byte _midiChannel, MidiData *_midiData);
 
 MidiData *MIDIC_read();
 
