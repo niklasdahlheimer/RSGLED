@@ -47,6 +47,8 @@ void printAlive() {
 }
 
 void setup() {
+    startupTime = millis();
+
     if (DEBUG_ENABLE) {
         //delay(5000); // time to start serial console
         Serial.begin(115200);
@@ -64,8 +66,6 @@ void setup() {
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
     RELAYC_init(&config);
     OTA_init(config.LETTER, config.IP);
-
-    startupTime = millis();
 }
 
 
