@@ -221,9 +221,17 @@ inline Config getConfig(const int index) {
             };
         case 3:
             return (Config){
-                .LETTER = 'X',
-                .IP = 43,
-                .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
+                .LETTER = '0',
+                .IP = 243,
+                .MIDI_CHANNEL = 10, // has to be MidiChannel - 1
+                .lines = {},
+                .groups = {},
+            };
+        case 4:
+            return (Config){
+                .LETTER = '1',
+                .IP = 244,
+                .MIDI_CHANNEL = 11, // has to be MidiChannel - 1
                 .lines = {},
                 .groups = {},
             };

@@ -19,7 +19,7 @@ static MidiData midiData;
 static Config config;
 
 void initConfig(const byte value) {
-    //delay(5000);
+    delay(5000);
     EEPROM.write(EEPROM_ADD_LETTER, value);
     EEPROM.commit();
     Serial.printf("written config value %d\n", value);
@@ -58,7 +58,7 @@ void setup() {
 
     // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
-    // 3 for X
+    // 3 for 0 (left), 4 for 1 (right)
     //initConfig(3);
     config = readConfig();
 
