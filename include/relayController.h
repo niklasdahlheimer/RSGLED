@@ -19,6 +19,6 @@
 
 void RELAYC_init();
 
-void RELAYC_update(const byte *note, const byte *controller);
+void RELAYC_update(const byte *note, const byte *controller, const int debugControl);
 
 #endif //RSGLED_RELAYCONTROLLER_H

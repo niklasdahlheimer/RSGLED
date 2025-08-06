@@ -56,6 +56,8 @@ void setup() {
         printMemoryStatus();
     }
 
+    pinMode(GPIO_NUM_0, INPUT);
+
     // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
     // 3 for 0 (left), 4 for 1 (right)
@@ -74,5 +76,5 @@ void loop() {
     OTA_loop();
     MIDICBLE_loop();
 
-    RELAYC_update(midiData.noteOn, midiData.controls);
+    RELAYC_update(midiData.noteOn, midiData.controls, digitalRead(GPIO_NUM_0) == LOW);
 }

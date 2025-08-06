@@ -14,10 +14,10 @@ void RELAYC_init() {
     reset();
 }
 
-void RELAYC_update(const byte *note, const byte *controller) {
+void RELAYC_update(const byte *note, const byte *controller, const int debugControl) {
     if (note[TOTAL_RESET]) reset();
 
-    digitalWrite(RELAY1_PIN, note[RELAY_1_ON] ? HIGH : LOW);
-    digitalWrite(RELAY2_PIN, note[RELAY_2_ON] ? HIGH : LOW);
-    digitalWrite(RELAY3_PIN, note[RELAY_3_ON] ? HIGH : LOW);
+    digitalWrite(RELAY1_PIN, note[RELAY_1_ON]  || debugControl ? HIGH : LOW);
+    digitalWrite(RELAY2_PIN, note[RELAY_2_ON] || debugControl? HIGH : LOW);
+    digitalWrite(RELAY3_PIN, note[RELAY_3_ON] || debugControl? HIGH : LOW);
 }
