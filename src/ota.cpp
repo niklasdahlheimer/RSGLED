@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <ESPmDNS.h>
 #include <ArduinoOTA.h>
+#include "ota.h"
 #include "led.h"
 #include "../credentials.h"
 
