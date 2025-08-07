@@ -29,10 +29,10 @@ public:
                                                        ledConfig.GROUP_NUM);
             ledConfig.groupOn(ledConfig.groups[groupIndex], &COLORS[0], 255);
         } else {
-            fill_rainbow_circular(ledConfig.LEDs,
-                                  ledConfig.LED_NUM,
-                                  ((ledConfig.timestamp - partStartTime) / RAINBOW_PERIOD_IN_MILLIS),
-                                  (uint8_t) (10 * (velocity / 127.0)));
+            fl::fill_rainbow_circular(ledConfig.LEDs,
+                                      ledConfig.LED_NUM,
+                                      ((ledConfig.timestamp - partStartTime) / RAINBOW_PERIOD_IN_MILLIS),
+                                      (uint8_t) (10 * (velocity / 127.0)));
         }
     };
 

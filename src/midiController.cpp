@@ -1,5 +1,4 @@
 #include "midiController.h"
-#include "ledController.h"
 #include <Arduino.h>
 #include <MIDI.h>
 #include "led.h"

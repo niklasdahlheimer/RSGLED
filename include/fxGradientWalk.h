@@ -36,7 +36,7 @@ public:
     };
 
     void onStart(LEDConfig &ledConfig) override {
-        fill_gradient_RGB(ledConfig.lineGradientLEDs, ledConfig.LINE_NUM, COLORS[2], COLORS[11]);
+        fl::fill_gradient_RGB(ledConfig.lineGradientLEDs, ledConfig.LINE_NUM, COLORS[2], COLORS[11]);
         lastStep = 0;
         lastUpdateTime = ledConfig.timestamp;
     }

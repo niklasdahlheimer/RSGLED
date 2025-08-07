@@ -1,7 +1,11 @@
 #include "midiController.h"
 #include <Arduino.h>
 #include <BLEMidi.h>
+#include <midiConsts.h>
+
 #include "led.h"
+
+#define CONNECTION_BLINK_TIME_IN_MS 500
 
 static MidiData* bleMidiData;
 static byte midiChannel;

@@ -13,10 +13,10 @@ public:
     }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        fill_rainbow_circular(ledConfig.LEDs,
-                              ledConfig.LED_NUM,
-                              ((ledConfig.timestamp - startMillis) / RAINBOW_PERIOD_IN_MILLIS),
-                              (uint8_t) (10 * (velocity / 127.0)));
+        fl::fill_rainbow_circular(ledConfig.LEDs,
+                                  ledConfig.LED_NUM,
+                                  ((ledConfig.timestamp - startMillis) / RAINBOW_PERIOD_IN_MILLIS),
+                                  (uint8_t) (10 * (velocity / 127.0)));
     };
 
     void onReset() override {
