@@ -5,32 +5,31 @@
 #include "led.h"
 #include "../credentials.h"
 
-void OTA_init(char letter, int ip) {
-    WiFi.mode(WIFI_STA);
+void OTA_init(const char letter, const int ip) {
+    WiFiClass::mode(WIFI_STA);
 
     // Set your Static IP address
-// https://randomnerdtutorials.com/esp32-static-fixed-ip-address-arduino-ide/
-    IPAddress local_IP(network[0], network[1], network[2], ip);
-    IPAddress gateway(gateway[0], gateway[1], gateway[2], gateway[3]);
-    IPAddress subnet(subnet[0], subnet[1], subnet[2], subnet[3]);
+    // https://randomnerdtutorials.com/esp32-static-fixed-ip-address-arduino-ide/
+    const IPAddress local_IP(network[0], network[1], network[2], ip);
+    const IPAddress gateway(gateway[0], gateway[1], gateway[2], gateway[3]);
+    const IPAddress subnet(subnet[0], subnet[1], subnet[2], subnet[3]);
     // Configures static IP address
     if (!WiFi.config(local_IP, gateway, subnet)) {
         Serial.println("STA Failed to configure");
     }
 
     // Hostname defaults to esp3232-[MAC]
-    char hostname[50];  // Buffer for the final hostname
+    char hostname[50]; // Buffer for the final hostname
     snprintf(hostname, sizeof(hostname), "RSG-LED-%c-%02d", letter, ip);
     ArduinoOTA.setHostname(hostname);
 
     // Connect to Wi-Fi network with SSID and password
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
+    Serial.printf("Connecting to %s", ssid);
     WiFi.begin(ssid, password);
 
     connectionLED.turnON();
     midiLED.turnON();
-    int connectionResult = WiFi.waitForConnectResult(10000);
+    const int connectionResult = WiFi.waitForConnectResult(10000);
     /*WL_CONNECTED after successful connection is established
     WL_NO_SSID_AVAIL in case configured SSID cannot be reached
     WL_CONNECT_FAILED if connection failed
@@ -57,7 +56,8 @@ void OTA_init(char letter, int ip) {
                 String type;
                 if (ArduinoOTA.getCommand() == U_FLASH) {
                     type = "sketch";
-                } else {  // U_SPIFFS
+                } else {
+                    // U_SPIFFS
                     type = "filesystem";
                 }
 
@@ -88,8 +88,7 @@ void OTA_init(char letter, int ip) {
     ArduinoOTA.begin();
 
     Serial.println("Ready");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
+    Serial.printf("IP address: %s", WiFi.localIP().toString().c_str());
 }
 
 void OTA_loop() {
