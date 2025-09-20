@@ -6,7 +6,7 @@
 #include "led.h"
 #include "esp_bt.h"
 
-#define CONNECTION_BLINK_TIME_IN_MS 500
+
 
 static MidiData* bleMidiData;
 static byte midiChannel;
@@ -15,7 +15,7 @@ static unsigned long lastNoteOn = 0;
 // private
 
 static void onAdvertisingStart() {
-    connectionLED.blink(CONNECTION_BLINK_TIME_IN_MS, CONNECTION_BLINK_TIME_IN_MS);
+    LED_blinkSlow(&connectionLED);
 }
 
 static void handleConnect() {
@@ -39,7 +39,7 @@ static void handleAllNoteOff() {
 static void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
         bleMidiData->controls[number] = value * 2;
-        LED_dataInBlink();
+        LED_blinkOnce(&midiLED);
         Serial.printf("control change %d %d\n", number, value);
     }
 
@@ -65,7 +65,7 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
         lastNoteOn = millis();
         bleMidiData->noteOn[note] = 2 * velocity;
 
-        LED_dataInBlink();
+        LED_blinkOnce(&midiLED);
         Serial.printf("note on %d, velocity %d\n", note, velocity);
     }
 }
@@ -102,6 +102,9 @@ MidiData *MIDICBLE_getMidiDataArray() {
 }
 
 void MIDICBLE_loop() {
+    /*if (BLEMidiServer.isConnected() && connectionLED.getState() != LED_BLINKING) {
+        connectionLED.turnON();
+    }*/
     connectionLED.loop();
     midiLED.loop();
 }

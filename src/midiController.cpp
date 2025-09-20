@@ -53,7 +53,7 @@ void handleControlChange(const byte channel, const byte number, const byte value
 
 void handleNoteOn(const byte channel, const byte note, const byte velocity) {
     midiData->noteOn[note] = 2 * velocity;
-    LED_dataInBlink();
+    LED_blinkOnce(&midiLED);
     lastNoteOn = millis();
     Serial.printf("note on %03d, velocity %03d\n", note, velocity);
 }

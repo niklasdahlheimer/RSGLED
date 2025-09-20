@@ -3,12 +3,14 @@
 #include "midiControllerBle.h"
 #include "relayController.h"
 #include "config.h"
+#include "ezButton.h"
+#include "led.h"
 #include "ota.h"
 
 #define EEPROM_SIZE 100
 #define EEPROM_ADD_LETTER 0
 
-#define ALIVE_INFO_INTERVAL_MILLIS 5000
+#define ALIVE_INFO_INTERVAL_MILLIS 1000
 
 #define DEBUG_ENABLE true
 
@@ -17,6 +19,10 @@ static unsigned long startupTime = 0;
 
 static MidiData midiData;
 static Config config;
+
+ezButton buttonOnboard(GPIO_NUM_0);
+ezButton buttonExtern1(GPIO_NUM_5);
+ezButton buttonExtern2(GPIO_NUM_4);
 
 void initConfig(const byte value) {
     delay(5000);
@@ -56,7 +62,9 @@ void setup() {
         printMemoryStatus();
     }
 
-    pinMode(GPIO_NUM_0, INPUT_PULLUP);
+    buttonOnboard.setDebounceTime(500);
+    buttonExtern1.setDebounceTime(500);
+    buttonExtern2.setDebounceTime(500);
 
     // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
@@ -76,5 +84,15 @@ void loop() {
     OTA_loop();
     MIDICBLE_loop();
 
-    RELAYC_update(midiData.noteOn, midiData.controls, digitalRead(GPIO_NUM_0) == LOW);
+    buttonOnboard.loop();
+    buttonExtern1.loop();
+    buttonExtern2.loop();
+
+    // LOW = Button gedrückt
+    // solange es keine andere sinvolle Funktion für buttonExternal2 gibt ->beide machen dauerhaft an
+    const boolean isButtonPressed = buttonOnboard.getState() == LOW || buttonExtern1.getState() == LOW || buttonExtern2.
+                                    getState() == LOW;
+    //LED_blinkFast(&midiLED);
+
+    RELAYC_update(midiData.noteOn, midiData.controls, isButtonPressed);
 }
