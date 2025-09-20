@@ -7,7 +7,7 @@
 
 void OTA_init(const char letter, const int ip) {
     WiFiClass::mode(WIFI_STA);
-
+    WiFi.setTxPower(WIFI_POWER_19_5dBm); // highest tx power
     // Set your Static IP address
     // https://randomnerdtutorials.com/esp32-static-fixed-ip-address-arduino-ide/
     const IPAddress local_IP(network[0], network[1], network[2], ip);

@@ -4,6 +4,7 @@
 #include <midiConsts.h>
 
 #include "led.h"
+#include "esp_bt.h"
 
 #define CONNECTION_BLINK_TIME_IN_MS 500
 
@@ -80,13 +81,14 @@ void MIDICBLE_init(const byte _midiChannel, char letter, MidiData* _bleMidiData)
 
     Serial.println("init BleController");
     BLEMidiServer.begin(name);
-
     BLEMidiServer.setOnConnectCallback(handleConnect);
     BLEMidiServer.setOnDisconnectCallback(handleDisconnect);
     BLEMidiServer.setControlChangeCallback(handleControlChange);
     BLEMidiServer.setNoteOnCallback(handleNoteOn);
     BLEMidiServer.setNoteOffCallback(handleNoteOff);
 
+    // set BLE power level
+    esp_ble_tx_power_set(ESP_BLE_PWR_TYPE_DEFAULT, ESP_PWR_LVL_P9);
     // waiting for connection...
     onAdvertisingStart();
 }
