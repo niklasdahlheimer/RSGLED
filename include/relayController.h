@@ -7,9 +7,9 @@
 
 // 23 is reserved for LED!
 // https://devices.esphome.io/devices/ESP32-Relay-X2
-#define RELAY1_PIN             GPIO_NUM_16
-#define RELAY2_PIN             GPIO_NUM_17
-#define RELAY3_PIN             GPIO_NUM_15
+#define RELAY1_PIN             GPIO_NUM_16 // internal Relay outer
+#define RELAY2_PIN             GPIO_NUM_17 // internal Relay inner
+#define RELAY3_PIN             GPIO_NUM_15 // external Relay
 
 #define TOTAL_RESET            Note_C_2
 
