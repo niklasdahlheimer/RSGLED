@@ -7,10 +7,10 @@ class FXGradientWalk final : public FXBase {
 public:
     DEFINE_GETNAME(FXGradientWalk)
 
-    explicit FXGradientWalk(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit FXGradientWalk(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
+    }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-
         const double period = static_cast<double>(getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
 
         unsigned long elapsedTime = ledConfig.timestamp - lastUpdateTime;
@@ -25,13 +25,12 @@ public:
         // circling offset
         for (int i = 0; i < ledConfig.LINE_NUM; i++) {
             ledConfig.lineOn(ledConfig.lines[(i + lastStep) % ledConfig.LINE_NUM], &ledConfig.lineGradientLEDs[i],
-                        velocity);
+                             velocity);
         }
-
     };
 
     void onReset() override {
-		lastStep = 0;
+        lastStep = 0;
         lastUpdateTime = 0;
     };
 

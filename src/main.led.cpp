@@ -87,7 +87,8 @@ void handleFreeRun() {
 
     if (encoderState.mode == RUN_BLE || encoderState.mode == RUN_CABLE) {
         // start free run
-        if (midiData.noteOn[FREE_RUN] == 0 && (midiData.noteOn[FREE_RUN_START] != 0 || millis() - lastSignal > FREE_RUN_START_MILLIS)) {
+        if (midiData.noteOn[FREE_RUN] == 0 && (midiData.noteOn[FREE_RUN_START] != 0 || millis() - lastSignal >
+                                               FREE_RUN_START_MILLIS)) {
             Serial.println("start free run in ble mode");
             freeRunSetTime = millis();
             midiData.noteOn[FREE_RUN] = 255;

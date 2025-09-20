@@ -37,7 +37,7 @@ MidiData *MIDIC_read() {
 
 void handleAllNoteOff() {
     Serial.printf("All Note Off command received!\n");
-    for (unsigned char & i : midiData->noteOn) {
+    for (unsigned char &i: midiData->noteOn) {
         i = 0;
     }
 }
@@ -46,7 +46,7 @@ void handleControlChange(const byte channel, const byte number, const byte value
     midiData->controls[number] = value * 2;
     Serial.printf("control change on %03d, value %03d\n", number, value);
 
-    if(number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL){
+    if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
         handleAllNoteOff();
     }
 }

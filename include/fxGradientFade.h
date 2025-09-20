@@ -7,7 +7,8 @@ class FXGradientFade final : public FXBase {
 public:
     DEFINE_GETNAME(FXGradientFade)
 
-    explicit FXGradientFade(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit FXGradientFade(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
+    }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (startMillis == ledConfig.timestamp) {
@@ -36,7 +37,6 @@ public:
     };
 
     void onStart(LEDConfig &ledConfig) override {
-       
     }
 
     void onFinish(LEDConfig &ledConfig) override {

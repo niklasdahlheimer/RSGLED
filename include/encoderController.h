@@ -31,7 +31,7 @@ typedef struct {
     bool active;
 } State;
 
-void ENCODER_init(State* state);
+void ENCODER_init(State *state);
 
 void ENCODER_loop();
 

@@ -7,8 +7,7 @@
 #include "esp_bt.h"
 
 
-
-static MidiData* bleMidiData;
+static MidiData *bleMidiData;
 static byte midiChannel;
 static unsigned long lastNoteOn = 0;
 
@@ -31,7 +30,7 @@ static void handleDisconnect() {
 
 static void handleAllNoteOff() {
     Serial.printf("All Note Off command received!\n");
-    for (unsigned char & i : bleMidiData->noteOn) {
+    for (unsigned char &i: bleMidiData->noteOn) {
         i = 0;
     }
 }
@@ -43,7 +42,7 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
         Serial.printf("control change %d %d\n", number, value);
     }
 
-    if(number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL){
+    if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
         handleAllNoteOff();
     }
 }
@@ -73,7 +72,7 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
 
 // public
 
-void MIDICBLE_init(const byte _midiChannel, char letter, MidiData* _bleMidiData) {
+void MIDICBLE_init(const byte _midiChannel, char letter, MidiData *_bleMidiData) {
     midiChannel = _midiChannel;
     bleMidiData = _bleMidiData;
     char name[16];

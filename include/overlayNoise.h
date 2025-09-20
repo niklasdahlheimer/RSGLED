@@ -9,7 +9,8 @@ class OverlayNoise final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayNoise)
 
-    explicit OverlayNoise(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit OverlayNoise(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
+    }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (ledConfig.timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
@@ -26,7 +27,6 @@ public:
     };
 
     void onStart(LEDConfig &ledConfig) override {
-       
     }
 
     void onFinish(LEDConfig &ledConfig) override {

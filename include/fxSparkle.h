@@ -9,7 +9,8 @@ class FXSparkle final : public FXBase {
 public:
     DEFINE_GETNAME(FXSparkle)
 
-    explicit FXSparkle(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {}
+    explicit FXSparkle(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
+    }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         // Define the density and brightness of the sparkles based on the velocity
@@ -41,14 +42,12 @@ public:
     };
 
     void onStart(LEDConfig &ledConfig) override {
-       
     }
 
     void onFinish(LEDConfig &ledConfig) override {
     }
 
 private:
-
 };
 
 #endif //FX_SPARKLE_H
