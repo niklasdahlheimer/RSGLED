@@ -56,7 +56,7 @@ void setup() {
         printMemoryStatus();
     }
 
-    pinMode(GPIO_NUM_0, INPUT);
+    pinMode(GPIO_NUM_0, INPUT_PULLUP);
 
     // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
