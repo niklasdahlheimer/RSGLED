@@ -17,23 +17,23 @@
 static ezLED connectionLED(CONNECTION_LED_PIN);
 static ezLED midiLED(MIDI_INPUT_LED_PIN);
 
-inline void LED_blinkOnce(ezLED* led) {
+inline void LED_blinkOnce(ezLED *led) {
     led->blinkNumberOfTimes(40, 40, 1, 0);
 }
 
-inline void LED_blinkSlow(ezLED* led) {
+inline void LED_blinkSlow(ezLED *led) {
     led->blink(BLINK_TIME_IN_MS_SLOW,BLINK_TIME_IN_MS_SLOW);
 }
 
-inline void LED_blinkFast(ezLED* led) {
+inline void LED_blinkFast(ezLED *led) {
     led->blink(BLINK_TIME_IN_MS_FAST,BLINK_TIME_IN_MS_FAST);
 }
 
-inline void LED_Off(ezLED* led) {
+inline void LED_Off(ezLED *led) {
     led->turnOFF();
 }
 
-inline void LED_On(ezLED* led) {
+inline void LED_On(ezLED *led) {
     led->turnON();
 }
 
