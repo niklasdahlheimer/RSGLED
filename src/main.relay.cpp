@@ -12,8 +12,6 @@
 
 #define ALIVE_INFO_INTERVAL_MILLIS 1000
 
-//#define DEBUG_LOG_ENABLE false
-
 static unsigned long aliveTime = 0;
 static unsigned long startupTime = 0;
 
@@ -55,8 +53,8 @@ void maybePrintAlive() {
 void setup() {
     startupTime = millis();
 
-    if (DEBUG_LOG_ENABLED) {
-        //delay(5000); // time to start serial console
+    if (DEBUG_LOG_ENABLE) {
+        delay(2000); // time to start serial console
         Serial.begin(115200);
         Serial.println("start init");
         printMemoryStatus();
