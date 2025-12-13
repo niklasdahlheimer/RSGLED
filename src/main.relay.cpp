@@ -22,6 +22,8 @@ ezButton buttonOnboard(GPIO_NUM_0);
 ezButton buttonExtern1(GPIO_NUM_5,INTERNAL_PULLUP);
 ezButton buttonExtern2(GPIO_NUM_4,INTERNAL_PULLUP);
 
+bool isToggleOn = false;
+ezButton pushButtonExtern(GPIO_NUM_2, INTERNAL_PULLUP);
 
 void initConfig(const byte value) {
     delay(5000);
@@ -64,6 +66,7 @@ void setup() {
     buttonOnboard.setDebounceTime(100);
     buttonExtern1.setDebounceTime(100);
     buttonExtern2.setDebounceTime(100);
+    pushButtonExtern.setDebounceTime(100);
 
     // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
@@ -86,11 +89,21 @@ void loop() {
     buttonOnboard.loop();
     buttonExtern1.loop();
     buttonExtern2.loop();
+    pushButtonExtern.loop();
 
-    // LOW = Button gedrückt
+    if (pushButtonExtern.isPressed()) {
+        Serial.println("pushButtonExtern pressed! Toggle flag");
+        isToggleOn = !isToggleOn;
+    }
+
+
+    // LOW = "Button gedrückt" da intern pullup und bei Druck auf Masse verbunden wird
     // solange es keine andere sinvolle Funktion für buttonExternal2 gibt ->beide machen dauerhaft an
-    const boolean isButtonPressed = buttonOnboard.getState() == LOW || buttonExtern1.getState() == LOW || buttonExtern2.
-                                    getState() == LOW;
+    const boolean isButtonPressed = buttonOnboard.getState() == LOW ||
+                                    buttonExtern1.getState() == LOW ||
+                                    buttonExtern2.getState() == LOW ||
+                                    isToggleOn;
+
     //LED_blinkFast(&midiLED);
 
     RELAYC_update(midiData.noteOn, midiData.controls, isButtonPressed);
