@@ -60,9 +60,9 @@ void setup() {
         printMemoryStatus();
     }
 
-    buttonOnboard.setDebounceTime(500);
-    buttonExtern1.setDebounceTime(500);
-    buttonExtern2.setDebounceTime(500);
+    buttonOnboard.setDebounceTime(100);
+    buttonExtern1.setDebounceTime(100);
+    buttonExtern2.setDebounceTime(100);
 
     // init and read EEPROM
     EEPROM.begin(EEPROM_SIZE);
