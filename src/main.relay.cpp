@@ -19,8 +19,9 @@ static MidiData midiData;
 static Config config;
 
 ezButton buttonOnboard(GPIO_NUM_0);
-ezButton buttonExtern1(GPIO_NUM_5);
-ezButton buttonExtern2(GPIO_NUM_4);
+ezButton buttonExtern1(GPIO_NUM_5,INTERNAL_PULLUP);
+ezButton buttonExtern2(GPIO_NUM_4,INTERNAL_PULLUP);
+
 
 void initConfig(const byte value) {
     delay(5000);
