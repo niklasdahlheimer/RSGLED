@@ -8,7 +8,7 @@
 #include "ota.h"
 
 #define EEPROM_SIZE 100
-#define EEPROM_ADD_LETTER 0
+#define EEPROM_LETTER_ADDRESS 0
 
 #define ALIVE_INFO_INTERVAL_MILLIS 1000
 
@@ -26,13 +26,13 @@ ezButton buttonExtern2(GPIO_NUM_4);
 
 void initConfig(const byte value) {
     delay(5000);
-    EEPROM.write(EEPROM_ADD_LETTER, value);
+    EEPROM.write(EEPROM_LETTER_ADDRESS, value);
     EEPROM.commit();
     Serial.printf("written config value %d\n", value);
 }
 
 Config readConfig() {
-    const byte letter = EEPROM.read(EEPROM_ADD_LETTER);
+    const byte letter = EEPROM.read(EEPROM_LETTER_ADDRESS);
     Serial.printf("read config for letter %d\n", letter);
     return getConfig(letter);
 }
