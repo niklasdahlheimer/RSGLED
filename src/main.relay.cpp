@@ -72,14 +72,14 @@ void setup() {
 
     RELAYC_init();
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
-    OTA_init(config.LETTER, config.IP);
+    //OTA_init(config.LETTER, config.IP);
 }
 
 
 void loop() {
     maybePrintAlive();
 
-    OTA_loop();
+    //OTA_loop();
     MIDICBLE_loop();
 
     buttonOnboard.loop();
