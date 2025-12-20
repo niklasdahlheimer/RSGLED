@@ -109,7 +109,7 @@ void handleFreeRun() {
 }
 
 void handleHelloPhase() {
-    // activate notes for hello phase
+    // activate notes for Hello-Phase
     if (!isHelloPhaseFinished) {
         if (millis() - startupTime < HELLO_PHASE_MILLIS) {
             midiData.noteOn[ALL_ON_COLOR_1] = 120;
