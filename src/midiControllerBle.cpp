@@ -18,18 +18,18 @@ static void onAdvertisingStart() {
 }
 
 static void handleConnect() {
-    Serial.println("MIDI BLE Controller connected!");
-    Serial.printf("listening for midi on channel %d and %d\n", midiChannel + 1, MIDI_CHANNEL_ALL + 1);
+    Serial.println("BLE MIDI: Controller connected!");
+    Serial.printf("BLE MIDI: listening for midi on channel %d and %d\n", midiChannel + 1, MIDI_CHANNEL_ALL + 1);
     connectionLED.turnON();
 }
 
 static void handleDisconnect() {
-    Serial.println("MIDI BLE Controller disconnected!");
+    Serial.println("BLE MIDI: Controller disconnected!");
     onAdvertisingStart();
 }
 
 static void handleAllNoteOff() {
-    Serial.printf("All Note Off command received!\n");
+    Serial.printf("BLE MIDI: All Note Off command received!\n");
     for (unsigned char &i: bleMidiData->noteOn) {
         i = 0;
     }
@@ -39,7 +39,7 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
         bleMidiData->controls[number] = value * 2;
         LED_blinkOnce(&midiLED);
-        Serial.printf("control change %d %d\n", number, value);
+        Serial.printf("BLE MIDI: control change %d %d\n", number, value);
     }
 
     if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
@@ -50,7 +50,7 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
 static void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
     if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
         bleMidiData->noteOn[note] = 0;
-        Serial.printf("note off %d\n", note);
+        Serial.printf("BLE MIDI: note off %d\n", note);
     }
 }
 
@@ -65,7 +65,7 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
         bleMidiData->noteOn[note] = 2 * velocity;
 
         LED_blinkOnce(&midiLED);
-        Serial.printf("note on %d, velocity %d\n", note, velocity);
+        Serial.printf("BLE MIDI: note on %d, velocity %d\n", note, velocity);
     }
 }
 
@@ -78,7 +78,7 @@ void MIDICBLE_init(const byte _midiChannel, char letter, MidiData *_bleMidiData)
     char name[16];
     sprintf(name, "RSG_LED_%c", letter);
 
-    Serial.println("init BleController");
+    Serial.println("BLE MIDI: init BleController");
     BLEMidiServer.begin(name);
     BLEMidiServer.setOnConnectCallback(handleConnect);
     BLEMidiServer.setOnDisconnectCallback(handleDisconnect);

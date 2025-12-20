@@ -18,6 +18,7 @@ void handleNoteOff(byte channel, byte note, byte velocity);
 void handleError(int8_t error);
 
 void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
+    Serial.printf("Cable MIDI: Init Cable MIDI Controller\n");
     midiChannel = _midiChannel;
     midiData = _midiData;
 
@@ -36,7 +37,7 @@ MidiData *MIDIC_read() {
 // private
 
 void handleAllNoteOff() {
-    Serial.printf("All Note Off command received!\n");
+    Serial.printf("Cable MIDI: All Note Off command received!\n");
     for (unsigned char &i: midiData->noteOn) {
         i = 0;
     }
@@ -44,7 +45,7 @@ void handleAllNoteOff() {
 
 void handleControlChange(const byte channel, const byte number, const byte value) {
     midiData->controls[number] = value * 2;
-    Serial.printf("control change on %03d, value %03d\n", number, value);
+    Serial.printf("Cable MIDI: Control change on %03d, value %03d\n", number, value);
 
     if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
         handleAllNoteOff();
@@ -55,16 +56,16 @@ void handleNoteOn(const byte channel, const byte note, const byte velocity) {
     midiData->noteOn[note] = 2 * velocity;
     LED_blinkOnce(&midiLED);
     lastNoteOn = millis();
-    Serial.printf("note on %03d, velocity %03d\n", note, velocity);
+    Serial.printf("Cable MIDI: Note on %03d, velocity %03d\n", note, velocity);
 }
 
 void handleNoteOff(const byte channel, const byte note, byte velocity) {
     midiData->noteOn[note] = 0;
-    Serial.printf("note off %03d\n", note);
+    Serial.printf("Cable MIDI: Note off %03d\n", note);
 }
 
 void handleError(const int8_t error) {
-    Serial.printf("MIDI error %03d\n", error);
+    Serial.printf("Cable MIDI: MIDI error %03d\n", error);
 };
 
 unsigned long MIDIC_lastNoteOn() {
