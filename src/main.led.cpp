@@ -15,8 +15,6 @@
 
 #define HELLO_PHASE_MILLIS 1800
 
-#define DEBUG_ENABLE false
-
 static unsigned long aliveTime = 0;
 static unsigned long freeRunSetTime = 0;
 static unsigned long startupTime = 0;
@@ -57,7 +55,7 @@ void printAlive() {
 }
 
 void setup() {
-    if (DEBUG_ENABLE) {
+    if (DEBUG_LOG_ENABLE) {
         delay(5000); // time to start serial console
         Serial.begin(115200);
     }
