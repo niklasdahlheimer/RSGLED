@@ -3,21 +3,20 @@
 
 #include <fxBase.h>
 
-#define FREE_RUN_DIM_IN_MILLIS 2000
-#define FREE_RUN_BRIGHTNESS 30
-
 CRGB white = CRGB::LightSkyBlue;
 
 class FXFreeRun final : public FXBase {
 public:
     DEFINE_GETNAME(FXFreeRun)
+    static constexpr uint16_t FREE_RUN_DIM_IN_MILLIS = 2000;
+    static constexpr uint8_t FREE_RUN_BRIGHTNESS = 30;
 
     explicit FXFreeRun(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        const byte brightness = FREE_RUN_BRIGHTNESS * getRampValue(millis() - startMillis, FREE_RUN_DIM_IN_MILLIS);
-        ledConfig.allOn(&white, brightness);
+        const float brightness = FREE_RUN_BRIGHTNESS * getRampValue(millis() - startMillis, FREE_RUN_DIM_IN_MILLIS);
+        ledConfig.allOn(&white, static_cast<byte>(brightness));
         //Serial.printf("set velocity to %d at %d \n", brightness, millis() - startMillis);
     };
 

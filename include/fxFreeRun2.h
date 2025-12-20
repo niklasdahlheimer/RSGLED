@@ -3,9 +3,6 @@
 
 #include <fxBase.h>
 
-#define FREE_RUN_DIM_IN_MILLIS 3000
-#define FREE_RUN_BRIGHTNESS 40
-
 const CRGBPalette16 p16 = {
     CRGB::DarkSlateBlue,
     CRGB::RoyalBlue,
@@ -31,6 +28,8 @@ const CRGBPalette16 p16 = {
 class FXFreeRun2 final : public FXBase {
 public:
     DEFINE_GETNAME(FXFreeRun2)
+    static constexpr uint16_t FREE_RUN_DIM_IN_MILLIS = 2000;
+    static constexpr uint8_t FREE_RUN_BRIGHTNESS = 30;
 
     explicit FXFreeRun2(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
         UpscalePalette(p16, p256);
@@ -43,7 +42,7 @@ public:
         for (int i = 0; i < ledConfig.LINE_NUM; i++) {
             palettePos = (i * 190 / ledConfig.LINE_NUM) - colorOffset;
             color = ColorFromPalette(p256, palettePos);
-            ledConfig.lineOn(ledConfig.lines[i], &color, brightness);
+            ledConfig.lineOn(ledConfig.lines[i], &color, static_cast<byte>(brightness));
         }
     }
 
@@ -59,7 +58,7 @@ public:
 private:
     CRGBPalette256 p256;
     uint8_t colorSpeed = 5;
-    uint8_t brightness;
+    float brightness;
     CRGB color;
     uint8_t palettePos;
     uint8_t colorOffset;
