@@ -21,7 +21,7 @@ inline Config getConfig(const int index) {
         default:
             return (Config){
                 .LETTER = 'R',
-                .IP = ips[0],
+                .IP = wifiConfig.ips[0],
                 .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
                 .lines = {
                     {4, 5, 6, 14, 15, 16, 131, 132, 236, 237, 338, 339, 473, 474, 475, 484, 485, 486},
@@ -99,7 +99,7 @@ inline Config getConfig(const int index) {
         case 1:
             return (Config){
                 .LETTER = 'S',
-                .IP = ips[1],
+                .IP = wifiConfig.ips[1],
                 .MIDI_CHANNEL = 13, // has to be MidiChannel - 1
                 .lines = {
                     {7, 8, 9, 10, 11, 104, 105, 106, 198, 288, 287, 199, 200, 107, 12}, //1
@@ -167,7 +167,7 @@ inline Config getConfig(const int index) {
         case 2:
             return (Config){
                 .LETTER = 'G',
-                .IP = ips[2],
+                .IP = wifiConfig.ips[2],
                 .MIDI_CHANNEL = 14, // has to be MidiChannel - 1
                 .lines = {
                     {1, 93, 184, 273, 358, 359, 271, 272, 181, 182, 183, 91, 92, 361, 360, 371, 370, 369, 379, 380}, //1
@@ -223,7 +223,7 @@ inline Config getConfig(const int index) {
         case 3:
             return (Config){
                 .LETTER = '0',
-                .IP = ips[3],
+                .IP = wifiConfig.ips[3],
                 .MIDI_CHANNEL = 10, // has to be MidiChannel - 1
                 .lines = {},
                 .groups = {},
@@ -231,7 +231,7 @@ inline Config getConfig(const int index) {
         case 4:
             return (Config){
                 .LETTER = '1',
-                .IP = ips[4],
+                .IP = wifiConfig.ips[4],
                 .MIDI_CHANNEL = 11, // has to be MidiChannel - 1
                 .lines = {},
                 .groups = {},

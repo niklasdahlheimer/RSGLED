@@ -10,9 +10,9 @@ void OTA_init(const char letter, const int ip) {
     WiFi.setTxPower(WIFI_POWER_19_5dBm); // highest tx power
     // Set your Static IP address
     // https://randomnerdtutorials.com/esp32-static-fixed-ip-address-arduino-ide/
-    const IPAddress local_IP(network[0], network[1], network[2], ip);
-    const IPAddress gateway(gateway[0], gateway[1], gateway[2], gateway[3]);
-    const IPAddress subnet(subnet[0], subnet[1], subnet[2], subnet[3]);
+    const IPAddress local_IP(wifiConfig.network[0], wifiConfig.network[1], wifiConfig.network[2], ip);
+    const IPAddress gateway(wifiConfig.gateway[0], wifiConfig.gateway[1], wifiConfig.gateway[2], wifiConfig.gateway[3]);
+    const IPAddress subnet(wifiConfig.subnet[0], wifiConfig.subnet[1], wifiConfig.subnet[2], wifiConfig.subnet[3]);
     // Configures static IP address
     if (!WiFi.config(local_IP, gateway, subnet)) {
         Serial.println("STA Failed to configure");
@@ -24,8 +24,8 @@ void OTA_init(const char letter, const int ip) {
     ArduinoOTA.setHostname(hostname);
 
     // Connect to Wi-Fi network with SSID and password
-    Serial.printf("Connecting to %s", ssid);
-    WiFi.begin(ssid, password);
+    Serial.printf("Connecting to %s", wifiConfig.ssid);
+    WiFi.begin(wifiConfig.ssid, wifiConfig.password);
 
     connectionLED.turnON();
     midiLED.turnON();
