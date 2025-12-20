@@ -31,6 +31,8 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
 
 MidiData *MIDIC_read() {
     MIDI.read(midiChannel);
+    connectionLED.loop();
+    midiLED.loop();
     return midiData;
 }
 
@@ -45,6 +47,7 @@ void handleAllNoteOff() {
 
 void handleControlChange(const byte channel, const byte number, const byte value) {
     midiData->controls[number] = value * 2;
+    LED_blinkOnce(&midiLED);
     Serial.printf("Cable MIDI: Control change on %03d, value %03d\n", number, value);
 
     if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
@@ -54,8 +57,8 @@ void handleControlChange(const byte channel, const byte number, const byte value
 
 void handleNoteOn(const byte channel, const byte note, const byte velocity) {
     midiData->noteOn[note] = 2 * velocity;
-    LED_blinkOnce(&midiLED);
     lastNoteOn = millis();
+    LED_blinkOnce(&midiLED);
     Serial.printf("Cable MIDI: Note on %03d, velocity %03d\n", note, velocity);
 }
 
