@@ -22,7 +22,7 @@ inline Config getConfig(const int index) {
             return (Config){
                 .LETTER = 'R',
                 .IP = wifiConfig.ips[0],
-                .MIDI_CHANNEL = 12, // has to be MidiChannel - 1
+                .MIDI_CHANNEL = 13, // und MIDI_CHANNEL_ALL
                 .lines = {
                     {4, 5, 6, 14, 15, 16, 131, 132, 236, 237, 338, 339, 473, 474, 475, 484, 485, 486},
                     {3, 7, 13, 17, 130, 133, 235, 238, 337, 340, 472, 476, 483, 487},
@@ -100,7 +100,7 @@ inline Config getConfig(const int index) {
             return (Config){
                 .LETTER = 'S',
                 .IP = wifiConfig.ips[1],
-                .MIDI_CHANNEL = 13, // has to be MidiChannel - 1
+                .MIDI_CHANNEL = 14, // und MIDI_CHANNEL_ALL
                 .lines = {
                     {7, 8, 9, 10, 11, 104, 105, 106, 198, 288, 287, 199, 200, 107, 12}, //1
                     {6, 103, 197, 287, 288, 200, 108, 13},
@@ -168,7 +168,7 @@ inline Config getConfig(const int index) {
             return (Config){
                 .LETTER = 'G',
                 .IP = wifiConfig.ips[2],
-                .MIDI_CHANNEL = 14, // has to be MidiChannel - 1
+                .MIDI_CHANNEL = 15, // und MIDI_CHANNEL_ALL
                 .lines = {
                     {1, 93, 184, 273, 358, 359, 271, 272, 181, 182, 183, 91, 92, 361, 360, 371, 370, 369, 379, 380}, //1
                     {2, 94, 185, 274, 357, 270, 180, 90, 362, 368, 372, 378}, //2
@@ -224,7 +224,7 @@ inline Config getConfig(const int index) {
             return (Config){
                 .LETTER = '0',
                 .IP = wifiConfig.ips[3],
-                .MIDI_CHANNEL = 10, // has to be MidiChannel - 1
+                .MIDI_CHANNEL = 11, // und MIDI_CHANNEL_ALL
                 .lines = {},
                 .groups = {},
             };
@@ -232,7 +232,7 @@ inline Config getConfig(const int index) {
             return (Config){
                 .LETTER = '1',
                 .IP = wifiConfig.ips[4],
-                .MIDI_CHANNEL = 11, // has to be MidiChannel - 1
+                .MIDI_CHANNEL = 11, // und MIDI_CHANNEL_ALL
                 .lines = {},
                 .groups = {},
             };

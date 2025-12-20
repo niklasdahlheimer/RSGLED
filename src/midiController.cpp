@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <MIDI.h>
 #include "led.h"
+#include "midiConsts.h"
 
 MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
 
@@ -22,7 +23,7 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
     midiChannel = _midiChannel;
     midiData = _midiData;
 
-    MIDI.begin(midiChannel);
+    MIDI.begin(MIDI_CHANNEL_OMNI);
     MIDI.setHandleControlChange(handleNoteOn);
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
@@ -30,9 +31,11 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
 }
 
 MidiData *MIDIC_read() {
-    MIDI.read(midiChannel);
+    MIDI.read();
+
     connectionLED.loop();
     midiLED.loop();
+
     return midiData;
 }
 
@@ -46,9 +49,13 @@ void handleAllNoteOff() {
 }
 
 void handleControlChange(const byte channel, const byte number, const byte value) {
+    Serial.printf("Cable MIDI: Control change on %03d, value %03d, channel %d\n", number, value, channel);
+    if (channel != midiChannel && channel != MIDI_CHANNEL_ALL) {
+        return;
+    }
+
     midiData->controls[number] = value * 2;
     LED_blinkOnce(&midiLED);
-    Serial.printf("Cable MIDI: Control change on %03d, value %03d\n", number, value);
 
     if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
         handleAllNoteOff();
@@ -56,15 +63,23 @@ void handleControlChange(const byte channel, const byte number, const byte value
 }
 
 void handleNoteOn(const byte channel, const byte note, const byte velocity) {
+    Serial.printf("Cable MIDI: Note on %03d, velocity %03d, channel %d\n", note, velocity, channel);
+    if (channel != midiChannel && channel != MIDI_CHANNEL_ALL) {
+        return;
+    }
+
     midiData->noteOn[note] = 2 * velocity;
     lastNoteOn = millis();
     LED_blinkOnce(&midiLED);
-    Serial.printf("Cable MIDI: Note on %03d, velocity %03d\n", note, velocity);
 }
 
 void handleNoteOff(const byte channel, const byte note, byte velocity) {
+    Serial.printf("Cable MIDI: Note off %03d, channel %d\n", note, channel);
+    if (channel != midiChannel && channel != MIDI_CHANNEL_ALL) {
+        return;
+    }
+
     midiData->noteOn[note] = 0;
-    Serial.printf("Cable MIDI: Note off %03d\n", note);
 }
 
 void handleError(const int8_t error) {

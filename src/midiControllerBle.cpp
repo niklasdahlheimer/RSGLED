@@ -19,7 +19,7 @@ static void onAdvertisingStart() {
 
 static void handleConnect() {
     Serial.println("BLE MIDI: Controller connected!");
-    Serial.printf("BLE MIDI: listening for midi on channel %d and %d\n", midiChannel + 1, MIDI_CHANNEL_ALL + 1);
+    Serial.printf("BLE MIDI: listening for midi on channel %d and %d\n", midiChannel, MIDI_CHANNEL_ALL);
     connectionLED.turnON();
 }
 
@@ -36,11 +36,14 @@ static void handleAllNoteOff() {
 }
 
 static void handleControlChange(byte channel, byte number, byte value, uint16_t timestamp) {
-    if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        bleMidiData->controls[number] = value * 2;
-        LED_blinkOnce(&midiLED);
-        Serial.printf("BLE MIDI: control change %d %d\n", number, value);
+    Serial.printf("BLE MIDI: control change %d, value %d, channel %d\n", number, value, channel + 1);
+    if (channel + 1 != midiChannel && channel + 1 != MIDI_CHANNEL_ALL) {
+        return;
     }
+
+    bleMidiData->controls[number] = value * 2;
+    LED_blinkOnce(&midiLED);
+
 
     if (number == ALL_NOTE_OFF_CC && value == ALL_NOTE_OFF_VAL) {
         handleAllNoteOff();
@@ -48,25 +51,29 @@ static void handleControlChange(byte channel, byte number, byte value, uint16_t 
 }
 
 static void handleNoteOff(byte channel, byte note, byte velocity, uint16_t timestamp) {
-    if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        bleMidiData->noteOn[note] = 0;
-        Serial.printf("BLE MIDI: note off %d\n", note);
+    Serial.printf("BLE MIDI: note off %d, channel %d\n", note, channel + 1);
+    if (channel + 1 != midiChannel && channel + 1 != MIDI_CHANNEL_ALL) {
+        return;
     }
+
+    bleMidiData->noteOn[note] = 0;
 }
 
 static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timestamp) {
-    if (channel == midiChannel || channel == MIDI_CHANNEL_ALL) {
-        if (velocity == 0) {
-            handleNoteOff(channel, note, velocity, timestamp);
-            return;
-        }
-
-        lastNoteOn = millis();
-        bleMidiData->noteOn[note] = 2 * velocity;
-
-        LED_blinkOnce(&midiLED);
-        Serial.printf("BLE MIDI: note on %d, velocity %d\n", note, velocity);
+    Serial.printf("BLE MIDI: note on %d, velocity %d, channel %d\n", note, velocity, channel + 1);
+    if (channel + 1 != midiChannel && channel + 1 != MIDI_CHANNEL_ALL) {
+        return;
     }
+
+    if (velocity == 0) {
+        handleNoteOff(channel, note, velocity, timestamp);
+        return;
+    }
+
+    lastNoteOn = millis();
+    bleMidiData->noteOn[note] = 2 * velocity;
+
+    LED_blinkOnce(&midiLED);
 }
 
 
