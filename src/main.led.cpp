@@ -16,6 +16,7 @@
 #define HELLO_PHASE_MILLIS 1800
 
 static unsigned long aliveTime = 0;
+static unsigned long memoryStatusCounter = 0;
 static unsigned long freeRunSetTime = 0;
 static unsigned long startupTime = 0;
 
@@ -52,6 +53,9 @@ void printAlive() {
     if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
         aliveTime = millis();
         Serial.println(".");
+        if (memoryStatusCounter++ % 5 == 0) {
+            printMemoryStatus();
+        }
     }
 }
 
