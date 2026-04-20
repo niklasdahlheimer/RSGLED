@@ -5,6 +5,18 @@
 #include "led.h"
 #include "../credentials.h"
 
+const char* wifiResultToString(const int result) {
+    switch (result) {
+        case WL_CONNECTED:          return "WL_CONNECTED";
+        case WL_NO_SSID_AVAIL:      return "WL_NO_SSID_AVAIL";
+        case WL_CONNECT_FAILED:     return "WL_CONNECT_FAILED";
+        case WL_DISCONNECTED:       return "WL_DISCONNECTED";
+        case WL_IDLE_STATUS:        return "WL_IDLE_STATUS";
+        case WL_SCAN_COMPLETED:     return "WL_SCAN_COMPLETED";
+        default:                    return "UNKNOWN";
+    }
+}
+
 void OTA_init(const char letter, const int ip) {
     WiFiClass::mode(WIFI_STA);
     WiFi.setTxPower(WIFI_POWER_19_5dBm); // highest tx power
@@ -24,20 +36,22 @@ void OTA_init(const char letter, const int ip) {
     ArduinoOTA.setHostname(hostname);
 
     // Connect to Wi-Fi network with SSID and password
-    Serial.printf("Connecting to %s", wifiConfig.ssid);
+    Serial.printf("Connecting to %s\n", wifiConfig.ssid);
     WiFi.begin(wifiConfig.ssid, wifiConfig.password);
 
     connectionLED.turnON();
     midiLED.turnON();
     const int connectionResult = WiFi.waitForConnectResult(10000);
-    /*WL_CONNECTED after successful connection is established
+    /*
+    WL_CONNECTED after successful connection is established
     WL_NO_SSID_AVAIL in case configured SSID cannot be reached
     WL_CONNECT_FAILED if connection failed
     WL_CONNECT_WRONG_PASSWORD if password is incorrect
     WL_IDLE_STATUS when Wi-Fi is in process of changing between statuses
     WL_DISCONNECTED if module is not configured in station mode
-    -1 on timeout*/
-    Serial.printf("connection result: %d", connectionResult);
+    -1 on timeout
+    */
+    Serial.printf("connection result: %d (%s)\n", connectionResult, wifiResultToString(connectionResult));
     connectionLED.turnOFF();
     midiLED.turnOFF();
 
@@ -87,8 +101,7 @@ void OTA_init(const char letter, const int ip) {
 
     ArduinoOTA.begin();
 
-    Serial.println("Ready");
-    Serial.printf("IP address: %s", WiFi.localIP().toString().c_str());
+    Serial.printf("IP address: %s\n", WiFi.localIP().toString().c_str());
 }
 
 void OTA_loop() {

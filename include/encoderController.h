@@ -13,7 +13,8 @@ enum MODE {
     BRIGHTNESS,
     TEST,
     LINE,
-    RUN_CABLE
+    RUN_CABLE,
+    OTA
 };
 
 typedef struct {

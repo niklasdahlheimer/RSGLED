@@ -20,6 +20,7 @@ static unsigned long freeRunSetTime = 0;
 static unsigned long startupTime = 0;
 
 static bool isHelloPhaseFinished = false;
+static bool isOtaInitialized = false;
 
 static MidiData midiData;
 static Config config;
@@ -73,7 +74,6 @@ void setup() {
     MIDIC_init(config.MIDI_CHANNEL, &midiData);
     MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
     ENCODER_init(&encoderState);
-    OTA_init(config.LETTER, config.IP);
 
     printMemoryStatus();
 
@@ -126,6 +126,12 @@ void handleEncoderState() {
     midiData.noteOn[CONFIG_MODE_BRIGHTNESS] = encoderState.mode == BRIGHTNESS ? 255 : 0;
     midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
 
+    if (encoderState.mode == OTA && !isOtaInitialized) {
+        Serial.println("initializing OTA...");
+        OTA_init(config.LETTER, config.IP);
+        isOtaInitialized = true;
+    }
+
     if (encoderState.mode == BRIGHTNESS) {
         midiData.controls[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM] = 255 - encoderState.value;
     } else if (encoderState.mode == LINE) {
@@ -135,8 +141,9 @@ void handleEncoderState() {
 
 void loop() {
     printAlive();
-
+    if (encoderState.mode == OTA) {
     OTA_loop();
+    }
     MIDICBLE_loop();
     ENCODER_loop();
 
