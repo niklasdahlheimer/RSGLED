@@ -146,7 +146,7 @@ void handleEncoderState() {
 void loop() {
     printAlive();
     if (encoderState.mode == OTA) {
-    OTA_loop();
+        OTA_loop();
     }
     MIDICBLE_loop();
     ENCODER_loop();
