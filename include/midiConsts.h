@@ -4,6 +4,9 @@
 
 #define MIDI_CHANNEL_ALL 12
 
+#define ALL_NOTE_OFF_CC 123
+#define ALL_NOTE_OFF_VAL 0
+
 #define Note_C_2 0
 #define Note_Cis_2 1
 #define Note_D_2 2
