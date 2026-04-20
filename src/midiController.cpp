@@ -24,7 +24,7 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
     midiData = _midiData;
 
     MIDI.begin(MIDI_CHANNEL_OMNI);
-    MIDI.setHandleControlChange(handleNoteOn);
+    MIDI.setHandleControlChange(handleControlChange);
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
     MIDI.setHandleError(handleError);
