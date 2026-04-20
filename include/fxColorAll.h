@@ -18,7 +18,7 @@ public:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (ledConfig.timestamp - startMillis < ledConfig.fadeInTime) {
             const byte fadedVelocity = map(ledConfig.timestamp - startMillis, 0, ledConfig.fadeInTime, 0, velocity);
-            //Serial.printf("set velocity to %d from %d time %d\n", fadedVelocity, velocity, ledConfig.timestamp - startMillis);
+            //LOGD("set velocity to %d from %d time %d\n", fadedVelocity, velocity, ledConfig.timestamp - startMillis);
             ledConfig.allOn(color, fadedVelocity);
         } else {
             ledConfig.allOn(color, velocity);

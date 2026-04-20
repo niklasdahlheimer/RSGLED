@@ -4,8 +4,7 @@
 #include "relayController.h"
 #include "config.h"
 #include "ezButton.h"
-#include "led.h"
-#include "ota.h"
+#include "logging.h"
 
 #define EEPROM_SIZE 100
 #define EEPROM_LETTER_ADDRESS 0
@@ -29,27 +28,27 @@ void initConfig(const byte value) {
     delay(5000);
     EEPROM.write(EEPROM_LETTER_ADDRESS, value);
     EEPROM.commit();
-    Serial.printf("written config value %d\n", value);
+    LOGD("written config value %d\n", value);
 }
 
 Config readConfig() {
     const byte letter = EEPROM.read(EEPROM_LETTER_ADDRESS);
-    Serial.printf("read config for letter %d\n", letter);
+    LOGD("read config for letter %d\n", letter);
     return getConfig(letter);
 }
 
 void printMemoryStatus() {
-    Serial.printf("=== Speicherstatus des ESP32 ===\n");
-    Serial.printf("Gesamter Heap-Speicher: %d Bytes\n", ESP.getHeapSize());
-    Serial.printf("Freier Heap-Speicher: %d Bytes\n", ESP.getFreeHeap());
-    Serial.printf("Minimale freie Heap-Speichergröße: %d Bytes\n", ESP.getMinFreeHeap());
-    Serial.printf("Maximale Allokierbare Speichergröße: %d Bytes\n", ESP.getMaxAllocHeap());
+    LOGD("=== Speicherstatus des ESP32 ===\n");
+    LOGD("Gesamter Heap-Speicher: %d Bytes\n", ESP.getHeapSize());
+    LOGD("Freier Heap-Speicher: %d Bytes\n", ESP.getFreeHeap());
+    LOGD("Minimale freie Heap-Speichergröße: %d Bytes\n", ESP.getMinFreeHeap());
+    LOGD("Maximale Allokierbare Speichergröße: %d Bytes\n", ESP.getMaxAllocHeap());
 }
 
 void maybePrintAlive() {
     if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
         aliveTime = millis();
-        Serial.println(".");
+        LOGN(".");
     }
 }
 
@@ -59,7 +58,7 @@ void setup() {
     if (DEBUG_LOG_ENABLE) {
         delay(2000); // time to start serial console
         Serial.begin(115200);
-        Serial.println("start init");
+        LOGN("start init");
         printMemoryStatus();
     }
 
@@ -92,7 +91,7 @@ void loop() {
     pushButtonExtern.loop();
 
     if (pushButtonExtern.isPressed()) {
-        Serial.println("pushButtonExtern pressed! Toggle flag");
+        LOGN("pushButtonExtern pressed! Toggle flag");
         isToggleOn = !isToggleOn;
     }
 

@@ -1,7 +1,8 @@
 #include "relayController.h"
+#include "logging.h"
 
 void reset() {
-    Serial.println("relay controller: reset");
+    LOGN("relay controller: reset");
     digitalWrite(RELAY1_PIN, LOW);
     digitalWrite(RELAY2_PIN, LOW);
     digitalWrite(RELAY3_PIN, LOW);

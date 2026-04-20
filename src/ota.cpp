@@ -2,6 +2,7 @@
 #include <ESPmDNS.h>
 #include <ArduinoOTA.h>
 #include "ota.h"
+#include "logging.h"
 #include "led.h"
 #include "../credentials.h"
 
@@ -27,7 +28,7 @@ void OTA_init(const char letter, const int ip) {
     const IPAddress subnet(wifiConfig.subnet[0], wifiConfig.subnet[1], wifiConfig.subnet[2], wifiConfig.subnet[3]);
     // Configures static IP address
     if (!WiFi.config(local_IP, gateway, subnet)) {
-        Serial.println("STA Failed to configure");
+        LOGN("STA Failed to configure");
     }
 
     // Hostname defaults to esp3232-[MAC]
@@ -36,7 +37,7 @@ void OTA_init(const char letter, const int ip) {
     ArduinoOTA.setHostname(hostname);
 
     // Connect to Wi-Fi network with SSID and password
-    Serial.printf("Connecting to %s\n", wifiConfig.ssid);
+    LOGD("Connecting to %s\n", wifiConfig.ssid);
     WiFi.begin(wifiConfig.ssid, wifiConfig.password);
 
     connectionLED.turnON();
@@ -51,7 +52,7 @@ void OTA_init(const char letter, const int ip) {
     WL_DISCONNECTED if module is not configured in station mode
     -1 on timeout
     */
-    Serial.printf("connection result: %d (%s)\n", connectionResult, wifiResultToString(connectionResult));
+    LOGD("connection result: %d (%s)\n", connectionResult, wifiResultToString(connectionResult));
     connectionLED.turnOFF();
     midiLED.turnOFF();
 
@@ -76,32 +77,32 @@ void OTA_init(const char letter, const int ip) {
                 }
 
                 // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-                Serial.println("Start updating " + type);
+                LOGN("Start updating " + type);
             })
             .onEnd([]() {
-                Serial.println("\nEnd");
+                LOGN("\nEnd");
             })
             .onProgress([](unsigned int progress, unsigned int total) {
-                Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+                LOGD("Progress: %u%%\r", (progress / (total / 100)));
             })
             .onError([](ota_error_t error) {
-                Serial.printf("Error[%u]: ", error);
+                LOGD("Error[%u]: ", error);
                 if (error == OTA_AUTH_ERROR) {
-                    Serial.println("Auth Failed");
+                    LOGN("Auth Failed");
                 } else if (error == OTA_BEGIN_ERROR) {
-                    Serial.println("Begin Failed");
+                    LOGN("Begin Failed");
                 } else if (error == OTA_CONNECT_ERROR) {
-                    Serial.println("Connect Failed");
+                    LOGN("Connect Failed");
                 } else if (error == OTA_RECEIVE_ERROR) {
-                    Serial.println("Receive Failed");
+                    LOGN("Receive Failed");
                 } else if (error == OTA_END_ERROR) {
-                    Serial.println("End Failed");
+                    LOGN("End Failed");
                 }
             });
 
     ArduinoOTA.begin();
 
-    Serial.printf("IP address: %s\n", WiFi.localIP().toString().c_str());
+    LOGD("IP address: %s\n", WiFi.localIP().toString().c_str());
 }
 
 void OTA_loop() {

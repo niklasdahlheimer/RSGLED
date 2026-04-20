@@ -5,6 +5,7 @@
 #include "encoderController.h"
 #include "config.h"
 #include "ota.h"
+#include "logging.h"
 
 #define EEPROM_SIZE 100
 #define EEPROM_LETTER_ADDRESS 0
@@ -32,27 +33,27 @@ void initConfig(const byte value) {
     delay(5000);
     EEPROM.write(EEPROM_LETTER_ADDRESS, value);
     EEPROM.commit();
-    Serial.printf("written config value %d\n", value);
+    LOGD("written config value %d\n", value);
 }
 
 Config readConfig() {
     const byte letter = EEPROM.read(EEPROM_LETTER_ADDRESS);
-    Serial.printf("read config for letter %d\n", letter);
+    LOGD("read config for letter %d\n", letter);
     return getConfig(letter);
 }
 
 void printMemoryStatus() {
-    Serial.printf("=== Speicherstatus des ESP32 ===\n");
-    Serial.printf("Gesamter Heap-Speicher: %d Bytes\n", ESP.getHeapSize());
-    Serial.printf("Freier Heap-Speicher: %d Bytes\n", ESP.getFreeHeap());
-    Serial.printf("Minimale freie Heap-Speichergröße: %d Bytes\n", ESP.getMinFreeHeap());
-    Serial.printf("Maximale Allokierbare Speichergröße: %d Bytes\n", ESP.getMaxAllocHeap());
+    LOGD("=== Speicherstatus des ESP32 ===\n");
+    LOGD("Gesamter Heap-Speicher: %d Bytes\n", ESP.getHeapSize());
+    LOGD("Freier Heap-Speicher: %d Bytes\n", ESP.getFreeHeap());
+    LOGD("Minimale freie Heap-Speichergröße: %d Bytes\n", ESP.getMinFreeHeap());
+    LOGD("Maximale Allokierbare Speichergröße: %d Bytes\n", ESP.getMaxAllocHeap());
 }
 
 void printAlive() {
     if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
         aliveTime = millis();
-        Serial.println(".");
+        LOGN(".");
         if (memoryStatusCounter++ % 5 == 0) {
             printMemoryStatus();
         }
@@ -65,7 +66,7 @@ void setup() {
         Serial.begin(115200);
     }
 
-    Serial.println("start init");
+    LOGN("start init");
 
     EEPROM.begin(EEPROM_SIZE);
 
@@ -91,20 +92,20 @@ void handleFreeRun() {
         // start free run
         if (midiData.noteOn[FREE_RUN] == 0 && (midiData.noteOn[FREE_RUN_START] != 0 || millis() - lastSignal >
                                                FREE_RUN_START_MILLIS)) {
-            Serial.println("start free run in ble mode");
+            LOGN("start free run in ble mode");
             freeRunSetTime = millis();
             midiData.noteOn[FREE_RUN] = 255;
         }
 
         // stop free run on signal
         if (midiData.noteOn[FREE_RUN] != 0 && lastSignal > freeRunSetTime) {
-            Serial.println("stop free run");
+            LOGN("stop free run");
             midiData.noteOn[FREE_RUN] = 0;
         }
     } else {
         // stop free run in all other modes
         if (midiData.noteOn[FREE_RUN] != 0) {
-            Serial.println("stop free run");
+            LOGN("stop free run");
             midiData.noteOn[FREE_RUN] = 0;
         }
     }
@@ -117,7 +118,7 @@ void handleHelloPhase() {
             midiData.noteOn[ALL_ON_COLOR_1] = 120;
             midiData.noteOn[PUMP] = 255;
         } else {
-            Serial.println("hello phase finished");
+            LOGN("hello phase finished");
             isHelloPhaseFinished = true;
             midiData.noteOn[ALL_ON_COLOR_1] = 0;
             midiData.noteOn[PUMP] = 0;
@@ -131,7 +132,7 @@ void handleEncoderState() {
     midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
 
     if (encoderState.mode == OTA && !isOtaInitialized) {
-        Serial.println("initializing OTA...");
+        LOGN("initializing OTA...");
         OTA_init(config.LETTER, config.IP);
         isOtaInitialized = true;
     }

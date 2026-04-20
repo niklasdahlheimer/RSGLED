@@ -1,4 +1,5 @@
 #include "ledController.h"
+#include "logging.h"
 #include <vector>
 
 #include "fxCOlorAll.h"
@@ -123,7 +124,7 @@ void maybeSetGlobalBrightness(LEDConfig *config) {
 
     ledConfig.globBrightness = LED_BRIGHTNESS_MAX - config->controller[CONTROLLER_GLOBAL_BRIGHTNESS_TRIM];
     FastLED.setBrightness(ledConfig.globBrightness);
-    Serial.printf("set globBrightness to %d\n", ledConfig.globBrightness);
+    LOGD("set globBrightness to %d\n", ledConfig.globBrightness);
 }
 
 void maybeSetTempoTrim(const byte *controller) {
@@ -139,13 +140,13 @@ void maybeSetTempoTrim(const byte *controller) {
         long mappedValue = map(trimValue, 129, 254, 1000, 8000);
         ledConfig.tempoTrim = static_cast<double>(mappedValue) / 1000.0;
     }
-    Serial.printf("set tempo trim to %f \n", ledConfig.tempoTrim);
+    LOGD("set tempo trim to %f \n", ledConfig.tempoTrim);
 }
 
 void maybeSetFadeInTime(const byte *controller) {
     if (controller[CONTROLLER_FADE_IN] == ledConfig.lastControllerValues[CONTROLLER_FADE_IN]) return;
     ledConfig.fadeInTime = map(controller[CONTROLLER_FADE_IN], 0, 254, 0, LED_FADE_IN_TIME_MILLIS_MAX);
-    Serial.printf("fade in time to %d ms \n", ledConfig.fadeInTime);
+    LOGD("fade in time to %d ms \n", ledConfig.fadeInTime);
 }
 
 void maybeSetTempo(const byte tempoValue) {
@@ -153,7 +154,7 @@ void maybeSetTempo(const byte tempoValue) {
     if (tempoValue == 0 || tempoValue == ledConfig.tempo) {
         return;
     }
-    Serial.printf("set tempo to %d bpm (value was %d)\n", tempoValue, ledConfig.tempo);
+    LOGD("set tempo to %d bpm (value was %d)\n", tempoValue, ledConfig.tempo);
     ledConfig.tempo = tempoValue;
 }
 
@@ -173,7 +174,7 @@ int findMaxLedNum(const Config *config) {
 // public
 
 void reset() {
-    Serial.println("total reset");
+    LOGN("total reset");
     FastLED.clear(true);
     ledConfig.tempo = DEFAULT_TEMPO;
     ledConfig.tempoTrim = 1;
@@ -207,7 +208,7 @@ void LEDC_init(const Config *config) {
     for (int i = 0; i < ledConfig.LINE_NUM; i++) {
         if (!ledConfig.lines[i][0]) break; // should not happen
         ledConfig.groups[0][pos] = ledConfig.lines[i];
-        Serial.printf("%d: assigned line %d to group 0\n", pos, i);
+        LOGD("%d: assigned line %d to group 0\n", pos, i);
         pos++;
     }
     // assign ledConfig.groups
@@ -219,7 +220,7 @@ void LEDC_init(const Config *config) {
             ledConfig.groups[i][j] = &ledConfig.lines[config->groups[i][j] - 1][0];
         }
     }
-    Serial.printf("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n",
+    LOGD("LED_NUM: %d, LINE_NUM: %d, GROUP_NUM: %d\n",
                   ledConfig.LED_NUM, ledConfig.LINE_NUM, ledConfig.GROUP_NUM);
 
     //FastLED.setMaxPowerInMilliWatts( 250*1000);
@@ -306,7 +307,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // handle effects
     for (const auto &effect: effects) {
-        //Serial.printf("handling effect with note %d\n", effect->getTriggerNote());
+        //LOGD("handling effect with note %d\n", effect->getTriggerNote());
         effect->handle(ledConfig);
     }
 

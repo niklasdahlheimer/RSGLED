@@ -17,7 +17,7 @@ public:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const float brightness = FREE_RUN_BRIGHTNESS * getRampValue(millis() - startMillis, FREE_RUN_DIM_IN_MILLIS);
         ledConfig.allOn(&white, static_cast<byte>(brightness));
-        //Serial.printf("set velocity to %d at %d \n", brightness, millis() - startMillis);
+        //LOGD("set velocity to %d at %d \n", brightness, millis() - startMillis);
     };
 
     void onReset() override {

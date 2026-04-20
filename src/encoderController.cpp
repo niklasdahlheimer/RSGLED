@@ -1,4 +1,5 @@
 #include "encoderController.h"
+#include "logging.h"
 #include "AiEsp32RotaryEncoder.h"
 
 AiEsp32RotaryEncoder rotaryEncoder = AiEsp32RotaryEncoder(ENCODER_PIN_A, ENCODER_PIN_B, ENCODER_BUTTON_PIN, -1, 2);
@@ -49,14 +50,14 @@ void ENCODER_loop() {
         rotaryEncoder.setBoundaries(ModeConfigs[currentModeIndex].minValue, ModeConfigs[currentModeIndex].maxValue,
                                     ModeConfigs[currentModeIndex].circleValues);
         rotaryEncoder.reset(ModeConfigs[currentModeIndex].value);
-        Serial.printf("enc mode: %d, value: %d\n", statePointer->mode, statePointer->value);
+        LOGD("enc mode: %d, value: %d\n", statePointer->mode, statePointer->value);
     }
     if (rotaryEncoder.encoderChanged()) {
         const int encValue = (int) rotaryEncoder.readEncoder();
         ModeConfigs[currentModeIndex].value = encValue;
         statePointer->value = encValue;
         statePointer->lastChanged = millis();
-        Serial.printf("enc value: %d\n", encValue);
+        LOGD("enc value: %d\n", encValue);
     }
 
     if (millis() - statePointer->lastChanged > ACTIVE_MILLIS) {

@@ -2,6 +2,7 @@
 #define EFFECT_H
 
 #include <Arduino.h>
+#include "logging.h"
 #include "ledController.h"
 
 #define DEFINE_GETNAME(className) const char* getName() const override { return #className; }
@@ -19,8 +20,8 @@ public:
         if (ledConfig.note[triggerNote] && startMillis == 0) {
             startMillis = ledConfig.timestamp;
             effectRunCount++;
-            Serial.printf("Starting effect (%d) ", effectRunCount);
-            Serial.println(getName());
+            LOGD("Starting effect (%d) ", effectRunCount);
+            LOGN(getName());
             onStart(ledConfig);
         } else if (!ledConfig.note[triggerNote] && startMillis != 0) {
             startMillis = 0;
