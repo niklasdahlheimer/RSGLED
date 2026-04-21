@@ -10,10 +10,10 @@
 
 enum MODE {
     RUN_BLE,
+    RUN_CABLE,
     BRIGHTNESS,
     TEST,
     LINE,
-    RUN_CABLE,
     OTA
 };
 

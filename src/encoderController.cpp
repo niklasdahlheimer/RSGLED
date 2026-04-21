@@ -15,10 +15,10 @@ State *statePointer;
 #define NUM_OF_MODES 6
 ModeConfig ModeConfigs[NUM_OF_MODES] = {
     {RUN_BLE, 0, 0, 255, false},
+    {RUN_CABLE, 0, 0, 255, false},
     {BRIGHTNESS, 255, 0, 255, false},
     {TEST, 255, 0, 255, false},
     {LINE, 0, 0, 255, true},
-    {RUN_CABLE, 0, 0, 255, false},
     {OTA, 0, 0, 255, false},
 };
 

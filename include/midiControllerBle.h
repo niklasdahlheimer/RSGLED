@@ -2,6 +2,7 @@
 #define RSGLED_MIDICONTROLLERBLE_H
 
 void MIDICBLE_init(byte _midiChannel, char letter, MidiData *_bleMidiData);
+void MIDICBLE_disconnect();
 
 MidiData *MIDICBLE_getMidiDataArray();
 

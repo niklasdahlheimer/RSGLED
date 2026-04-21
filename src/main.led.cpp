@@ -23,6 +23,7 @@ static unsigned long startupTime = 0;
 
 static bool isHelloPhaseFinished = false;
 static bool isOtaInitialized = false;
+static bool isBleMidiInitialized = false;
 
 static MidiData midiData;
 static Config config;
@@ -77,7 +78,7 @@ void setup() {
 
     LEDC_init(&config);
     MIDIC_init(config.MIDI_CHANNEL, &midiData);
-    MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
+    // MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
     ENCODER_init(&encoderState);
 
     printMemoryStatus();
@@ -127,6 +128,16 @@ void handleHelloPhase() {
 }
 
 void handleEncoderState() {
+    if (encoderState.mode == RUN_BLE && !isBleMidiInitialized) {
+        LOGN("initializing BLE MIDI...");
+        MIDICBLE_init(config.MIDI_CHANNEL, config.LETTER, &midiData);
+        isBleMidiInitialized = true;
+    } else if (encoderState.mode == RUN_CABLE && isBleMidiInitialized) {
+        LOGN("disconnecting BLE MIDI for Cable mode...");
+        MIDICBLE_disconnect();
+        isBleMidiInitialized = false;
+    }
+
     midiData.noteOn[CONFIG_MODE_TEST] = encoderState.mode == TEST ? 255 : 0;
     midiData.noteOn[CONFIG_MODE_BRIGHTNESS] = encoderState.mode == BRIGHTNESS ? 255 : 0;
     midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;

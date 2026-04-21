@@ -80,6 +80,15 @@ static void handleNoteOn(byte channel, byte note, byte velocity, uint16_t timest
 
 // public
 
+void MIDICBLE_disconnect() {
+    LOGN("BLE MIDI: Disconnecting and freeing resources...");
+    BLEMidiServer.end();
+    // Optional: Bluetooth komplett abschalten um Strom zu sparen / Ressourcen frei zu geben
+    // esp_bluedroid_disable();
+    // esp_bt_controller_disable();
+    connectionLED.turnOFF();
+}
+
 void MIDICBLE_init(const byte _midiChannel, char letter, MidiData *_bleMidiData) {
     midiChannel = _midiChannel;
     bleMidiData = _bleMidiData;
@@ -99,6 +108,8 @@ void MIDICBLE_init(const byte _midiChannel, char letter, MidiData *_bleMidiData)
     // waiting for connection...
     onAdvertisingStart();
 }
+
+
 
 unsigned long MIDICBLE_lastNoteOn() {
     return lastNoteOn;
