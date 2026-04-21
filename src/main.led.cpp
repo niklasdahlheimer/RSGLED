@@ -138,10 +138,6 @@ void handleEncoderState() {
         isBleMidiInitialized = false;
     }
 
-    midiData.noteOn[CONFIG_MODE_TEST] = encoderState.mode == TEST ? 255 : 0;
-    midiData.noteOn[CONFIG_MODE_BRIGHTNESS] = encoderState.mode == BRIGHTNESS ? 255 : 0;
-    midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
-
     if (encoderState.mode == OTA && !isOtaInitialized) {
         LOGN("initializing OTA...");
         OTA_init(config.LETTER, config.IP);
@@ -153,6 +149,10 @@ void handleEncoderState() {
     } else if (encoderState.mode == LINE) {
         midiData.controls[CONTROLLER_LINE_INDEX] = encoderState.value;
     }
+
+    midiData.noteOn[CONFIG_MODE_TEST] = encoderState.mode == TEST ? 255 : 0;
+    midiData.noteOn[CONFIG_MODE_BRIGHTNESS] = encoderState.mode == BRIGHTNESS ? 255 : 0;
+    midiData.noteOn[CONFIG_MODE_LINE] = encoderState.mode == LINE ? 255 : 0;
 }
 
 void loop() {
