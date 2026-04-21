@@ -142,6 +142,10 @@ void handleEncoderState() {
         LOGN("initializing OTA...");
         OTA_init(config.LETTER, config.IP);
         isOtaInitialized = true;
+    } else if (encoderState.mode != OTA && isOtaInitialized) {
+        LOGN("disconnecting OTA for other mode...");
+        OTA_disconnect();
+        isOtaInitialized = false;
     }
 
     if (encoderState.mode == BRIGHTNESS) {

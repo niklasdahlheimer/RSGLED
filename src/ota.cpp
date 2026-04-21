@@ -108,3 +108,8 @@ void OTA_init(const char letter, const int ip) {
 void OTA_loop() {
     ArduinoOTA.handle();
 }
+
+void OTA_disconnect() {
+    LOGN("Disconnecting WiFi...");
+    WiFi.disconnect(true);
+}

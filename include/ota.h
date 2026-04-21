@@ -5,4 +5,6 @@ void OTA_init(char letter, int ip);
 
 void OTA_loop();
 
+void OTA_disconnect();
+
 #endif
