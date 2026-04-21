@@ -1,5 +1,6 @@
 #include <EEPROM.h>
 #include "midiController.h"
+#include "midiControllerRtp.h"
 #include "ledController.h"
 #include "midiControllerBle.h"
 #include "encoderController.h"
@@ -24,6 +25,7 @@ static unsigned long startupTime = 0;
 static bool isHelloPhaseFinished = false;
 static bool isOtaInitialized = false;
 static bool isBleMidiInitialized = false;
+static bool isRtpMidiInitialized = false;
 
 static MidiData midiData;
 static Config config;
@@ -87,9 +89,9 @@ void setup() {
 }
 
 void handleFreeRun() {
-    const unsigned long lastSignal = max(MIDICBLE_lastNoteOn(), MIDIC_lastNoteOn());
+    const unsigned long lastSignal = max(max(MIDICBLE_lastNoteOn(), MIDIC_lastNoteOn()), MIDICRTP_lastNoteOn());
 
-    if (encoderState.mode == RUN_BLE || encoderState.mode == RUN_CABLE) {
+    if (encoderState.mode == RUN_BLE || encoderState.mode == RUN_CABLE || encoderState.mode == RUN_RTP_WIFI) {
         // start free run
         if (midiData.noteOn[FREE_RUN] == 0 && (midiData.noteOn[FREE_RUN_START] != 0 || millis() - lastSignal >
                                                FREE_RUN_START_MILLIS)) {
@@ -138,6 +140,16 @@ void handleEncoderState() {
         isBleMidiInitialized = false;
     }
 
+    if (encoderState.mode == RUN_RTP_WIFI && !isRtpMidiInitialized) {
+        LOGN("initializing RTP MIDI...");
+        MIDICRTP_init(config.MIDI_CHANNEL, config.LETTER, config.IP, &midiData);
+        isRtpMidiInitialized = true;
+    } else if (encoderState.mode != RUN_RTP_WIFI && isRtpMidiInitialized) {
+        LOGN("disconnecting RTP MIDI for other mode...");
+        MIDICRTP_disconnect();
+        isRtpMidiInitialized = false;
+    }
+
     if (encoderState.mode == OTA && !isOtaInitialized) {
         LOGN("initializing OTA...");
         OTA_init(config.LETTER, config.IP);
@@ -165,6 +177,7 @@ void loop() {
         OTA_loop();
     }
     MIDICBLE_loop();
+    MIDICRTP_loop();
     ENCODER_loop();
 
     // ble midi is read asynchronous into midiData array
