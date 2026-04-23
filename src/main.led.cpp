@@ -182,7 +182,6 @@ void loop() {
 
     // ble midi is read asynchronous into midiData array
     if (encoderState.mode == RUN_CABLE) {
-        // cable MIDI read ist nicht exclusiv! es wird weiterhin auch ble MIDI gelesen
         MIDIC_read();
     }
 
