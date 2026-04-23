@@ -315,5 +315,5 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // push to stripe
     FastLED.show();
-    //LOGD("pushed to stripe\n");
+    LOGD("+++\n");
 }
