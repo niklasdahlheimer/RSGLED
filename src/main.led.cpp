@@ -57,7 +57,7 @@ void printAlive() {
     if (millis() > aliveTime + ALIVE_INFO_INTERVAL_MILLIS) {
         aliveTime = millis();
         LOGN(".");
-        if (memoryStatusCounter++ % 5 == 0) {
+        if (memoryStatusCounter++ % 20 == 0) {
             printMemoryStatus();
         }
     }
