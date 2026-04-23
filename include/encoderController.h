@@ -9,8 +9,8 @@
 
 
 enum MODE {
-    RUN_BLE,
     RUN_CABLE,
+    RUN_BLE,
     RUN_RTP_WIFI,
     BRIGHTNESS,
     TEST,

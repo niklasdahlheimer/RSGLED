@@ -14,8 +14,8 @@ State *statePointer;
 
 #define NUM_OF_MODES 7
 ModeConfig ModeConfigs[NUM_OF_MODES] = {
-    {RUN_BLE, 0, 0, 255, false},
     {RUN_CABLE, 0, 0, 255, false},
+    {RUN_BLE, 0, 0, 255, false},
     {RUN_RTP_WIFI, 0, 0, 255, false},
     {BRIGHTNESS, 255, 0, 255, false},
     {TEST, 255, 0, 255, false},
