@@ -5,7 +5,12 @@
 #include "led.h"
 #include "midiConsts.h"
 
-MIDI_CREATE_INSTANCE(HardwareSerial, Serial2, MIDI);
+// nötig damit read() nicht immer nur ein command pro Runde ausliest
+struct MyMIDISettings : public midi::DefaultSettings {
+    static const bool Use1ByteParsing = false;
+};
+
+MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial2, MIDI, MyMIDISettings);
 
 static MidiData *midiData;
 static byte midiChannel;
