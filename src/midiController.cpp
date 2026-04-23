@@ -50,10 +50,11 @@ void handleAllNoteOff() {
 }
 
 void handleControlChange(const byte channel, const byte number, const byte value) {
-    LOGD("Cable MIDI: Control change on %03d, value %03d, channel %d\n", number, value, channel);
     if (channel != midiChannel && channel != MIDI_CHANNEL_ALL) {
+        LOGD("Cable MIDI: IGNORE (cc%03d-v%03d-c%d\n", number, value, channel);
         return;
     }
+    LOGD("Cable MIDI: Control change on %03d, value %03d, channel %d\n", number, value, channel);
 
     midiData->controls[number] = value * 2;
     LED_blinkOnce(&midiLED);
@@ -64,10 +65,11 @@ void handleControlChange(const byte channel, const byte number, const byte value
 }
 
 void handleNoteOn(const byte channel, const byte note, const byte velocity) {
-    LOGD("Cable MIDI: Note on %03d, velocity %03d, channel %d\n", note, velocity, channel);
     if (channel != midiChannel && channel != MIDI_CHANNEL_ALL) {
+        LOGD("Cable MIDI: IGNORE (n%03d-v%03d-c%d\n", note, velocity, channel);
         return;
     }
+    LOGD("Cable MIDI: Note on %03d, velocity %03d, channel %d\n", note, velocity, channel);
 
     midiData->noteOn[note] = 2 * velocity;
     lastNoteOn = millis();
@@ -75,10 +77,11 @@ void handleNoteOn(const byte channel, const byte note, const byte velocity) {
 }
 
 void handleNoteOff(const byte channel, const byte note, byte velocity) {
-    LOGD("Cable MIDI: Note off %03d, channel %d\n", note, channel);
     if (channel != midiChannel && channel != MIDI_CHANNEL_ALL) {
+        LOGD("Cable MIDI: IGNORE (no%03d-v%03d-c%d\n", note, velocity, channel);
         return;
     }
+    LOGD("Cable MIDI: Note off %03d, channel %d\n", note, channel);
 
     midiData->noteOn[note] = 0;
 }
