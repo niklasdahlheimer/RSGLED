@@ -34,11 +34,8 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
 MidiData *MIDIC_read() {
     // while damit alles in einem step abgeholt wird
     // (wg. Problemen dass overlays zu spät triggern)
-    while (MIDI.read(MIDI_CHANNEL_ALL)) {
+    while (MIDI.read()) {
     }
-    while (MIDI.read(midiChannel)) {
-    }
-
     connectionLED.loop();
     midiLED.loop();
 
