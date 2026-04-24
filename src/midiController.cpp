@@ -10,7 +10,7 @@ struct MyMIDISettings : public midi::DefaultSettings {
     static const bool Use1ByteParsing = false;
 };
 
-MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial2, MIDI, MyMIDISettings);
+MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial2, MIDI_CABLE, MyMIDISettings);
 
 static MidiData *midiData;
 static byte midiChannel;
@@ -29,17 +29,17 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
     midiChannel = _midiChannel;
     midiData = _midiData;
 
-    MIDI.begin(MIDI_CHANNEL_OMNI);
-    MIDI.setHandleControlChange(handleControlChange);
-    MIDI.setHandleNoteOn(handleNoteOn);
-    MIDI.setHandleNoteOff(handleNoteOff);
-    MIDI.setHandleError(handleError);
+    MIDI_CABLE.begin(MIDI_CHANNEL_OMNI);
+    MIDI_CABLE.setHandleControlChange(handleControlChange);
+    MIDI_CABLE.setHandleNoteOn(handleNoteOn);
+    MIDI_CABLE.setHandleNoteOff(handleNoteOff);
+    MIDI_CABLE.setHandleError(handleError);
 }
 
 MidiData *MIDIC_read() {
     // while damit alles in einem step abgeholt wird
     // (wg. Problemen dass overlays zu spät triggern)
-    while (MIDI.read()) {
+    while (MIDI_CABLE.read()) {
     }
     connectionLED.loop();
     midiLED.loop();
