@@ -293,7 +293,7 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     ledConfig.note = note;
     ledConfig.controller = controller;
 
-    // nur bei flanken
+    // nur bei Flanken
     static byte lastTotalReset = 0;
     const byte currentTotalReset = note[TOTAL_RESET];
     if (currentTotalReset != 0 && lastTotalReset == 0) {
@@ -321,5 +321,4 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
 
     // push to stripe
     FastLED.show();
-    LOGD("+++\n");
 }
