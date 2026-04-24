@@ -293,9 +293,15 @@ void LEDC_updateStripe(const byte *note, const byte *controller) {
     ledConfig.note = note;
     ledConfig.controller = controller;
 
-    if (note[TOTAL_RESET]) reset();
+    // nur bei flanken
+    static byte lastTotalReset = 0;
+    const byte currentTotalReset = note[TOTAL_RESET];
+    if (currentTotalReset != 0 && lastTotalReset == 0) {
+        reset();
+    }
+    lastTotalReset = currentTotalReset;
 
-    FastLED.clear();
+    FastLED.clear(false);
 
     // meta values
     maybeSetGroupColor(note, controller);
