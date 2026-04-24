@@ -6,7 +6,7 @@
 #include "midiConsts.h"
 
 // nötig damit read() nicht immer nur ein command pro Runde ausliest
-struct MyMIDISettings : public midi::DefaultSettings {
+struct MyMIDISettings : MIDI_NAMESPACE::DefaultSettings {
     static const bool Use1ByteParsing = false;
 };
 
