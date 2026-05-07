@@ -1,5 +1,5 @@
-#ifndef FXCOLOR_LEVEL_H
-#define FXCOLOR_LEVEL_H
+#ifndef FX_COLOR_LEVEL_H
+#define FX_COLOR_LEVEL_H
 
 #include <fxBase.h>
 
@@ -12,18 +12,19 @@ public:
         this->levelIndex = 0;
     }
 
-    FXColorLevel(byte TRIGGER_NOTE, const CRGB *color, const byte groupIndex) : FXBase(TRIGGER_NOTE) {
+    FXColorLevel(const byte TRIGGER_NOTE, const CRGB *color, const byte groupIndex) : FXBase(TRIGGER_NOTE) {
         this->color = color;
         this->levelIndex = groupIndex;
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         // Horizontal Segment Blocks (for Level Meter etc.)
         ledConfig.levelOn(levelIndex, color, velocity);
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }
@@ -36,4 +37,4 @@ private:
     byte levelIndex;
 };
 
-#endif //FXCOLOR_LEVEL_H
+#endif //FX_COLOR_LEVEL_H

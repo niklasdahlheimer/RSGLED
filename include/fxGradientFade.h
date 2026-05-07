@@ -10,6 +10,7 @@ public:
     explicit FXGradientFade(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (startMillis == ledConfig.timestamp) {
             fl::fill_gradient_RGB(ledConfig.fullGradientLEDs, FULL_GRADIENT_STEPS, COLORS[0], COLORS[5], COLORS[0]);
@@ -29,12 +30,12 @@ public:
         }
 
         ledConfig.allOn(&ledConfig.fullGradientLEDs[gradientFadeLastStep % FULL_GRADIENT_STEPS], velocity);
-    };
+    }
 
     void onReset() override {
         gradientFadeLastStep = 0;
         gradientFadeLastUpdateTime = 0;
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

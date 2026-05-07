@@ -12,6 +12,7 @@ public:
     explicit FXTest(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const byte newPart = getSteppedSawValue(ledConfig.timestamp - startMillis, 5000, 3);
 
@@ -32,12 +33,12 @@ public:
             fl::fill_rainbow_circular(ledConfig.LEDs,
                                       ledConfig.LED_NUM,
                                       ((ledConfig.timestamp - partStartTime) / RAINBOW_PERIOD_IN_MILLIS),
-                                      (uint8_t) (10 * (velocity / 127.0)));
+                                      static_cast<uint8_t>(10 * (velocity / 127.0)));
         }
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

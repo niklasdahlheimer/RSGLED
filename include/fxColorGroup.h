@@ -12,17 +12,18 @@ public:
         this->groupIndex = 0;
     }
 
-    FXColorGroup(byte TRIGGER_NOTE, const CRGB *color, const byte groupIndex) : FXBase(TRIGGER_NOTE) {
+    FXColorGroup(const byte TRIGGER_NOTE, const CRGB *color, const byte groupIndex) : FXBase(TRIGGER_NOTE) {
         this->color = color;
         this->groupIndex = groupIndex;
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         ledConfig.groupOn(ledConfig.groups[groupIndex], color, velocity);
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

@@ -27,24 +27,24 @@ const CRGBPalette16 p16blue = {
 
 const CRGBPalette16 p16white = {
     CRGB::White,
-   CRGB::Snow,
-   CRGB::WhiteSmoke,
-   CRGB::Gainsboro,
+    CRGB::Snow,
+    CRGB::WhiteSmoke,
+    CRGB::Gainsboro,
 
-   CRGB::FloralWhite,
-   CRGB::Ivory,
-   CRGB::Seashell,
-   CRGB::OldLace,
+    CRGB::FloralWhite,
+    CRGB::Ivory,
+    CRGB::Seashell,
+    CRGB::OldLace,
 
     CRGB::Linen,
     CRGB::AntiqueWhite,
     CRGB::Beige,
     CRGB::WhiteSmoke,
 
-   CRGB::Silver,
-   CRGB::Gainsboro,
-   CRGB::WhiteSmoke,
-   CRGB::White
+    CRGB::Silver,
+    CRGB::Gainsboro,
+    CRGB::WhiteSmoke,
+    CRGB::White
 };
 
 class FXFreeRun final : public FXBase {
@@ -60,7 +60,7 @@ public:
         colorOffset = 0;
     }
 
-    void  makeEffect(LEDConfig &ledConfig, const byte velocity) override {
+    void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         colorOffset = beat8(colorSpeed);
         brightness = FREE_RUN_BRIGHTNESS * getRampValue(millis() - startMillis, FREE_RUN_DIM_IN_MILLIS);
 

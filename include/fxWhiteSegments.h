@@ -21,6 +21,7 @@ public:
     explicit FXWhiteSegments(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned int currentStep =
                 getSteppedSawValue(ledConfig.timestamp - startMillis, getBeatLenInMillis(ledConfig.tempo, 4),
@@ -29,10 +30,10 @@ public:
         for (int i = 0; i < GROUPS_PER_STEP; ++i) {
             ledConfig.groupOn(ledConfig.groups[groups[currentStep][i]], &color, velocity);
         }
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

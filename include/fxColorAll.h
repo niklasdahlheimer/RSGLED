@@ -11,10 +11,11 @@ public:
         this->color = DEFAULT_COLOR;
     }
 
-    FXColorAll(byte TRIGGER_NOTE, const CRGB *color) : FXBase(TRIGGER_NOTE) {
+    FXColorAll(const byte TRIGGER_NOTE, const CRGB *color) : FXBase(TRIGGER_NOTE) {
         this->color = color;
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (ledConfig.timestamp - startMillis < ledConfig.fadeInTime) {
             const byte fadedVelocity = map(ledConfig.timestamp - startMillis, 0, ledConfig.fadeInTime, 0, velocity);
@@ -23,10 +24,10 @@ public:
         } else {
             ledConfig.allOn(color, velocity);
         }
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

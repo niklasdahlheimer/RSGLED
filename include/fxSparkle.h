@@ -12,17 +12,18 @@ public:
     explicit FXSparkle(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         // Define the density and brightness of the sparkles based on the velocity
-        byte density = map(velocity, 0, 255, 1, 20); // Adjust sparkle density with velocity
-        byte sparkleBrightness = velocity; // Adjust brightness with velocity
+        const byte density = map(velocity, 0, 255, 1, 20); // Adjust sparkle density with velocity
+        const byte sparkleBrightness = velocity; // Adjust brightness with velocity
 
         // Iterate through the LEDs and randomly assign sparkles
         for (int i = 0; i < density; i++) {
-            int ledIndex = random(ledConfig.LED_NUM); // Randomly select an LED index
+            const int ledIndex = random(ledConfig.LED_NUM); // Randomly select an LED index
 
             // Choose whether to make the sparkle colorful or white
-            bool makeWhite = random(100) < 50; // 30% chance of white sparkles, adjust as needed
+            const bool makeWhite = random(100) < 50; // 30% chance of white sparkles, adjust as needed
             if (makeWhite) {
                 ledConfig.LEDs[ledIndex] = CRGB::White;
             } else {
@@ -36,10 +37,10 @@ public:
         for (int i = 0; i < ledConfig.LED_NUM; i++) {
             ledConfig.LEDs[i].fadeToBlackBy(100); // Adjust fade speed as needed
         }
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }
