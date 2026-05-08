@@ -12,6 +12,8 @@ struct MyMIDISettings : MIDI_NAMESPACE::DefaultSettings {
 
 MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial2, MIDI_CABLE, MyMIDISettings);
 
+static constexpr unsigned long MIDI_DRAIN_WINDOW_MICROS = 2000;
+
 static MidiData *midiData;
 static byte midiChannel;
 static unsigned long lastNoteOn = 0;
@@ -37,9 +39,14 @@ void MIDIC_init(const byte _midiChannel, MidiData *_midiData) {
 }
 
 MidiData *MIDIC_read() {
+    bool drainIntervalUsed = false;
     // while damit alles in einem step abgeholt wird
     // (wg. Problemen dass overlays zu spät triggern)
     while (MIDI_CABLE.read()) {
+        if (!drainIntervalUsed) {
+            drainIntervalUsed = true;
+            delayMicroseconds(MIDI_DRAIN_WINDOW_MICROS);
+        }
     }
     connectionLED.loop();
     midiLED.loop();
