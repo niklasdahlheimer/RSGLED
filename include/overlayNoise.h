@@ -12,6 +12,7 @@ public:
     explicit OverlayNoise(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         if (ledConfig.timestamp - noiseLastUpdateMillis > NOISE_PERIOD_IN_MILLIS) {
             noiseLastUpdateMillis = ledConfig.timestamp;
@@ -19,12 +20,12 @@ public:
             noiseCurrentVal = noiseCurrentVal > 1 ? 1 : (noiseCurrentVal < 0.2 ? 0.2 : noiseCurrentVal);
         }
         ledConfig.allBrighten(LED_BRIGHTNESS_MAX * noiseCurrentVal * (velocity / 255.0));
-    };
+    }
 
     void onReset() override {
         noiseCurrentVal = 0.5;
         noiseLastUpdateMillis = 0;
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

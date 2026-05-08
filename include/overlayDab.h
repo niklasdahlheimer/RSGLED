@@ -12,6 +12,7 @@ public:
         color = CRGB::White;
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned long animationLength = getBeatLenInMillis(ledConfig.tempo, 16);
         for (int i = 0; i < ANIMATED_LINES_NUM; ++i) {
@@ -21,7 +22,7 @@ public:
             }
             ledConfig.lineOn(ledConfig.lines[lineIndex[i]], &color);
         }
-    };
+    }
 
     void onReset() override {
     }

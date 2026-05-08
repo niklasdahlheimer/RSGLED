@@ -13,18 +13,19 @@ public:
     explicit OverlayStrobe(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
-        int state = getRectValue(ledConfig.timestamp - startMillis, getBeatLenInMillis(ledConfig.tempo, 16),
+        const int state = getRectValue(ledConfig.timestamp - startMillis, getBeatLenInMillis(ledConfig.tempo, 16),
                                  STROBE_ON_FACTOR);
         if (state == 1) {
             //ledConfig.allOn(ledConfig.globalColor, velocity); // Turn all LEDs on to the strobe color
         } else {
             FastLED.clear(); // Turn all LEDs off
         }
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }

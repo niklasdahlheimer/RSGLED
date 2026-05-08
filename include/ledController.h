@@ -120,18 +120,18 @@
 #define CONTROLLER_LINE_INDEX                       14
 
 static CRGB COLORS[12]{
-    CRGB::LightSkyBlue,
-    CRGB::Fuchsia,
-    CRGB::Lime,
-    CRGB::Pink,
-    CRGB::Gold,
-    CRGB::Purple,
-    CRGB::Red,
-    CRGB::HotPink,
-    CRGB::Blue,
-    CRGB::OrangeRed,
-    CRGB::Teal,
-    CRGB::Aqua
+    CRGB::LightSkyBlue, //0 Note_C1
+    CRGB::Fuchsia, //1 Note_Cis1
+    CRGB::Lime, //2 Note_D1
+    CRGB::Pink, //3 Note_Dis1
+    CRGB::Gold, //4 Note_E1
+    CRGB::Purple, //5 Note_F1
+    CRGB::Red, //6 Note_Fis1
+    CRGB::HotPink, //7 Note_G1
+    CRGB::Blue, //8 Note_Gis1
+    CRGB::OrangeRed, //9 Note_A1
+    CRGB::Teal, //10 Note_Ais1
+    CRGB::Aqua//11 Note_B1
 };
 
 typedef struct {

@@ -13,14 +13,15 @@ public:
     explicit OverlayLevelPump(const byte TRIGGER_NOTE) : FXBase(TRIGGER_NOTE) {
     }
 
+protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned int currentStep =
                 getSteppedSawValue(ledConfig.timestamp - startMillis, PUMP_PERIOD_IN_MILLIS, 6);
         ledConfig.levelSolo(currentStep);
-    };
+    }
 
     void onReset() override {
-    };
+    }
 
     void onStart(LEDConfig &ledConfig) override {
     }
