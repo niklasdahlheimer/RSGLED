@@ -4,6 +4,13 @@
 
 #define ANIMATED_LINES_NUM 10
 
+/**
+ * @brief Overlay: Fügt wandernde weiße Linien hinzu.
+ * 
+ * Dieser Effekt erzeugt eine Anzahl von Linien (ANIMATED_LINES_NUM), die zufällig über die
+ * verfügbaren LED-Linien wandern. Die Position jeder Linie wird in einem festen Zeitintervall
+ * (basierend auf dem Tempo) aktualisiert.
+ */
 class OverlayDab final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayDab)

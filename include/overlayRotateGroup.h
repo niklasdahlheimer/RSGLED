@@ -3,7 +3,12 @@
 
 #include <fxBase.h>
 
-// Overlay
+/**
+ * @brief Overlay: Rotiert den Effekt über die verschiedenen LED-Gruppen.
+ * 
+ * Basierend auf dem Tempo wird nacheinander jeweils eine der LED-Gruppen (1 bis 10)
+ * exklusiv aktiviert (Solo-Modus).
+ */
 class OverlayRotateGroup final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayRotateGroup)

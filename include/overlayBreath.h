@@ -5,6 +5,12 @@
 
 #define BREATH_PERIOD_IN_MILLIS     5000
 
+/**
+ * @brief Overlay: Erzeugt einen pulsierenden "Atmungs"-Effekt.
+ * 
+ * Die Helligkeit aller LEDs wird sinusförmig über einen Zeitraum (BREATH_PERIOD_IN_MILLIS)
+ * variiert, was ein langsames Aufleuchten und Abblenden bewirkt.
+ */
 class OverlayBreath final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayBreath)

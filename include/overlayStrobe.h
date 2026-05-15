@@ -5,7 +5,12 @@
 
 #define STROBE_ON_FACTOR            0.2 // Factor between 0 and 1 how long the LEDs stay ON
 
-// Overlay
+/**
+ * @brief Overlay: Erzeugt einen Stroboskop-Effekt.
+ * 
+ * Der Effekt schaltet die LEDs in einem schnellen, tempobasierten Intervall ein und aus.
+ * Der STROBE_ON_FACTOR bestimmt dabei das Verhältnis zwischen An- und Aus-Phase.
+ */
 class OverlayStrobe final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayStrobe)

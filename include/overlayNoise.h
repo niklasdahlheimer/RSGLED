@@ -5,6 +5,12 @@
 
 #define NOISE_PERIOD_IN_MILLIS      10
 
+/**
+ * @brief Overlay: Fügt ein zufälliges Helligkeitsrauschen hinzu.
+ * 
+ * Der Effekt variiert die Gesamthelligkeit in kurzen Zeitintervallen (NOISE_PERIOD_IN_MILLIS)
+ * um einen zufälligen Wert, um ein "Flackern" oder Rauschen zu erzeugen.
+ */
 class OverlayNoise final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayNoise)

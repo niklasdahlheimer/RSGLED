@@ -5,7 +5,12 @@
 
 #define PUMP_PERIOD_IN_MILLIS       100
 
-// Overlay
+/**
+ * @brief Overlay: Erzeugt einen pulsierenden Effekt auf den Level-Gruppen.
+ * 
+ * Basierend auf dem Tempo wird ein Sägezahn-Wert berechnet, der nacheinander die verschiedenen
+ * Helligkeitsstufen (Level) anspricht.
+ */
 class OverlayLevelPump final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayLevelPump)

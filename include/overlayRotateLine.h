@@ -3,7 +3,12 @@
 
 #include <fxBase.h>
 
-// Overlay
+/**
+ * @brief Overlay: Rotiert den Effekt über die einzelnen LED-Linien.
+ * 
+ * Basierend auf dem Tempo wird nacheinander jede einzelne LED-Linie exklusiv
+ * aktiviert (Solo-Modus), wodurch ein wanderndes Licht über alle Linien entsteht.
+ */
 class OverlayRotateLine final : public FXBase {
 public:
     DEFINE_GETNAME(OverlayRotateLine)
