@@ -180,6 +180,7 @@ void reset() {
     ledConfig.globBrightness = LED_BRIGHTNESS_MAX;
     ledConfig.timestamp = 0;
     ledConfig.globalColor = &COLORS[0];
+    ledConfig.fadeInTime = 0;
     for (auto &i: ledConfig.groupColor) {
         i = *ledConfig.globalColor;
     }
