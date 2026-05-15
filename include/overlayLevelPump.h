@@ -16,7 +16,7 @@ public:
 protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
         const unsigned int currentStep =
-                getSteppedSawValue(ledConfig.timestamp - startMillis, PUMP_PERIOD_IN_MILLIS, 6);
+                getSteppedSawValue(ledConfig.timestamp - startMillis, getBeatLenInMillis(ledConfig.tempo, 8, true), 6);
         ledConfig.levelSolo(currentStep);
     }
 
