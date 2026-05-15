@@ -20,9 +20,9 @@ protected:
 
         const double period = static_cast<double>(getBeatLenInMillis(ledConfig.tempo, 64)) * ledConfig.tempoTrim;
 
-        unsigned long elapsedTime = ledConfig.timestamp - gradientFadeLastUpdateTime;
+        unsigned const long elapsedTime = ledConfig.timestamp - gradientFadeLastUpdateTime;
 
-        double progress = static_cast<double>(elapsedTime) / period;
+        double const progress = static_cast<double>(elapsedTime) / period;
         gradientFadeLastStep = (gradientFadeLastStep + static_cast<unsigned int>(progress)) % FULL_GRADIENT_STEPS;
 
         if (progress >= 1.0) {
