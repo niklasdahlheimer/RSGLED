@@ -3,8 +3,6 @@
 
 #include <fxBase.h>
 
-#define NOISE_PERIOD_IN_MILLIS      10
-
 class FXSparkle final : public FXBase {
 public:
     DEFINE_GETNAME(FXSparkle)

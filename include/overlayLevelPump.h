@@ -3,8 +3,6 @@
 
 #include <fxBase.h>
 
-#define PUMP_PERIOD_IN_MILLIS       100
-
 /**
  * @brief Overlay: Erzeugt einen pulsierenden Effekt auf den Level-Gruppen.
  * 

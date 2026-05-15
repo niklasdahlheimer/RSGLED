@@ -3,8 +3,6 @@
 
 #include <fxBase.h>
 
-#define RAINBOW_PERIOD_IN_MILLIS    10
-
 class FXRainbow final : public FXBase {
 public:
     DEFINE_GETNAME(FXRainbow)
@@ -14,9 +12,13 @@ public:
 
 protected:
     void makeEffect(LEDConfig &ledConfig, const byte velocity) override {
+        // Berechnet den Start-Hue basierend auf der Zeit und dem Tempo.
+        // Ein voller Regenbogen-Durchlauf (256 Stufen) pro Takt.
+        const uint8_t initialHue = (256 * (ledConfig.timestamp - startMillis)) / getBeatLenInMillis(ledConfig.tempo, 1);
+        
         fl::fill_rainbow_circular(ledConfig.LEDs,
                                   ledConfig.LED_NUM,
-                                  ((ledConfig.timestamp - startMillis) / RAINBOW_PERIOD_IN_MILLIS),
+                                  initialHue,
                                   static_cast<uint8_t>(10 * (velocity / 127.0)));
     }
 
