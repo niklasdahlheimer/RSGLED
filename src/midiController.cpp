@@ -12,7 +12,7 @@ struct MyMIDISettings : MIDI_NAMESPACE::DefaultSettings {
 
 MIDI_CREATE_CUSTOM_INSTANCE(HardwareSerial, Serial2, MIDI_CABLE, MyMIDISettings);
 
-static constexpr unsigned long MIDI_DRAIN_WINDOW_MICROS = 3000;
+static constexpr unsigned long MIDI_DRAIN_WINDOW_MICROS = 4000;
 
 static MidiData *midiData;
 static byte midiChannel;
